@@ -7,6 +7,8 @@ const baseUrl = 'http://localhost:8080' // 后端接口
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
+
+
   const { VITE_APP_ENV } = env
   return {
     // 部署生产环境和开发环境下的URL。
@@ -42,7 +44,7 @@ export default defineConfig(({ mode, command }) => {
     },
     // vite 相关配置
     server: {
-      port: 80,
+      port: 5173,
       host: true,
       open: true,
       proxy: {
@@ -52,8 +54,8 @@ export default defineConfig(({ mode, command }) => {
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/dev-api/, '')
         },
-         // springdoc proxy
-         '^/v3/api-docs/(.*)': {
+         // spring doc proxy
+         '/v3/api-docs': {
           target: baseUrl,
           changeOrigin: true,
         }
