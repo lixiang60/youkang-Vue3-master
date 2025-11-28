@@ -31,8 +31,18 @@
           plain
           icon="Plus"
           @click="handleAdd"
-          v-hasPermi="['customer:research:add']"
-        >添加</el-button>
+          v-hasPermi="['sequencing:production:add']"
+        >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="Edit"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['sequencing:production:edit']"
+        >修改</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -41,7 +51,7 @@
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['customer:research:remove']"
+          v-hasPermi="['sequencing:production:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -60,12 +70,12 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="primary"
+          type="warning"
           plain
-          icon="Document"
-          @click="handleBatchEdit"
-          v-hasPermi="['customer:research:batch']"
-        >批量编辑</el-button>
+          icon="Download"
+          @click="handleExport"
+          v-hasPermi="['sequencing:production:export']"
+        >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -80,35 +90,36 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="id" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="客户ID" align="center" prop="customerId" width="80" fixed />
-      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" fixed show-overflow-tooltip />
-      <el-table-column label="姓名拼音" align="center" prop="pinyin" width="100" />
-      <el-table-column label="地区" align="center" prop="region" width="80" />
-      <el-table-column label="课题组ID" align="center" prop="researchGroupId" width="100" />
-      <el-table-column label="课题组" align="center" prop="researchGroupName" width="120" show-overflow-tooltip />
-      <el-table-column label="是否启用" align="center" prop="isEnabled" width="80">
+      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
+      <el-table-column label="名称" align="center" prop="name" />
+      <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.isEnabled" />
+          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="结算方式" align="center" prop="paymentMethod" width="100" />
-      <el-table-column label="业务员" align="center" prop="salesman" width="100" />
-      <el-table-column label="客户地址" align="center" prop="address" width="150" show-overflow-tooltip />
-      <el-table-column label="添加人" align="center" prop="addedBy" width="100" />
-      <el-table-column label="添加时间" align="center" prop="createTime" width="110">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="客户电话" align="center" prop="phone" width="120" />
-      <el-table-column label="手机" align="center" prop="mobile" width="120" />
-      <el-table-column label="E_MAIL" align="center" prop="email" width="120" show-overflow-tooltip />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-      <el-table-column label="所属公司ID" align="center" prop="belongCompanyId" width="100" />
-      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" show-overflow-tooltip />
-      <el-table-column label="总积分" align="center" prop="totalPoints" width="80" />
-      <el-table-column label="可用积分" align="center" prop="availablePoints" width="90" />
+      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
+        <template #default="scope">
+          <el-button
+            link
+            type="primary"
+            icon="Edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['sequencing:production:edit']"
+          >修改</el-button>
+          <el-button
+            link
+            type="primary"
+            icon="Delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['sequencing:production:remove']"
+          >删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->
@@ -122,40 +133,42 @@
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="客户选择" prop="customerId">
-              <el-input v-model="form.customerId" placeholder="请选择客户" />
+          <el-col :span="12">
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="form.name" placeholder="请输入名称" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="课题组选择" prop="researchGroupId">
-              <el-input v-model="form.researchGroupId" placeholder="请选择课题组" />
+          <el-col :span="12">
+            <el-form-item label="状态" prop="status">
+              <el-radio-group v-model="form.status">
+                <el-radio label="0">正常</el-radio>
+                <el-radio label="1">停用</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" :rows="5" placeholder="请输入备注信息" />
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">添 加</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
-<script setup name="Research">
-import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
+<script setup name="Production">
+import { listProduction, getProduction, addProduction, updateProduction, delProduction } from '@/api/sequencing/production'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -179,11 +192,8 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    customerId: [
-      { required: true, message: '客户不能为空', trigger: 'blur' }
-    ],
-    researchGroupId: [
-      { required: true, message: '课题组不能为空', trigger: 'blur' }
+    name: [
+      { required: true, message: '名称不能为空', trigger: 'blur' }
     ]
   }
 })
@@ -193,7 +203,7 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listResearch(queryParams.value).then(response => {
+  listProduction(queryParams.value).then(response => {
     dataList.value = response.rows
     total.value = response.total
     loading.value = false
@@ -212,8 +222,8 @@ function cancel() {
 function reset() {
   form.value = {
     id: undefined,
-    customerId: undefined,
-    researchGroupId: undefined,
+    name: undefined,
+    status: '0',
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -242,27 +252,18 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '客户课题组设置'
+  title.value = '添加模板生产'
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
-  getResearch(id).then(response => {
+  getProduction(id).then(response => {
     form.value = response.data
     open.value = true
-    title.value = '修改客户课题组'
+    title.value = '修改模板生产'
   })
-}
-
-/** 批量编辑按钮操作 */
-function handleBatchEdit() {
-  if (ids.value.length === 0) {
-    proxy.$modal.msgWarning('请选择要批量编辑的记录')
-    return
-  }
-  proxy.$modal.msgInfo('批量编辑功能开发中...')
 }
 
 /** 提交按钮 */
@@ -270,13 +271,13 @@ function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value.id !== undefined) {
-        updateResearch(form.value).then(response => {
+        updateProduction(form.value).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addResearch(form.value).then(response => {
+        addProduction(form.value).then(response => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -290,7 +291,7 @@ function submitForm() {
 function handleDelete(row) {
   const idList = row.id || ids.value
   proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delResearch(idList)
+    return delProduction(idList)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -299,18 +300,12 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('customer/research/export', {
+  proxy.download('sequencing/production/export', {
     ...queryParams.value
-  }, `research_${new Date().getTime()}.xlsx`)
+  }, `production_${new Date().getTime()}.xlsx`)
 }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
 })
 </script>
