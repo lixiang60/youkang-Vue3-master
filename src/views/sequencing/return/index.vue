@@ -1,49 +1,7 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['sequencing:return:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['sequencing:return:edit']"
-        >修改</el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -70,12 +28,34 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
+          type="success"
           plain
           icon="Download"
           @click="handleExport"
           v-hasPermi="['sequencing:return:export']"
         >导出</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="ShoppingCart"
+          @click="handleDeliveryDetails"
+        >发货明细</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="Promotion"
+          @click="handleArrangeReturn"
+        >安排返还</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="CollectionTag"
+          @click="handleReturnLabel"
+        >返还标签</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -90,36 +70,20 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="状态" align="center" prop="status">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['sequencing:return:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['sequencing:return:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column label="id" align="center" prop="id" width="80" fixed sortable />
+      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
+      <el-table-column label="订单号" align="center" prop="orderNo" width="120" />
+      <el-table-column label="安排时间" align="center" prop="arrangeTime" width="160" />
+      <el-table-column label="安排人" align="center" prop="arrangeBy" width="100" />
+      <el-table-column label="返还类型" align="center" prop="returnType" width="120" show-overflow-tooltip />
+      <el-table-column label="返还数量" align="center" prop="returnQuantity" width="80" />
+      <el-table-column label="生产编号范围" align="center" prop="productionNoRange" width="150" show-overflow-tooltip />
+      <el-table-column label="生产编号集" align="center" prop="productionNoSet" width="150" show-overflow-tooltip />
+      <el-table-column label="状态" align="center" prop="status" width="100" />
+      <el-table-column label="返还时间" align="center" prop="returnTime" width="160" />
+      <el-table-column label="返还人" align="center" prop="returnBy" width="100" />
+      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" show-overflow-tooltip />
+      <el-table-column label="生产公司" align="center" prop="productionCompany" width="120" show-overflow-tooltip />
     </el-table>
 
     <!-- 分页 -->
@@ -305,7 +269,18 @@ function handleExport() {
   }, `return_${new Date().getTime()}.xlsx`)
 }
 
+// 占位方法
+function handleDeliveryDetails() { proxy.$modal.msgInfo('功能开发中...') }
+function handleArrangeReturn() { proxy.$modal.msgInfo('功能开发中...') }
+function handleReturnLabel() { proxy.$modal.msgInfo('功能开发中...') }
+
 onMounted(() => {
-  getList()
+  // TODO: 等后端接口实现后再启用
+  // getList()
+  
+  // 临时模拟数据
+  loading.value = false
+  dataList.value = []
+  total.value = 0
 })
 </script>

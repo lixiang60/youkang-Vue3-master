@@ -1,59 +1,7 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['sequencing:production:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['sequencing:production:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['sequencing:production:remove']"
-        >删除</el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           plain
@@ -70,12 +18,51 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="success"
+          plain
+          icon="Upload"
+          @click="handleImport"
+          v-hasPermi="['sequencing:production:import']"
+        >导入</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="warning"
           plain
           icon="Download"
           @click="handleExport"
           v-hasPermi="['sequencing:production:export']"
         >导出</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="Setting"
+          @click="handleSetDefault"
+        >设为默认</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="Money"
+          @click="handleSetPrice"
+        >设置价格</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="Edit"
+          @click="handleBatchEdit"
+        >批量编辑</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="InfoFilled"
+          @click="handleSampleInfo"
+        >样品信息</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -90,36 +77,24 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="状态" align="center" prop="status">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['sequencing:production:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['sequencing:production:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column label="生产编号" align="center" prop="productionNo" width="100" fixed sortable />
+      <el-table-column label="订单号" align="center" prop="orderNo" width="120" />
+      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
+      <el-table-column label="客户地址" align="center" prop="customerAddress" width="150" show-overflow-tooltip />
+      <el-table-column label="客户等级" align="center" prop="customerLevel" width="80" />
+      <el-table-column label="课题组" align="center" prop="researchGroup" width="100" show-overflow-tooltip />
+      <el-table-column label="样品对应号" align="center" prop="sampleCorrespondingNo" width="100" />
+      <el-table-column label="样品编号" align="center" prop="sampleNo" width="100" />
+      <el-table-column label="测序引物" align="center" prop="sequencingPrimer" width="100" />
+      <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
+      <el-table-column label="样品类型" align="center" prop="sampleType" width="80" />
+      <el-table-column label="载体名称" align="center" prop="vectorName" width="100" />
+      <el-table-column label="抗生素类型" align="center" prop="antibioticType" width="100" />
+      <el-table-column label="模板板号" align="center" prop="templatePlateNo" width="80" />
+      <el-table-column label="模板孔号" align="center" prop="templateWellNo" width="80" />
+      <el-table-column label="返回状态" align="center" prop="returnStatus" width="80" />
+      <el-table-column label="原孔号" align="center" prop="originalWellNo" width="80" />
+      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
     </el-table>
 
     <!-- 分页 -->
@@ -136,16 +111,13 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入名称" />
+            <el-form-item label="生产编号" prop="productionNo">
+              <el-input v-model="form.productionNo" placeholder="请输入生产编号" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">停用</el-radio>
-              </el-radio-group>
+            <el-form-item label="订单号" prop="orderNo">
+              <el-input v-model="form.orderNo" placeholder="请输入订单号" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -192,8 +164,8 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
+    productionNo: [
+      { required: true, message: '生产编号不能为空', trigger: 'blur' }
     ]
   }
 })
@@ -222,8 +194,8 @@ function cancel() {
 function reset() {
   form.value = {
     id: undefined,
-    name: undefined,
-    status: '0',
+    productionNo: undefined,
+    orderNo: undefined,
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -305,7 +277,20 @@ function handleExport() {
   }, `production_${new Date().getTime()}.xlsx`)
 }
 
+// 占位方法
+function handleImport() { proxy.$modal.msgInfo('功能开发中...') }
+function handleSetDefault() { proxy.$modal.msgInfo('功能开发中...') }
+function handleSetPrice() { proxy.$modal.msgInfo('功能开发中...') }
+function handleBatchEdit() { proxy.$modal.msgInfo('功能开发中...') }
+function handleSampleInfo() { proxy.$modal.msgInfo('功能开发中...') }
+
 onMounted(() => {
-  getList()
+  // TODO: 等后端接口实现后再启用
+  // getList()
+  
+  // 临时模拟数据
+  loading.value = false
+  dataList.value = []
+  total.value = 0
 })
 </script>

@@ -1,28 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -32,7 +9,7 @@
           icon="Plus"
           @click="handleAdd"
           v-hasPermi="['sequencing:order:add']"
-        >新增</el-button>
+        >添加</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -42,7 +19,7 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['sequencing:order:edit']"
-        >修改</el-button>
+        >编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -70,12 +47,85 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          plain
+          icon="Document"
+          @click="handleSequencingOrder"
+        >测序订单</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="DocumentCopy"
+          @click="handleSequencingSample"
+        >测序样品</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="Files"
+          @click="handleBatchAdd"
+        >批量添加</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="warning"
           plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['sequencing:order:export']"
-        >导出</el-button>
+          icon="Printer"
+          @click="handleLabelPrint"
+        >标签打印</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="Operation"
+          @click="handleInternalOperation"
+        >内部操作表</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="DataBoard"
+          @click="handleDailyReport"
+        >业务员日报表</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="Monitor"
+          @click="handleOrderMonitor"
+        >订单量监控</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="Switch"
+          @click="handleTransfer"
+        >调拨</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="List"
+          @click="handleGeneSequencingOrder"
+        >基因测序单</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="CollectionTag"
+          @click="handleTemplateLabel"
+        >模板标签</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="RefreshRight"
+          @click="handleSyncYoukang"
+        >同步康为</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -90,36 +140,31 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="订单号" align="center" prop="orderNo" width="120" fixed sortable />
+      <el-table-column label="客户ID" align="center" prop="customerId" width="80" fixed />
+      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" fixed show-overflow-tooltip />
+      <el-table-column label="客户地址" align="center" prop="customerAddress" width="150" show-overflow-tooltip />
+      <el-table-column label="课题组ID" align="center" prop="researchGroupId" width="80" />
+      <el-table-column label="课题组" align="center" prop="researchGroupName" width="120" show-overflow-tooltip />
+      <el-table-column label="订单类型" align="center" prop="orderType" width="100" />
+      <el-table-column label="测序代数" align="center" prop="sequencingCodeNum" width="80" />
+      <el-table-column label="订单信息" align="center" prop="orderInfo" width="120" show-overflow-tooltip />
+      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
+      <el-table-column label="同步康为" align="center" prop="syncYoukang" width="80">
         <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
+          <dict-tag :options="sys_yes_no" :value="scope.row.syncYoukang" />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="添加时间" align="center" prop="createTime" width="160">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['sequencing:order:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['sequencing:order:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column label="添加人" align="center" prop="createBy" width="100" />
+      <el-table-column label="审核人" align="center" prop="auditor" width="100" />
+      <el-table-column label="当日订单号" align="center" prop="dailyOrderNo" width="100" />
+      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" show-overflow-tooltip />
+      <el-table-column label="生产公司" align="center" prop="productionCompany" width="120" show-overflow-tooltip />
     </el-table>
 
     <!-- 分页 -->
@@ -132,35 +177,161 @@
     />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="客户选择：" prop="customerId">
+              <el-input v-model="form.customerId" placeholder="请选择客户" />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入名称" />
+            <el-form-item label="邮件是否发送：" prop="sendEmail">
+              <el-radio-group v-model="form.sendEmail">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">停用</el-radio>
+            <el-form-item label="是否模板排版：" prop="templateArrangement">
+              <el-radio-group v-model="form.templateArrangement">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="测序生产实验室：" prop="sequencingLab">
+              <el-select v-model="form.sequencingLab" placeholder="请选择" style="width: 100%">
+                <el-option label="实验室A" value="A" />
+                <el-option label="实验室B" value="B" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="合成生产实验室：" prop="synthesisLab">
+              <el-select v-model="form.synthesisLab" placeholder="请选择" style="width: 100%">
+                <el-option label="实验室A" value="A" />
+                <el-option label="实验室B" value="B" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="信息不全：" prop="infoIncomplete">
+              <el-select v-model="form.infoIncomplete" placeholder="请选择" style="width: 100%">
+                <el-option label="是" value="1" />
+                <el-option label="否" value="0" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="送样日期：" prop="sampleDeliveryDate">
+              <el-date-picker
+                v-model="form.sampleDeliveryDate"
+                type="date"
+                placeholder="选择日期"
+                style="width: 100%"
+                value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="加急：" prop="urgent">
+              <el-radio-group v-model="form.urgent">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="模板样式：" prop="templateStyle">
+              <el-radio-group v-model="form.templateStyle">
+                <el-radio label="1">复制excel模式</el-radio>
+                <el-radio label="2">EXCEL模板</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+            <el-form-item label="测序级别：" prop="sequencingLevel">
+              <el-radio-group v-model="form.sequencingLevel">
+                <el-radio label="1">一代</el-radio>
+                <el-radio label="4">四代</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="模板内容：" prop="templateContent">
+              <el-input v-model="form.templateContent" type="textarea" :rows="5" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="测序模板附件：" prop="sequencingTemplateAttachment">
+              <div style="display: flex; width: 100%">
+                <el-input v-model="form.sequencingTemplateAttachment" readonly />
+                <el-button type="info" plain class="ml10">选择文件</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="加测合成模板附件：" prop="synthesisTemplateAttachment">
+              <div style="display: flex; width: 100%">
+                <el-input v-model="form.synthesisTemplateAttachment" readonly />
+                <el-button type="info" plain class="ml10">选择文件</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="拍照附件：" prop="photoAttachment">
+              <div style="display: flex; width: 100%">
+                <el-input v-model="form.photoAttachment" readonly />
+                <el-button type="info" plain class="ml10">拍照</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="关联基因样品编号：" prop="linkedGeneSampleNo">
+              <div style="display: flex; width: 100%">
+                <el-input v-model="form.linkedGeneSampleNo" />
+                <span class="ml10" style="white-space: nowrap">(非必填项目)</span>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item>
+              <el-button>上传截图</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="备注：" prop="remark">
+              <el-input v-model="form.remark" type="textarea" :rows="3" />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="primary" @click="submitForm">添 加</el-button>
         </div>
       </template>
     </el-dialog>
@@ -171,7 +342,7 @@
 import { listOrder, getOrder, addOrder, updateOrder, delOrder } from '@/api/sequencing/order'
 
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
+const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
 
 const dataList = ref([])
 const open = ref(false)
@@ -192,8 +363,8 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
+    customerId: [
+      { required: true, message: '客户不能为空', trigger: 'blur' }
     ]
   }
 })
@@ -222,8 +393,21 @@ function cancel() {
 function reset() {
   form.value = {
     id: undefined,
-    name: undefined,
-    status: '0',
+    customerId: undefined,
+    sendEmail: '1',
+    templateArrangement: '1',
+    sequencingLab: undefined,
+    synthesisLab: undefined,
+    infoIncomplete: undefined,
+    sampleDeliveryDate: new Date().toISOString().split('T')[0],
+    urgent: '0',
+    templateStyle: '1',
+    sequencingLevel: '1',
+    templateContent: undefined,
+    sequencingTemplateAttachment: undefined,
+    synthesisTemplateAttachment: undefined,
+    photoAttachment: undefined,
+    linkedGeneSampleNo: undefined,
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -252,7 +436,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加订单管理'
+  title.value = '添加订单'
 }
 
 /** 修改按钮操作 */
@@ -262,7 +446,7 @@ function handleUpdate(row) {
   getOrder(id).then(response => {
     form.value = response.data
     open.value = true
-    title.value = '修改订单管理'
+    title.value = '修改订单'
   })
 }
 
@@ -298,14 +482,26 @@ function handleDelete(row) {
   }).catch(() => {})
 }
 
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download('sequencing/order/export', {
-    ...queryParams.value
-  }, `order_${new Date().getTime()}.xlsx`)
-}
+// 占位方法
+function handleSequencingOrder() { proxy.$modal.msgInfo('功能开发中...') }
+function handleSequencingSample() { proxy.$modal.msgInfo('功能开发中...') }
+function handleBatchAdd() { proxy.$modal.msgInfo('功能开发中...') }
+function handleLabelPrint() { proxy.$modal.msgInfo('功能开发中...') }
+function handleInternalOperation() { proxy.$modal.msgInfo('功能开发中...') }
+function handleDailyReport() { proxy.$modal.msgInfo('功能开发中...') }
+function handleOrderMonitor() { proxy.$modal.msgInfo('功能开发中...') }
+function handleTransfer() { proxy.$modal.msgInfo('功能开发中...') }
+function handleGeneSequencingOrder() { proxy.$modal.msgInfo('功能开发中...') }
+function handleTemplateLabel() { proxy.$modal.msgInfo('功能开发中...') }
+function handleSyncYoukang() { proxy.$modal.msgInfo('功能开发中...') }
 
 onMounted(() => {
-  getList()
+  // TODO: 等后端接口实现后再启用
+  // getList()
+  
+  // 临时模拟数据
+  loading.value = false
+  dataList.value = []
+  total.value = 0
 })
 </script>

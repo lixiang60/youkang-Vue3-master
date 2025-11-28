@@ -34,7 +34,7 @@
           style="width: 63%"
           @keyup.enter="handleLogin"
         >
-          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
+          <template #prefix><svg-icon icon-class="validcode" class="el-input__icon input-icon" /></template>
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
@@ -130,6 +130,7 @@ function handleLogin() {
       }).catch(() => {
         loading.value = false
         // 重新获取验证码
+        console.log("重新获取验证码", captchaEnabled.value)
         if (captchaEnabled.value) {
           getCode()
         }

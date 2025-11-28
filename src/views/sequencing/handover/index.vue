@@ -32,17 +32,7 @@
           icon="Plus"
           @click="handleAdd"
           v-hasPermi="['sequencing:handover:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['sequencing:handover:edit']"
-        >修改</el-button>
+        >添加</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -68,15 +58,6 @@
           @click="handleRefresh"
         >刷新</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['sequencing:handover:export']"
-        >导出</el-button>
-      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -91,18 +72,7 @@
     >
       <el-table-column type="selection" width="50" align="center" fixed />
       <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="状态" align="center" prop="status">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100" fixed>
         <template #default="scope">
           <el-button
             link
@@ -110,16 +80,33 @@
             icon="Edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['sequencing:handover:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['sequencing:handover:remove']"
-          >删除</el-button>
+          >[处理]</el-button>
         </template>
       </el-table-column>
+      <el-table-column label="类型" align="center" prop="type" />
+      <el-table-column label="客户ID" align="center" prop="customerId" />
+      <el-table-column label="客户姓名" align="center" prop="customerName" />
+      <el-table-column label="内容" align="center" prop="content" show-overflow-tooltip />
+      <el-table-column label="显示位置" align="center" prop="displayPosition" />
+      <el-table-column label="添加人" align="center" prop="createBy" />
+      <el-table-column label="添加时间" align="center" prop="createTime" width="160">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" prop="status">
+        <template #default="scope">
+          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
+        </template>
+      </el-table-column>
+      <el-table-column label="处理内容" align="center" prop="processContent" show-overflow-tooltip />
+      <el-table-column label="处理人" align="center" prop="processBy" />
+      <el-table-column label="处理时间" align="center" prop="processTime" width="160">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.processTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="所属公司" align="center" prop="belongCompany" />
     </el-table>
 
     <!-- 分页 -->
@@ -135,16 +122,18 @@
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入名称" />
+          <el-col :span="24">
+            <el-form-item label="客户选择" prop="customerId">
+              <el-input v-model="form.customerId" placeholder="请输入客户ID" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">停用</el-radio>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="提示位置" prop="displayPosition">
+              <el-radio-group v-model="form.displayPosition">
+                <el-radio label="0">订单添加</el-radio>
+                <el-radio label="1">模板设置</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -152,15 +141,14 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+              <el-input v-model="form.remark" type="textarea" :rows="5" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitForm">添 加</el-button>
         </div>
       </template>
     </el-dialog>
@@ -189,7 +177,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     name: undefined,
-    status: undefined
+    status: 0
   },
   rules: {
     name: [
