@@ -2,18 +2,18 @@
   <div class="app-container">
     <!-- 查询表单 -->
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item label="客户名称" prop="name">
+      <el-form-item label="客户名称" prop="customerName">
         <el-input
-          v-model="queryParams.name"
+          v-model="queryParams.customerName"
           placeholder="请输入客户名称"
           clearable
           style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="手机号" prop="mobile">
+      <el-form-item label="手机号" prop="phone">
         <el-input
-          v-model="queryParams.mobile"
+          v-model="queryParams.phone"
           placeholder="请输入手机号"
           clearable
           style="width: 200px"
@@ -119,23 +119,20 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="客户ID" align="center" prop="customerId" width="80" fixed />
-      <el-table-column label="姓名昵称" align="center" prop="name" width="100" fixed show-overflow-tooltip />
-      <el-table-column label="拼音" align="center" prop="pinyin" width="80" />
+      <el-table-column label="客户ID" align="center" prop="id" width="80" fixed />
+      <el-table-column label="姓名昵称" align="center" prop="customerName" width="100" fixed show-overflow-tooltip />
       <el-table-column label="地区" align="center" prop="region" width="100" />
       <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
-      <el-table-column label="邮编" align="center" prop="zipCode" width="100" />
-      <el-table-column label="电话" align="center" prop="phone" width="130" />
-      <el-table-column label="手机" align="center" prop="mobile" width="130" />
+      <el-table-column label="手机" align="center" prop="phone" width="130" />
       <el-table-column label="邮箱" align="center" prop="email" width="100" />
       <el-table-column label="微信ID" align="center" prop="wechatId" width="100" />
-      <el-table-column label="等级" align="center" prop="level" width="80" />
+      <el-table-column label="等级" align="center" prop="customerLevel" width="80" />
       <el-table-column label="状态" align="center" prop="status" width="80" />
-      <el-table-column label="销售员" align="center" prop="salesman" width="100" />
-      <el-table-column label="客户单位" align="center" prop="company" width="150" show-overflow-tooltip />
+      <el-table-column label="销售员" align="center" prop="salesPerson" width="100" />
+      <el-table-column label="客户单位" align="center" prop="customerUnit" width="150" show-overflow-tooltip />
       <el-table-column label="发票种类" align="center" prop="invoiceType" width="120" />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-      <el-table-column label="添加人" align="center" prop="addedBy" width="100" />
+      <el-table-column label="备注" align="center" prop="remarks" width="100" show-overflow-tooltip />
+      <el-table-column label="添加人" align="center" prop="createBy" width="100" />
       <el-table-column label="时间" align="center" prop="createTime" width="110">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -145,7 +142,7 @@
       <el-table-column label="可用积分" align="center" prop="availablePoints" width="90" />
       <el-table-column label="已使用积分" align="center" prop="usedPoints" width="100" />
       <el-table-column label="冻结积分" align="center" prop="frozenPoints" width="90" />
-      <el-table-column label="所属公司" align="center" prop="belongCompany" width="90" />
+      <el-table-column label="所属公司" align="center" prop="company" width="90" />
       <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
@@ -180,13 +177,16 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="姓名客户：" prop="name">
-              <el-input v-model="form.name" placeholder="请输入客户姓名" />
+            <el-form-item label="姓名客户：" prop="customerName">
+              <el-input v-model="form.customerName" placeholder="请输入客户姓名" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="姓名拼音：" prop="pinyin">
-              <el-input v-model="form.pinyin" placeholder="请输入姓名拼音" />
+             <el-form-item label="所属公司：" prop="company">
+              <el-select v-model="form.company" placeholder="请选择所属公司" style="width: 100%">
+                <el-option label="杭州有康" value="杭州有康" />
+                <el-option label="北京分公司" value="北京分公司" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -201,78 +201,45 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="所属公司：" prop="belongCompany">
-              <el-select v-model="form.belongCompany" placeholder="请选择所属公司" style="width: 100%">
-                <el-option label="杭州有康" value="杭州有康" />
-                <el-option label="北京分公司" value="北京分公司" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
             <el-form-item label="地址：" prop="address">
               <el-input v-model="form.address" placeholder="请输入详细地址" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="课题组：" prop="researchGroup">
-              <el-input v-model="form.researchGroup" placeholder="请输入课题组" style="width: 280px" />
+            <el-form-item label="课题组：" prop="subjectGroupId">
+              <el-input v-model="form.subjectGroupId" placeholder="请输入课题组" style="width: 280px" />
               <el-button icon="Search" circle style="margin-left: 10px"></el-button>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="邮编：" prop="zipCode">
-              <el-input v-model="form.zipCode" placeholder="请输入邮编" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="电话：" prop="phone">
-              <el-input v-model="form.phone" placeholder="请输入固定电话" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="手机：" prop="mobile">
-              <el-input v-model="form.mobile" placeholder="请输入手机号码" maxlength="11">
+             <el-form-item label="手机：" prop="phone">
+              <el-input v-model="form.phone" placeholder="请输入手机号码" maxlength="11">
                 <template #suffix>
                   <el-icon><More /></el-icon>
                 </template>
               </el-input>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="邮箱：" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱地址" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="新客户：" prop="isNew">
-              <el-radio-group v-model="form.isNew">
-                <el-radio label="是">是</el-radio>
-                <el-radio label="否">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="试测：" prop="isTest">
-              <el-radio-group v-model="form.isTest">
-                <el-radio label="是">是</el-radio>
-                <el-radio label="否">否</el-radio>
-              </el-radio-group>
-              <span style="margin-left: 10px; color: #999; font-size: 12px">注：如需试测，请选择</span>
+            <el-form-item label="微信ID：" prop="wechatId">
+              <el-input v-model="form.wechatId" placeholder="请输入微信ID" />
             </el-form-item>
           </el-col>
         </el-row>
+
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="等级：" prop="level">
-              <el-select v-model="form.level" placeholder="请选择等级" style="width: 100%">
+            <el-form-item label="等级：" prop="customerLevel">
+              <el-select v-model="form.customerLevel" placeholder="请选择等级" style="width: 100%">
                 <el-option label="普通" value="普通" />
                 <el-option label="VIP1" value="VIP1" />
                 <el-option label="VIP2" value="VIP2" />
@@ -291,14 +258,14 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="销售员：" prop="salesman">
-              <el-input v-model="form.salesman" placeholder="请输入销售员" style="width: 280px" />
+            <el-form-item label="销售员：" prop="salesPerson">
+              <el-input v-model="form.salesPerson" placeholder="请输入销售员" style="width: 280px" />
               <el-button icon="Search" circle style="margin-left: 10px"></el-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="客户单位：" prop="company">
-              <el-input v-model="form.company" placeholder="请输入客户单位" />
+            <el-form-item label="客户单位：" prop="customerUnit">
+              <el-input v-model="form.customerUnit" placeholder="请输入客户单位" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -322,8 +289,8 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="备注：" prop="remark">
-              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入备注信息" />
+            <el-form-item label="备注：" prop="remarks">
+              <el-input v-model="form.remarks" type="textarea" :rows="4" placeholder="请输入备注信息" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -358,15 +325,15 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    mobile: undefined,
+    customerName: undefined,
+    phone: undefined,
     status: undefined
   },
   rules: {
-    name: [
+    customerName: [
       { required: true, message: '客户名称不能为空', trigger: 'blur' }
     ],
-    mobile: [
+    phone: [
       { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
     ],
     email: [
@@ -400,27 +367,21 @@ function reset() {
   form.value = {
     id: undefined,
     customerId: undefined,
-    name: undefined,
-    pinyin: undefined,
-    region: undefined,
-    belongCompany: '杭州有康',
-    address: undefined,
-    researchGroup: undefined,
-    zipCode: undefined,
-    phone: undefined,
-    mobile: undefined,
-    email: undefined,
-    wechatId: undefined,
-    isNew: '是',
-    isTest: '否',
-    level: '普通',
+    customerName: '',
+    region: '',
+    company: '杭州有康',
+    address: '',
+    subjectGroupId: '',
+    phone: '',
+    email: '',
+    wechatId: '',
+    customerLevel: '普通',
     status: '启用',
-    salesman: undefined,
-    company: undefined,
-    paymentMethod: undefined,
-    invoiceType: undefined,
-    deliveryAddress: undefined,
-    remark: undefined
+    salesPerson: '',
+    customerUnit: '',
+    paymentMethod: '',
+    invoiceType: '',
+    remarks: ''
   }
   proxy.resetForm('formRef')
 }
