@@ -221,8 +221,8 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="业务员" prop="salesman">
-              <el-input v-model="form.salesman" placeholder="请输入业务员" />
+            <el-form-item label="业务员" prop="salesPerson">
+              <el-input v-model="form.salesPerson" placeholder="请输入业务员" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -241,8 +241,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="所属公司" prop="belongCompany">
-              <el-input v-model="form.belongCompany" placeholder="请输入所属公司" />
+            <el-form-item label="所属公司" prop="companyId">
+              <el-input v-model="form.companyId" placeholder="请输入所属公司" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -342,10 +342,10 @@ function reset() {
     id: undefined,
     name: undefined,
     region: undefined,
-    salesman: undefined,
+    salesPerson: undefined,
     paymentMethod: undefined,
     invoiceTitle: undefined,
-    belongCompany: undefined,
+    companyId: undefined,
     contactPerson: undefined,
     contactPhone: undefined,
     contactAddress: undefined,
@@ -386,7 +386,11 @@ function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
   getResearch_group(id).then(response => {
-    form.value = response.data
+    form.value = {
+      ...response.data,
+      salesPerson: response.data.salesman, // Map old field to new field
+      companyId: response.data.belongCompany // Map old field to new field (adjust if belongCompanyId is correct)
+    }
     open.value = true
     title.value = '修改课题组'
   })
@@ -453,7 +457,12 @@ function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value.id !== undefined) {
-        updateResearch_group(form.value).then(response => {
+        const updateData = {
+          ...form.value,
+          salesman: form.value.salesPerson, // Map new field back to old field
+          belongCompany: form.value.companyId // Map new field back to old field
+        }
+        updateResearch_group(updateData).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
