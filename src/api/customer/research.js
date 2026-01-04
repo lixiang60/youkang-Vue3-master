@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询客户课题组列表
 export function listResearch(query) {
   return request({
-    url: '/customer/research/list',
+    url: '/customerSubject/query',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listResearch(query) {
 // 查询客户课题组详细
 export function getResearch(id) {
   return request({
-    url: '/customer/research/' + id,
+    url: '/customerSubject/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getResearch(id) {
 // 新增客户课题组
 export function addResearch(data) {
   return request({
-    url: '/customer/research',
+    url: '/customerSubject/add',
     method: 'post',
     data: data
   })
@@ -29,8 +29,8 @@ export function addResearch(data) {
 // 修改客户课题组
 export function updateResearch(data) {
   return request({
-    url: '/customer/research',
-    method: 'put',
+    url: '/customerSubject/update',
+    method: 'post',
     data: data
   })
 }
@@ -38,7 +38,7 @@ export function updateResearch(data) {
 // 删除客户课题组
 export function delResearch(id) {
   return request({
-    url: '/customer/research/' + id,
+    url: '/customerSubject/' + id,
     method: 'delete'
   })
 }
@@ -46,7 +46,7 @@ export function delResearch(id) {
 // 导出客户课题组
 export function exportResearch(query) {
   return request({
-    url: '/customer/research/export',
+    url: '/customerSubject/export',
     method: 'get',
     params: query
   })

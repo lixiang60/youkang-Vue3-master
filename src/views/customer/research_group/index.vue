@@ -155,11 +155,11 @@
       <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
       <el-table-column label="名称" align="center" prop="name" width="120" fixed show-overflow-tooltip />
       <el-table-column label="地区" align="center" prop="region" width="80" />
-      <el-table-column label="业务员" align="center" prop="salesman" width="100" />
+      <el-table-column label="业务员" align="center" prop="salesPerson" width="100" />
       <el-table-column label="结算方式" align="center" prop="paymentMethod" width="100" />
       <el-table-column label="发票抬头" align="center" prop="invoiceTitle" width="150" show-overflow-tooltip />
-      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" show-overflow-tooltip />
-      <el-table-column label="所属公司ID" align="center" prop="belongCompanyId" width="100" />
+      <el-table-column label="所属公司" align="center" prop="companyName" width="120" show-overflow-tooltip />
+      <el-table-column label="所属公司ID" align="center" prop="companyId" width="100" />
       <el-table-column label="联系人" align="center" prop="contactPerson" width="100" />
       <el-table-column label="联系电话" align="center" prop="contactPhone" width="120" />
       <el-table-column label="预付款课题" align="center" prop="prepaymentSubject" width="120" show-overflow-tooltip />
@@ -322,8 +322,8 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listResearch_group(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+    dataList.value = response.data.rows
+    total.value = response.data.total
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -387,9 +387,7 @@ function handleUpdate(row) {
   const id = row.id || ids.value
   getResearch_group(id).then(response => {
     form.value = {
-      ...response.data,
-      salesPerson: response.data.salesman, // Map old field to new field
-      companyId: response.data.belongCompany // Map old field to new field (adjust if belongCompanyId is correct)
+      ...response.data
     }
     open.value = true
     title.value = '修改课题组'
@@ -458,9 +456,7 @@ function submitForm() {
     if (valid) {
       if (form.value.id !== undefined) {
         const updateData = {
-          ...form.value,
-          salesman: form.value.salesPerson, // Map new field back to old field
-          belongCompany: form.value.companyId // Map new field back to old field
+          ...form.value
         }
         updateResearch_group(updateData).then(response => {
           proxy.$modal.msgSuccess('修改成功')
@@ -497,12 +493,6 @@ function handleExport() {
 }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
 })
 </script>

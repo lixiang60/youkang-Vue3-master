@@ -121,6 +121,7 @@
       <el-table-column type="selection" width="50" align="center" fixed />
       <el-table-column label="客户ID" align="center" prop="id" width="80" fixed />
       <el-table-column label="姓名昵称" align="center" prop="customerName" width="100" fixed show-overflow-tooltip />
+      <el-table-column label="课题组" align="center" prop="subjectGroupName" width="120" show-overflow-tooltip />
       <el-table-column label="地区" align="center" prop="region" width="100" />
       <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
       <el-table-column label="手机" align="center" prop="phone" width="130" />
@@ -209,8 +210,8 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="课题组：" prop="subjectGroupId">
-              <el-input v-model="form.subjectGroupId" placeholder="请输入课题组" style="width: 280px" />
-              <el-button icon="Search" circle style="margin-left: 10px"></el-button>
+              <el-input v-model="form.subjectGroupName" placeholder="请输入课题组" style="width: 280px" readonly />
+              <el-button icon="Search" circle style="margin-left: 10px" @click="openSubjectGroupSelector"></el-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -250,8 +251,8 @@
           <el-col :span="12">
             <el-form-item label="状态：" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio label="启用">启用</el-radio>
-                <el-radio label="禁用">禁用</el-radio>
+                <el-radio label="1">启用</el-radio>
+                <el-radio label="0">禁用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -272,18 +273,12 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="结算方式：" prop="paymentMethod">
-              <el-select v-model="form.paymentMethod" placeholder="请选择结算方式" style="width: 100%">
-                <el-option label="月结" value="月结" />
-                <el-option label="现结" value="现结" />
-              </el-select>
+              <dynamic-selector v-model="form.paymentMethod" type="paymentMethod" placeholder="请选择结算方式" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="发票种类：" prop="invoiceType">
-              <el-select v-model="form.invoiceType" placeholder="请选择发票种类" style="width: 100%">
-                <el-option label="普通发票" value="普通发票" />
-                <el-option label="增值税专用发票" value="增值税专用发票" />
-              </el-select>
+              <dynamic-selector v-model="form.invoiceType" type="invoiceType" placeholder="请选择发票种类" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -302,16 +297,26 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 课题组选择组件 -->
+    <subject-group-selector
+      v-model="showSubjectGroupSelector"
+      :selected-id="form.subjectGroupId"
+      @confirm="handleSubjectGroupSelect"
+    />
   </div>
 </template>
 
 <script setup name="Manage">
 import { listManage, getManage, addManage, updateManage, delManage } from '@/api/customer/manage'
+import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
+import DynamicSelector from '@/components/DynamicSelector/index.vue'
 
 const { proxy } = getCurrentInstance()
 
 const dataList = ref([])
 const open = ref(false)
+const showSubjectGroupSelector = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
@@ -348,8 +353,8 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listManage(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+    dataList.value = response.data.rows
+    total.value = response.data.total
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -372,6 +377,7 @@ function reset() {
     company: '杭州有康',
     address: '',
     subjectGroupId: '',
+    subjectGroupName: '',
     phone: '',
     email: '',
     wechatId: '',
@@ -496,14 +502,19 @@ function handleExport() {
   }, `customer_${new Date().getTime()}.xlsx`)
 }
 
+/** 打开课题组选择弹窗 */
+function openSubjectGroupSelector() {
+  showSubjectGroupSelector.value = true
+}
+
+/** 课题组选择回调 */
+function handleSubjectGroupSelect(group) {
+  form.value.subjectGroupId = group.id
+  form.value.subjectGroupName = group.name
+}
+
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据，方便查看页面效果
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
 })
 </script>
 

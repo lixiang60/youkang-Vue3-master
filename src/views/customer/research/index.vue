@@ -126,14 +126,28 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="客户选择" prop="customerId">
-              <el-input v-model="form.customerId" placeholder="请选择客户" />
+              <el-select v-model="form.customerId" placeholder="请选择客户" filterable clearable>
+                <el-option
+                  v-for="item in customerOptions"
+                  :key="item.customerId"
+                  :label="`${item.customerId}-${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
+                  :value="item.customerId"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="课题组选择" prop="researchGroupId">
-              <el-input v-model="form.researchGroupId" placeholder="请选择课题组" />
+            <el-form-item label="课题组选择" prop="subjectGroupId">
+              <el-select v-model="form.subjectGroupId" placeholder="请选择课题组" filterable clearable>
+                <el-option
+                  v-for="item in subjectGroupOptions"
+                  :key="item.id"
+                  :label="`${item.id}-${item.name}-${item.contactAddress || ''}`"
+                  :value="item.id"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -156,11 +170,14 @@
 
 <script setup name="Research">
 import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
+import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
 const dataList = ref([])
+const customerOptions = ref([])
+const subjectGroupOptions = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -182,7 +199,7 @@ const data = reactive({
     customerId: [
       { required: true, message: '客户不能为空', trigger: 'blur' }
     ],
-    researchGroupId: [
+    subjectGroupId: [
       { required: true, message: '课题组不能为空', trigger: 'blur' }
     ]
   }
@@ -213,7 +230,7 @@ function reset() {
   form.value = {
     id: undefined,
     customerId: undefined,
-    researchGroupId: undefined,
+    subjectGroupId: undefined,
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -305,12 +322,14 @@ function handleExport() {
 }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
+  listCustomerOption().then(response => {
+    console.log('Customer Options Response:', response)
+    customerOptions.value = response.data.records
+  })
+  listSubjectGroupOption().then(response => {
+    subjectGroupOptions.value = response.data.records
+  })
 })
+
 </script>

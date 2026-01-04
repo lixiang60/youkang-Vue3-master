@@ -20,7 +20,7 @@ export function getManage(id) {
 // 新增客户管理
 export function addManage(data) {
   return request({
-    url: '/customer/info',
+    url: '/customer/info/add',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addManage(data) {
 // 修改客户管理
 export function updateManage(data) {
   return request({
-    url: '/customer/info',
+    url: '/customer/info/edit',
     method: 'put',
     data: data
   })
@@ -49,22 +49,6 @@ export function exportManage(query) {
     url: '/customer/info/export',
     method: 'post',
     params: query
-  })
-}
-
-// 查询课题组信息
-export function subjectGroupSelector() {
-  return request({
-    url: '/customer/info/subjectGroupSelector',
-    method: 'get'
-  })
-}
-
-// 查询客户信息
-export function customerSelector() {
-  return request({
-    url: '/customer/info/customerSelector',
-    method: 'get'
   })
 }
     
