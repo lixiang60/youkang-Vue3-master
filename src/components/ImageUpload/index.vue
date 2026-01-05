@@ -92,6 +92,14 @@ const props = defineProps({
   drag: {
     type: Boolean,
     default: true
+  },
+  width: {
+    type: String,
+    default: "148px"
+  },
+  height: {
+    type: String,
+    default: "148px"
   }
 })
 
@@ -254,5 +262,12 @@ onMounted(() => {
 
 :deep(.el-upload.el-upload--picture-card.is-disabled) {
   display: none !important;
-} 
+}
+
+:deep(.el-upload--picture-card),
+:deep(.el-upload-list--picture-card .el-upload-list__item) {
+  width: v-bind(width) !important;
+  height: v-bind(height) !important;
+  line-height: v-bind(height) !important;
+}
 </style>

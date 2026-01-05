@@ -138,7 +138,7 @@
 
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="900px" append-to-body>
+    <base-dialog :title="title" v-model="open" width="900px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -260,7 +260,7 @@
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </base-dialog>
 
     <!-- 课题组选择组件 -->
     <subject-group-selector
@@ -276,6 +276,7 @@ import { listManage, getManage, addManage, updateManage, delManage } from '@/api
 import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import BaseDialog from '@/components/BaseDialog/index.vue'
 
 const { proxy } = getCurrentInstance()
 

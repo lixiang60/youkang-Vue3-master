@@ -3,9 +3,9 @@ import request from '@/utils/request'
 // 查询订单管理列表
 export function listOrder(query) {
   return request({
-    url: '/sequencing/order/list',
-    method: 'get',
-    params: query
+    url: '/order/info/list',
+    method: 'post',
+    data: query
   })
 }
 
@@ -20,7 +20,7 @@ export function getOrder(id) {
 // 新增订单管理
 export function addOrder(data) {
   return request({
-    url: '/sequencing/order',
+    url: '/order/info/addOrder',
     method: 'post',
     data: data
   })
@@ -30,7 +30,7 @@ export function addOrder(data) {
 export function updateOrder(data) {
   return request({
     url: '/sequencing/order',
-    method: 'put',
+    method: 'post',
     data: data
   })
 }
@@ -39,7 +39,7 @@ export function updateOrder(data) {
 export function delOrder(id) {
   return request({
     url: '/sequencing/order/' + id,
-    method: 'delete'
+    method: 'post'
   })
 }
 
@@ -47,7 +47,7 @@ export function delOrder(id) {
 export function exportOrder(query) {
   return request({
     url: '/sequencing/order/export',
-    method: 'get',
+    method: 'post',
     params: query
   })
 }

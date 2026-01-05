@@ -169,7 +169,7 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <base-dialog :title="title" v-model="open" width="800px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -246,13 +246,14 @@
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </base-dialog>
   </div>
 </template>
 
 <script setup name="Research_group">
 import { listResearch_group, getResearch_group, addResearch_group, updateResearch_group, delResearch_group } from '@/api/customer/research_group'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import BaseDialog from '@/components/BaseDialog/index.vue'
 
 const { proxy } = getCurrentInstance()
 

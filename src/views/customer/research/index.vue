@@ -83,7 +83,7 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <base-dialog :title="title" v-model="open" width="800px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="24">
@@ -126,7 +126,7 @@
           <el-button type="primary" @click="submitForm">添 加</el-button>
         </div>
       </template>
-    </el-dialog>
+    </base-dialog>
   </div>
 </template>
 
@@ -134,6 +134,7 @@
 import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
 import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import BaseDialog from '@/components/BaseDialog/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
