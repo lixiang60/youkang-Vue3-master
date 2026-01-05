@@ -4,8 +4,9 @@ import request from '@/utils/request'
 export function listResearch(query) {
   return request({
     url: '/customerSubject/query',
-    method: 'get',
-    params: query
+    method: 'post',
+    params: query,
+    data: {}
   })
 }
 
@@ -39,7 +40,7 @@ export function updateResearch(data) {
 export function delResearch(id) {
   return request({
     url: '/customerSubject/' + id,
-    method: 'delete'
+    method: 'post'
   })
 }
 

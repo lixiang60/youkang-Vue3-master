@@ -57,13 +57,6 @@
       <el-col :span="1.5">
         <el-button
           plain
-          icon="Search"
-          @click="handleQuery"
-        >查询</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
           icon="Refresh"
           @click="handleRefresh"
         >刷新</el-button>
@@ -139,70 +132,41 @@
           v-hasPermi="['customer:research_group:blank_price']"
         >空白价格</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
-      v-loading="loading" 
-      :data="dataList" 
-      @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" width="120" fixed show-overflow-tooltip />
-      <el-table-column label="地区" align="center" prop="region" width="80" />
-      <el-table-column label="业务员" align="center" prop="salesPerson" width="100" />
-      <el-table-column label="结算方式" align="center" prop="paymentMethod" width="100" />
-      <el-table-column label="发票抬头" align="center" prop="invoiceTitle" width="150" show-overflow-tooltip />
-      <el-table-column label="所属公司" align="center" prop="companyName" width="120" show-overflow-tooltip />
-      <el-table-column label="所属公司ID" align="center" prop="companyId" width="100" />
-      <el-table-column label="联系人" align="center" prop="contactPerson" width="100" />
-      <el-table-column label="联系电话" align="center" prop="contactPhone" width="120" />
-      <el-table-column label="预付款课题" align="center" prop="prepaymentSubject" width="120" show-overflow-tooltip />
-      <el-table-column label="联系地址" align="center" prop="contactAddress" width="150" show-overflow-tooltip />
-      <el-table-column label="添加时间" align="center" prop="createTime" width="110">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="添加人" align="center" prop="addedBy" width="100" />
-      <el-table-column label="积分基数" align="center" prop="pointsBase" width="80" />
-      <el-table-column label="积分金额" align="center" prop="pointsAmount" width="80" />
-      <el-table-column label="是否提醒" align="center" prop="isReminder" width="80" />
-      <el-table-column label="提醒内容" align="center" prop="reminderContent" width="120" show-overflow-tooltip />
-      <el-table-column label="基因标签类型" align="center" prop="geneLabelType" width="120" />
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['customer:research_group:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['customer:research_group:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
+    <dynamic-table
+      :loading="loading"
+      :data="dataList"
+      :columns="columns"
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
-    />
+      @selection-change="handleSelectionChange"
+    >
+      <template #createTime="{ row }">
+        <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
+      </template>
+
+      <template #action="{ row }">
+        <el-button
+          link
+          type="primary"
+          icon="Edit"
+          @click="handleUpdate(row)"
+          v-hasPermi="['customer:research_group:edit']"
+        >修改</el-button>
+        <el-button
+          link
+          type="primary"
+          icon="Delete"
+          @click="handleDelete(row)"
+          v-hasPermi="['customer:research_group:remove']"
+        >删除</el-button>
+      </template>
+    </dynamic-table>
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
@@ -288,6 +252,7 @@
 
 <script setup name="Research_group">
 import { listResearch_group, getResearch_group, addResearch_group, updateResearch_group, delResearch_group } from '@/api/customer/research_group'
+import DynamicTable from '@/components/DynamicTable/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -300,6 +265,30 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '名称', width: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', width: 80, visible: true },
+  { key: 'salesPerson', label: '业务员', width: 80, visible: true },
+  { key: 'paymentMethod', label: '结算方式', width: 100, visible: true },
+  { key: 'invoiceTitle', label: '发票抬头', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'companyName', label: '所属公司', width: 120, showOverflowTooltip: true, visible: false },
+  { key: 'companyId', label: '所属公司ID', width: 100, visible: false },
+  { key: 'contactPerson', label: '联系人', width: 100, visible: true },
+  { key: 'contactPhone', label: '联系电话', width: 120, visible: true },
+  { key: 'prepaymentSubject', label: '预付款课题', width: 120, showOverflowTooltip: true, visible: false },
+  { key: 'contactAddress', label: '联系地址', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'createTime', label: '添加时间', width: 110, slot: 'createTime', visible: true },
+  { key: 'addedBy', label: '添加人', width: 100, visible: false },
+  { key: 'pointsBase', label: '积分基数', width: 80, visible: false },
+  { key: 'pointsAmount', label: '积分金额', width: 80, visible: false },
+  { key: 'isReminder', label: '是否提醒', width: 80, visible: false },
+  { key: 'reminderContent', label: '提醒内容', width: 120, showOverflowTooltip: true, visible: false },
+  { key: 'geneLabelType', label: '基因标签类型', width: 120, visible: true },
+  { label: '操作', width: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
+])
 
 const data = reactive({
   form: {},

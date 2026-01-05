@@ -73,13 +73,6 @@
       <el-col :span="1.5">
         <el-button
           plain
-          icon="Search"
-          @click="handleQuery"
-        >查询</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
           icon="Refresh"
           @click="handleRefresh"
         >刷新</el-button>
@@ -106,72 +99,43 @@
           @click="handleContinueSetting"
         >继续设置</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
-      v-loading="loading" 
-      :data="dataList" 
-      @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="客户ID" align="center" prop="id" width="80" fixed />
-      <el-table-column label="姓名昵称" align="center" prop="customerName" width="100" fixed show-overflow-tooltip />
-      <el-table-column label="课题组" align="center" prop="subjectGroupName" width="120" show-overflow-tooltip />
-      <el-table-column label="地区" align="center" prop="region" width="100" />
-      <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
-      <el-table-column label="手机" align="center" prop="phone" width="130" />
-      <el-table-column label="邮箱" align="center" prop="email" width="100" />
-      <el-table-column label="微信ID" align="center" prop="wechatId" width="100" />
-      <el-table-column label="等级" align="center" prop="customerLevel" width="80" />
-      <el-table-column label="状态" align="center" prop="status" width="80" />
-      <el-table-column label="销售员" align="center" prop="salesPerson" width="100" />
-      <el-table-column label="客户单位" align="center" prop="customerUnit" width="150" show-overflow-tooltip />
-      <el-table-column label="发票种类" align="center" prop="invoiceType" width="120" />
-      <el-table-column label="备注" align="center" prop="remarks" width="100" show-overflow-tooltip />
-      <el-table-column label="添加人" align="center" prop="createBy" width="100" />
-      <el-table-column label="时间" align="center" prop="createTime" width="110">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总积分" align="center" prop="totalPoints" width="80" />
-      <el-table-column label="可用积分" align="center" prop="availablePoints" width="90" />
-      <el-table-column label="已使用积分" align="center" prop="usedPoints" width="100" />
-      <el-table-column label="冻结积分" align="center" prop="frozenPoints" width="90" />
-      <el-table-column label="所属公司" align="center" prop="company" width="90" />
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['customer:manage:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['customer:manage:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
+    <dynamic-table
+      :loading="loading"
+      :data="dataList"
+      :columns="columns"
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
-    />
+      @selection-change="handleSelectionChange"
+    >
+      <template #createTime="{ row }">
+        <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
+      </template>
+
+      <template #action="{ row }">
+        <el-button
+          link
+          type="primary"
+          icon="Edit"
+          @click="handleUpdate(row)"
+          v-hasPermi="['customer:manage:edit']"
+        >修改</el-button>
+        <el-button
+          link
+          type="primary"
+          icon="Delete"
+          @click="handleDelete(row)"
+          v-hasPermi="['customer:manage:remove']"
+        >删除</el-button>
+      </template>
+    </dynamic-table>
+
+
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="900px" append-to-body>
@@ -311,6 +275,7 @@
 import { listManage, getManage, addManage, updateManage, delManage } from '@/api/customer/manage'
 import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
+import DynamicTable from '@/components/DynamicTable/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -324,6 +289,33 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+// 列信息
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: '客户ID', width: 80, fixed: true, visible: true },
+  { key: 'customerName', label: '姓名昵称', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'subjectGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', width: 100, visible: true },
+  { key: 'address', label: '地址', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'phone', label: '手机', width: 130, visible: true },
+  { key: 'email', label: '邮箱', width: 100, visible: true },
+  { key: 'wechatId', label: '微信ID', width: 100, visible: false },
+  { key: 'customerLevel', label: '等级', width: 80, visible: false },
+  { key: 'status', label: '状态', width: 80, visible: true },
+  { key: 'salesPerson', label: '销售员', width: 100, visible: true },
+  { key: 'customerUnit', label: '客户单位', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'invoiceType', label: '发票种类', width: 120, visible: false },
+  { key: 'remarks', label: '备注', width: 100, showOverflowTooltip: true, visible: false },
+  { key: 'createBy', label: '添加人', width: 100, visible: false },
+  { key: 'createTime', label: '时间', width: 110, visible: false, slot: 'createTime' },
+  { key: 'totalPoints', label: '总积分', width: 80, visible: true },
+  { key: 'availablePoints', label: '可用积分', width: 90, visible: true },
+  { key: 'usedPoints', label: '已使用积分', width: 100, visible: false },
+  { key: 'frozenPoints', label: '冻结积分', width: 90, visible: false },
+  { key: 'company', label: '所属公司', width: 90, visible: false },
+  { label: '操作', width: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
+])
 
 const data = reactive({
   form: {},

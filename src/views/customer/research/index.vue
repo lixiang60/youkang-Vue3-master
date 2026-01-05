@@ -47,13 +47,6 @@
       <el-col :span="1.5">
         <el-button
           plain
-          icon="Search"
-          @click="handleQuery"
-        >查询</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
           icon="Refresh"
           @click="handleRefresh"
         >刷新</el-button>
@@ -67,58 +60,27 @@
           v-hasPermi="['customer:research:batch']"
         >批量编辑</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
-      v-loading="loading" 
-      :data="dataList" 
-      @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="id" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="客户ID" align="center" prop="customerId" width="80" fixed />
-      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" fixed show-overflow-tooltip />
-      <el-table-column label="姓名拼音" align="center" prop="pinyin" width="100" />
-      <el-table-column label="地区" align="center" prop="region" width="80" />
-      <el-table-column label="课题组ID" align="center" prop="researchGroupId" width="100" />
-      <el-table-column label="课题组" align="center" prop="researchGroupName" width="120" show-overflow-tooltip />
-      <el-table-column label="是否启用" align="center" prop="isEnabled" width="80">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.isEnabled" />
-        </template>
-      </el-table-column>
-      <el-table-column label="结算方式" align="center" prop="paymentMethod" width="100" />
-      <el-table-column label="业务员" align="center" prop="salesman" width="100" />
-      <el-table-column label="客户地址" align="center" prop="address" width="150" show-overflow-tooltip />
-      <el-table-column label="添加人" align="center" prop="addedBy" width="100" />
-      <el-table-column label="添加时间" align="center" prop="createTime" width="110">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="客户电话" align="center" prop="phone" width="120" />
-      <el-table-column label="手机" align="center" prop="mobile" width="120" />
-      <el-table-column label="E_MAIL" align="center" prop="email" width="120" show-overflow-tooltip />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-      <el-table-column label="所属公司ID" align="center" prop="belongCompanyId" width="100" />
-      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" show-overflow-tooltip />
-      <el-table-column label="总积分" align="center" prop="totalPoints" width="80" />
-      <el-table-column label="可用积分" align="center" prop="availablePoints" width="90" />
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
+    <dynamic-table
+      :loading="loading"
+      :data="dataList"
+      :columns="columns"
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
-    />
+      @selection-change="handleSelectionChange"
+    >
+      <template #isEnabled="{ row }">
+        <dict-tag :options="sys_normal_disable" :value="row.status" />
+      </template>
+      <template #createTime="{ row }">
+        <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
+      </template>
+    </dynamic-table>
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
@@ -171,6 +133,7 @@
 <script setup name="Research">
 import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
 import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
+import DynamicTable from '@/components/DynamicTable/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -186,6 +149,26 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: 'id', width: 80, fixed: true, sortable: true, visible: true  },
+  { key: 'customerId', label: '客户ID', width: 80, fixed: true, visible: true },
+  { key: 'customerName', label: '客户姓名', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', width: 80, visible: true },
+  { key: 'subjectGroupId', label: '课题组ID', width: 100, visible: true },
+  { key: 'subjectGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'status', label: '是否启用', width: 80, slot: 'isEnabled', visible: true },
+  { key: 'paymentMethod', label: '结算方式', width: 100, visible: false },
+  { key: 'salesPerson', label: '业务员', width: 100, visible: false },
+  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'createUser', label: '添加人', width: 100, visible: false },
+  { key: 'createTime', label: '添加时间', width: 110, slot: 'createTime', visible: true },
+  { key: 'customerPhone', label: '客户电话', width: 120, visible: true },
+  { key: 'customerEmail', label: 'E_MAIL', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false },
+  { key: 'company', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true }
+])
 
 const data = reactive({
   form: {},
@@ -211,8 +194,8 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listResearch(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+    dataList.value = response.data.records
+    total.value = response.data.total
     loading.value = false
   }).catch(() => {
     loading.value = false

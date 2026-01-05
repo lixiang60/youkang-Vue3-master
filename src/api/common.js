@@ -19,6 +19,7 @@ export function listSubjectGroupOption(query) {
 }
 
 // 通用选择器列表
+// type: paymentMethod, invoiceType, antibioticType,sampleType
 export function listSelectorOption(type, query) {
   return request({
     url: '/common/selector/list',
