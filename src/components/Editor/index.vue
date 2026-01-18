@@ -69,6 +69,11 @@ const props = defineProps({
   type: {
     type: String,
     default: "url",
+  },
+  /* 是否显示工具栏 */
+  toolbar: {
+    type: Boolean,
+    default: true,
   }
 })
 
@@ -78,7 +83,7 @@ const options = ref({
   debug: "warn",
   modules: {
     // 工具栏配置
-    toolbar: [
+    toolbar: props.toolbar ? [
       ["bold", "italic", "underline", "strike"],      // 加粗 斜体 下划线 删除线
       ["blockquote", "code-block"],                   // 引用  代码块
       [{ list: "ordered" }, { list: "bullet" }],      // 有序、无序列表
@@ -89,7 +94,7 @@ const options = ref({
       [{ align: [] }],                                // 对齐方式
       ["clean"],                                      // 清除文本格式
       ["link", "image", "video"]                      // 链接、图片、视频
-    ],
+    ] : false,
   },
   placeholder: "请输入内容",
   readOnly: props.readOnly
@@ -118,13 +123,15 @@ onMounted(() => {
   if (props.type == 'url') {
     let quill = quillEditorRef.value.getQuill()
     let toolbar = quill.getModule("toolbar")
-    toolbar.addHandler("image", (value) => {
-      if (value) {
-        proxy.$refs.uploadRef.click()
-      } else {
-        quill.format("image", false)
-      }
-    })
+    if (toolbar) {
+      toolbar.addHandler("image", (value) => {
+        if (value) {
+          proxy.$refs.uploadRef.click()
+        } else {
+          quill.format("image", false)
+        }
+      })
+    }
     quill.root.addEventListener('paste', handlePasteCapture, true)
   }
 })
@@ -196,15 +203,20 @@ function insertImage(file) {
 </script>
 
 <style>
-.editor-img-uploader {
-  display: none;
-}
+
 .editor, .ql-toolbar {
   white-space: pre-wrap !important;
   line-height: normal !important;
 }
 .quill-img {
   display: none;
+}
+.hide-toolbar .ql-toolbar {
+  display: none;
+}
+.hide-toolbar .ql-container {
+  border-top: 1px solid #cdd0d6;
+  border-radius: 4px;
 }
 .ql-snow .ql-tooltip[data-mode="link"]::before {
   content: "请输入链接地址:";

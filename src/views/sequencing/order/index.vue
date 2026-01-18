@@ -167,8 +167,8 @@
           <el-col :span="12">
             <el-form-item label="邮件是否发送：" prop="isEmail">
               <el-radio-group v-model="form.isEmail">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -185,16 +185,16 @@
           <el-col :span="12">
             <el-form-item label="测序生产实验室：" prop="sequencingLab">
               <el-select v-model="form.sequencingLab" placeholder="请选择" style="width: 80%">
-                <el-option label="实验室A" value="A" />
-                <el-option label="实验室B" value="B" />
+                <el-option label="合肥有康" value="A" />
+                <el-option label="杭州有康" value="B" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="合成生产实验室：" prop="synthesisLab">
               <el-select v-model="form.synthesisLab" placeholder="请选择" style="width: 80%">
-                <el-option label="实验室A" value="A" />
-                <el-option label="实验室B" value="B" />
+                <el-option label="合肥有康" value="A" />
+                <el-option label="杭州有康" value="B" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -232,9 +232,10 @@
           <el-col :span="12">
             <el-form-item label="模板样式：" prop="templateType">
               <el-radio-group v-model="form.templateType">
-                <el-radio label="1">复制excel模式</el-radio>
-                <el-radio label="2">EXCEL模板</el-radio>
+                <el-radio :label="1">复制excel模式(无格式)</el-radio>
+                <el-radio :label="2">EXCEL模板</el-radio>
               </el-radio-group>
+              <el-checkbox v-if="form.templateType == '1'" v-model="retainFormat" class="ml10">保留格式(智能解析)</el-checkbox>
             </el-form-item>
           </el-col>
         </el-row>
@@ -242,8 +243,8 @@
           <el-col :span="24">
             <el-form-item label="测序级别：" prop="generation">
               <el-radio-group v-model="form.generation">
-                <el-radio label="1">一代</el-radio>
-                <el-radio label="4">四代</el-radio>
+                <el-radio :label="1">一代</el-radio>
+                <el-radio :label="4">四代</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -251,14 +252,8 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="模板内容：" prop="templateContent">
-              <el-input 
-                v-model="form.templateContent" 
-                type="textarea" 
-                :rows="5" 
-                placeholder="请粘贴Excel内容，第一行为表头"
-                @change="handleTemplateChange"
-              />
-              <div class="mt5">
+               <editor v-model="form.templateContent" />
+               <div class="mt5">
                 <el-button type="text" @click="handleTemplateParse">解析模板</el-button>
                 <span class="ml10 text-gray" v-if="form.sampleInfoList && form.sampleInfoList.length > 0">
                   已解析 {{ form.sampleInfoList.length }} 条数据
@@ -286,9 +281,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="关联基因样品编号：" prop="linkedGeneSampleNo">
+            <el-form-item label="关联基因样品编号：" prop="genNo">
               <div style="display: flex; width: 100%">
-                <el-input v-model="form.linkedGeneSampleNo" />
+                <el-input v-model="form.genNo" />
                 <span class="ml10" style="white-space: nowrap">(非必填项目)</span>
               </div>
             </el-form-item>
@@ -415,7 +410,6 @@ function reset() {
     sequencingTemplateAttachment: undefined,
     synthesisTemplateAttachment: undefined,
     photoAttachment: undefined,
-    linkedGeneSampleNo: undefined // Determine if this maps to genNo or separate
   }
   selectedCustomer.value = null
   proxy.resetForm('formRef')
@@ -432,7 +426,7 @@ function handleCustomerChange(val) {
 
 /** 处理模板内容变更/解析 */
 function handleTemplateChange() {
-  handleTemplateParse()
+  // Parsing is now manual or could be debounced, but explicit button is safer for Rich Text
 }
 
 function handleTemplateParse() {
@@ -442,57 +436,96 @@ function handleTemplateParse() {
   }
 
   try {
-    const text = form.value.templateContent.trim()
-    const rows = text.split('\n').map(row => row.trim()).filter(row => row)
-    if (rows.length < 2) return // At least header and one data row
+    // Parse HTML content from Editor
+    const div = document.createElement('div')
+    div.innerHTML = form.value.templateContent
+    const table = div.querySelector('table')
+    
+    // Helper to get text content from cell, respecting internal newlines if any
+    const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
 
-    // Assume first row is header
-    // Ideally we map headers to keys. For now, let's use a simplified constant mapping or just basic TSV parsing
-    // Based on user JSON, we have keys: sampleId, sampleType, samplePosition, primer, etc.
-    // We'll simplisticly assume the user pastes headers that MATCH our keys OR we define a mapping.
-    // Given the ambiguity, I'll implement a generic TSV to Object parser assuming headers match visible labels or keys.
-    
-    // For this specific request, I will implement a direct parser that expects headers.
-    const headers = rows[0].split('\t').map(h => h.trim())
-    const data = []
-    
-    // Map common Chinese headers to keys if necessary, or assume keys are coming in?
-    // User sample showed keys like "sampleId", "sampleType".
-    // Let's assume headers might be Chinese. I will add a simple mapping dictionary.
-    const headerMap = {
-      '样品编号': 'sampleId', '样品类型': 'sampleType', '样品位置': 'samplePosition',
-      '引物名称': 'primer', '引物类型': 'primerType', '引物位置': 'primerPosition',
-      '引物浓度': 'primerConcentration', '序列': 'seq', '项目号': 'project',
-      '载体名称': 'carrierName', '抗性': 'antibioticType', '质粒长度': 'plasmidLength',
-      '片段大小': 'fragmentSize', '测序结果': 'testResult', '原浓度': 'originConcentration',
-      '模板板号': 'templatePlateNo', '模板孔号': 'templateHoleNo', '完成状态': 'performance',
-      '退回状态': 'returnState', '流程名称': 'flowName', '板号': 'plateNo',
-      '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
-      '孔数': 'holeNumber', '排版方式': 'layout', '备注': 'remark'
+    if (table) {
+       const rows = table.rows
+       if (rows.length < 2) return
+
+       // Parse headers
+       const headers = Array.from(rows[0].cells).map(cell => getCellText(cell))
+       
+       const headerMap = {
+          '样品编号': 'sampleId', '引物类型': 'primerType','样品类型': 'sampleType', '样品位置': 'samplePosition',
+          '引物名称': 'primer', '引物位置': 'primerPosition',
+          '引物浓度': 'primerConcentration', '序列': 'seq', '项目号': 'project',
+          '载体名称': 'carrierName', '抗性': 'antibioticType', '质粒长度': 'plasmidLength',
+          '片段大小': 'fragmentSize', '测序结果': 'testResult', '原浓度': 'originConcentration',
+          '模板板号': 'templatePlateNo', '模板孔号': 'templateHoleNo', '完成状态': 'performance',
+          '退回状态': 'returnState', '流程名称': 'flowName', '板号': 'plateNo',
+          '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
+          '孔数': 'holeNumber', '排版方式': 'layout', '备注': 'remark'
+       }
+       
+       const getKey = (header) => headerMap[header] || header
+       const validKeys = headers.map(getKey)
+       
+       const data = []
+       for (let i = 1; i < rows.length; i++) {
+         const cells = rows[i].cells
+         const item = {}
+         let hasData = false
+         validKeys.forEach((key, index) => {
+           if (index < cells.length) {
+             const val = getCellText(cells[index])
+             if (val) hasData = true
+             if (key) item[key] = val
+           }
+         })
+         if (hasData) {
+           data.push(item)
+         }
+       }
+       
+       form.value.sampleInfoList = data
+       proxy.$modal.msgSuccess(`成功解析 ${data.length} 条数据`)
+
+    } else {
+      // Fallback: If no table, try to parse as plain text (e.g. user pasted text into editor but it didn't form a table)
+      // Editor might wrap lines in <p>.
+      // Let's grab innerText and try TSV parse
+      const text = div.innerText.trim()
+      const rows = text.split('\n').map(r => r.trim()).filter(r => r)
+      if (rows.length < 2) {
+          proxy.$modal.msgWarning('未能识别表格数据，请确保粘贴了Excel表格内容')
+          return
+      }
+      
+      const headers = rows[0].split('\t').map(h => h.trim())
+      // ... Reuse TSV logic logic? 
+      // Simplified TSV fallback:
+       const headerMap = {
+          '样品编号': 'sampleId', '引物类型': 'primerType','样品类型': 'sampleType', '样品位置': 'samplePosition',
+          '引物名称': 'primer', '引物位置': 'primerPosition',
+          '引物浓度': 'primerConcentration', '序列': 'seq', '项目号': 'project',
+          '载体名称': 'carrierName', '抗性': 'antibioticType', '质粒长度': 'plasmidLength',
+          '片段大小': 'fragmentSize', '测序结果': 'testResult', '原浓度': 'originConcentration',
+          '模板板号': 'templatePlateNo', '模板孔号': 'templateHoleNo', '完成状态': 'performance',
+          '退回状态': 'returnState', '流程名称': 'flowName', '板号': 'plateNo',
+          '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
+          '孔数': 'holeNumber', '排版方式': 'layout', '备注': 'remark'
+       }
+       const getKey = (header) => headerMap[header] || header
+       const validKeys = headers.map(getKey)
+       const data = []
+       for (let i = 1; i < rows.length; i++) {
+         const cells = rows[i].split('\t')
+         const item = {}
+         validKeys.forEach((key, index) => {
+            if (key && index < cells.length) item[key] = cells[index]?.trim()
+         })
+         data.push(item)
+       }
+       form.value.sampleInfoList = data
+       proxy.$modal.msgSuccess(`成功解析 ${data.length} 条数据 (纯文本模式)`)
     }
 
-    // Helper to get key from header (supports both direct key and mapped Chinese header)
-    const getKey = (header) => {
-      if (headerMap[header]) return headerMap[header]
-      return header // Fallback to using the header itself as key
-    }
-
-    const validKeys = headers.map(getKey)
-
-    for (let i = 1; i < rows.length; i++) {
-      const cells = rows[i].split('\t')
-      const item = {}
-      validKeys.forEach((key, index) => {
-        if (key && index < cells.length) {
-          item[key] = cells[index]?.trim()
-        }
-      })
-      // Basic validation or default values could go here
-      data.push(item)
-    }
-    
-    form.value.sampleInfoList = data
-    proxy.$modal.msgSuccess(`成功解析 ${data.length} 条数据`)
   } catch (error) {
     console.error('Template parsing error:', error)
     proxy.$modal.msgError('解析失败，请检查格式')
