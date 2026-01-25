@@ -252,16 +252,28 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="模板内容：" prop="templateContent">
-               <editor v-model="form.templateContent" />
-               <div class="mt5">
+               <Editor2
+                  v-model="form.templateContent"
+                  :minHeight="150"
+                  style="width: 100%;"
+                />
+               <!-- <div class="mt5">
                 <el-button type="text" @click="handleTemplateParse">解析模板</el-button>
-                <span class="ml10 text-gray" v-if="form.sampleInfoList && form.sampleInfoList.length > 0">
-                  已解析 {{ form.sampleInfoList.length }} 条数据
-                </span>
-              </div>
+              </div> -->
             </el-form-item>
           </el-col>
         </el-row>
+        <!-- <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="模板内容2：" prop="templateContent">
+               <Editor
+                  v-model="form.templateContent"
+                  :minHeight="150"
+                  style="width: 100%;"
+                />
+            </el-form-item>
+          </el-col>
+        </el-row> -->
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="测序模板附件：" prop="sequencingTemplateAttachment">
@@ -314,6 +326,10 @@ import DynamicTable from '@/components/DynamicTable/index.vue'
 import ImageUpload from '@/components/ImageUpload/index.vue'
 import FileUpload from '@/components/FileUpload/index.vue'
 import BaseDialog from '@/components/BaseDialog/index.vue'
+import Editor from '@/components/Editor/index.vue'
+import Editor2 from '@/components/Editor2/index.vue'
+import { QuillEditor } from "@vueup/vue-quill"
+import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
@@ -364,7 +380,39 @@ const data = reactive({
   }
 })
 
+
+
+const editorOptions = ref({
+  theme: "snow",
+  bounds: document.body,
+  debug: "warn",
+  modules: {
+    // 工具栏配置
+    toolbar: [
+      ["bold", "italic", "underline", "strike"],      // 加粗 斜体 下划线 删除线
+      ["blockquote", "code-block"],                   // 引用  代码块
+      [{ list: "ordered" }, { list: "bullet" }],      // 有序、无序列表
+      [{ indent: "-1" }, { indent: "+1" }],           // 缩进
+      [{ size: ["small", false, "large", "huge"] }],  // 字体大小
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],        // 标题
+      [{ color: [] }, { background: [] }],            // 字体颜色、字体背景颜色
+      [{ align: [] }],                                // 对齐方式
+      ["clean"],                                      // 清除文本格式
+      ["link", "image", "video"]                      // 链接、图片、视频
+    ]
+  },
+  placeholder: "请输入内容",
+  readOnly: false
+})
+
 const { queryParams, form, rules } = toRefs(data)
+
+const localContent = ref("")
+watch(() => form.value.templateContent, (v) => {
+  if (v !== localContent.value) {
+    localContent.value = v === undefined ? "<p></p>" : v
+  }
+}, { immediate: true })
 
 /** 查询列表 */
 function getList() {
@@ -624,5 +672,38 @@ onMounted(() => {
   })
 })
 </script>
+
+
+<style>
+.editor-global-fix .ql-editor {
+  white-space: pre-wrap !important;
+  line-height: normal !important;
+}
+.editor-global-fix .ql-container {
+  white-space: pre-wrap !important;
+}
+</style>
+
+<style scoped>
+/* Fix for preserving whitespace in Excel paste */
+.editor-style-fix ::v-deep .ql-editor {
+  white-space: pre-wrap !important;
+  line-height: normal !important;
+}
+.editor-style-fix ::v-deep .ql-container {
+  white-space: pre-wrap !important;
+}
+:deep(.ql-toolbar.ql-snow + .ql-container.ql-snow) {
+  border-top: 1px solid #cdd0d6 !important;
+}
+:deep(.ql-editor table) {
+  border-collapse: collapse;
+  width: 100%; 
+}
+:deep(.ql-editor table td), :deep(.ql-editor table th) {
+  border: 1px solid #dcdfe6;
+  padding: 5px;
+}
+</style>
 
 
