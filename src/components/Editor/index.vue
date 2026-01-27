@@ -1,28 +1,30 @@
 <template>
-  <div>
-    <el-upload
-      :action="uploadUrl"
-      :before-upload="handleBeforeUpload"
-      :on-success="handleUploadSuccess"
-      :on-error="handleUploadError"
-      name="file"
-      :show-file-list="false"
-      :headers="headers"
-      class="editor-img-uploader"
-      v-if="type == 'url'"
-    >
-      <i ref="uploadRef" class="editor-img-uploader"></i>
-    </el-upload>
-  </div>
-  <div class="editor">
-    <quill-editor
-      ref="quillEditorRef"
-      v-model:content="content"
-      contentType="html"
-      @textChange="(e) => $emit('update:modelValue', content)"
-      :options="options"
-      :style="styles"
-    />
+  <div class="editor-wrapper">
+    <div>
+      <el-upload
+        :action="uploadUrl"
+        :before-upload="handleBeforeUpload"
+        :on-success="handleUploadSuccess"
+        :on-error="handleUploadError"
+        name="file"
+        :show-file-list="false"
+        :headers="headers"
+        class="editor-img-uploader"
+        v-if="type == 'url'"
+      >
+        <i ref="uploadRef" class="editor-img-uploader"></i>
+      </el-upload>
+    </div>
+    <div class="editor">
+      <quill-editor
+        ref="quillEditorRef"
+        v-model:content="content"
+        contentType="html"
+        @textChange="(e) => $emit('update:modelValue', content)"
+        :options="options"
+        :style="styles"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,6 +35,7 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css"
 import { getToken } from "@/utils/auth"
 
 const { proxy } = getCurrentInstance()
+const emit = defineEmits(['update:modelValue', 'paste-analyze'])
 
 const quillEditorRef = ref()
 const uploadUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload") // 上传的图片服务器地址
@@ -72,7 +75,7 @@ const props = defineProps({
   },
   /* 是否显示工具栏 */
   toolbar: {
-    type: Boolean,
+    type: [Boolean, Array, Object],
     default: true,
   }
 })
@@ -83,18 +86,24 @@ const options = ref({
   debug: "warn",
   modules: {
     // 工具栏配置
-    toolbar: props.toolbar ? [
-      ["bold", "italic", "underline", "strike"],      // 加粗 斜体 下划线 删除线
-      ["blockquote", "code-block"],                   // 引用  代码块
-      [{ list: "ordered" }, { list: "bullet" }],      // 有序、无序列表
-      [{ indent: "-1" }, { indent: "+1" }],           // 缩进
-      [{ size: ["small", false, "large", "huge"] }],  // 字体大小
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],        // 标题
-      [{ color: [] }, { background: [] }],            // 字体颜色、字体背景颜色
-      [{ align: [] }],                                // 对齐方式
-      ["clean"],                                      // 清除文本格式
-      ["link", "image", "video"]                      // 链接、图片、视频
-    ] : false,
+    // 工具栏配置
+    toolbar: (() => {
+      if (typeof props.toolbar === 'boolean') {
+        return props.toolbar ? [
+          ["bold", "italic", "underline", "strike"],      // 加粗 斜体 下划线 删除线
+          ["blockquote", "code-block"],                   // 引用  代码块
+          [{ list: "ordered" }, { list: "bullet" }],      // 有序、无序列表
+          [{ indent: "-1" }, { indent: "+1" }],           // 缩进
+          [{ size: ["small", false, "large", "huge"] }],  // 字体大小
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],        // 标题
+          [{ color: [] }, { background: [] }],            // 字体颜色、字体背景颜色
+          [{ align: [] }],                                // 对齐方式
+          ["clean"],                                      // 清除文本格式
+          ["link", "image", "video"]                      // 链接、图片、视频
+        ] : false
+      }
+      return props.toolbar
+    })(),
   },
   placeholder: "请输入内容",
   readOnly: props.readOnly
@@ -108,6 +117,7 @@ const styles = computed(() => {
   if (props.height) {
     style.height = `${props.height}px`
   }
+  console.log(props.toolbar)
   return style
 })
 
@@ -182,12 +192,24 @@ function handleUploadError() {
 function handlePasteCapture(e) {
   const clipboard = e.clipboardData || window.clipboardData
   if (clipboard && clipboard.items) {
+    // 1. Extract text/html for analysis (e.g. Excel parsing)
+    // We try to get HTML first (better for table parsing), then Plain Text
+    const htmlData = clipboard.getData('text/html')
+    const textData = clipboard.getData('text/plain')
+    
+    if (htmlData || textData) {
+      console.log("textData",textData)
+      emit('paste-analyze', textData || htmlData)
+    }
+
+    // 2. Check for image (Prioritize Image insertion as requested)
     for (let i = 0; i < clipboard.items.length; i++) {
       const item = clipboard.items[i]
       if (item.type.indexOf('image') !== -1) {
         e.preventDefault()
         const file = item.getAsFile()
         insertImage(file)
+        return // Stop after finding first image
       }
     }
   }
@@ -207,6 +229,7 @@ function insertImage(file) {
 .editor, .ql-toolbar {
   white-space: pre-wrap !important;
   line-height: normal !important;
+  width: 100%;
 }
 .quill-img {
   display: none;

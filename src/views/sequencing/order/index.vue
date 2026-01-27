@@ -235,7 +235,6 @@
                 <el-radio :label="1">复制excel模式(无格式)</el-radio>
                 <el-radio :label="2">EXCEL模板</el-radio>
               </el-radio-group>
-              <el-checkbox v-if="form.templateType == '1'" v-model="retainFormat" class="ml10">保留格式(智能解析)</el-checkbox>
             </el-form-item>
           </el-col>
         </el-row>
@@ -252,28 +251,19 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="模板内容：" prop="templateContent">
-               <Editor2
-                  v-model="form.templateContent"
-                  :minHeight="150"
-                  style="width: 100%;"
-                />
+                <Editor
+                   :toolbar="false"
+                   v-model="form.templateContent"
+                   :minHeight="150"
+                   style="width: 100%;"
+                   @paste-analyze="handlePasteAnalyze"
+                 />
                <!-- <div class="mt5">
                 <el-button type="text" @click="handleTemplateParse">解析模板</el-button>
               </div> -->
             </el-form-item>
           </el-col>
         </el-row>
-        <!-- <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="模板内容2：" prop="templateContent">
-               <Editor
-                  v-model="form.templateContent"
-                  :minHeight="150"
-                  style="width: 100%;"
-                />
-            </el-form-item>
-          </el-col>
-        </el-row> -->
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="测序模板附件：" prop="sequencingTemplateAttachment">
@@ -408,10 +398,22 @@ const editorOptions = ref({
 const { queryParams, form, rules } = toRefs(data)
 
 const localContent = ref("")
+const parseTimer = ref(null)
+
+// De-couple auto-parse from watcher if needed, 
+// But now we rely on explicit event BUT watcher might still fire if user types manually?
+// User said "Editor first parses excel value, then inserts excel as image". 
+// If inserted as image, templateContent changes to <img src...>. 
+// We should probably keep the watcher for manual typing, but the event is for the paste-override case.
 watch(() => form.value.templateContent, (v) => {
   if (v !== localContent.value) {
     localContent.value = v === undefined ? "<p></p>" : v
   }
+  // We keep the watcher for manual text entry fallback
+  if (parseTimer.value) clearTimeout(parseTimer.value)
+  parseTimer.value = setTimeout(() => {
+    // autoParseTemplate() // Call without args uses form.value.templateContent
+  }, 500)
 }, { immediate: true })
 
 /** 查询列表 */
@@ -472,50 +474,75 @@ function handleCustomerChange(val) {
   }
 }
 
-/** 处理模板内容变更/解析 */
-function handleTemplateChange() {
-  // Parsing is now manual or could be debounced, but explicit button is safer for Rich Text
+function handlePasteAnalyze(content) {
+  console.log("handlePasteAnalyze content length:", content?.length)
+  autoParseTemplate(content)
 }
 
-function handleTemplateParse() {
-  if (!form.value.templateContent) {
-    form.value.sampleInfoList = []
+function autoParseTemplate(rawContent) {
+  // Use rawContent if provided (from paste event), otherwise use current editor content
+  const contentToParse = rawContent || form.value.templateContent
+  
+  if (!contentToParse) {
     return
   }
-
+  console.log("autoParseTemplate processing...")
+  console.log("contentToParse",contentToParse)
   try {
-    // Parse HTML content from Editor
     const div = document.createElement('div')
-    div.innerHTML = form.value.templateContent
+    div.innerHTML = contentToParse
     const table = div.querySelector('table')
     
-    // Helper to get text content from cell, respecting internal newlines if any
     const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
+    
+    let data = []
+    
+    // Default order based on user requirement/image
+    const defaultKeys = [
+      'sampleId', 'primer', 'primerConcentration', 'primerType', 
+      'sampleType', 'antibioticType', 'carrierName', 'fragmentSize', 
+      'testResult', 'returnState', 'returnType', 'remark'
+    ]
+
+    const headerMap = {
+      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer', 
+      '引物浓度': 'primerConcentration', '引物类型': 'primerType',
+      '样品类型': 'sampleType', '抗生素类': 'antibioticType', '抗性': 'antibioticType',
+      '载体名称': 'carrierName', '片段大小': 'fragmentSize', 
+      '是否测通': 'testResult', '测序结果': 'testResult',
+      '是否返还': 'returnState', '退回状态': 'returnState',
+      '返还类型': 'returnType', 
+      '样品备注': 'remark', '备注': 'remark',
+      
+      // Old/Other mappings
+      '样品位置': 'samplePosition', '引物位置': 'primerPosition',
+      '序列': 'seq', '项目号': 'project', '质粒长度': 'plasmidLength',
+      '原浓度': 'originConcentration', '模板板号': 'templatePlateNo', 
+      '模板孔号': 'templateHoleNo', '完成状态': 'performance', 
+      '流程名称': 'flowName', '板号': 'plateNo',
+      '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
+      '孔数': 'holeNumber', '排版方式': 'layout'
+    }
 
     if (table) {
        const rows = table.rows
-       if (rows.length < 2) return
+       if (rows.length < 1) return
 
-       // Parse headers
-       const headers = Array.from(rows[0].cells).map(cell => getCellText(cell))
-       
-       const headerMap = {
-          '样品编号': 'sampleId', '引物类型': 'primerType','样品类型': 'sampleType', '样品位置': 'samplePosition',
-          '引物名称': 'primer', '引物位置': 'primerPosition',
-          '引物浓度': 'primerConcentration', '序列': 'seq', '项目号': 'project',
-          '载体名称': 'carrierName', '抗性': 'antibioticType', '质粒长度': 'plasmidLength',
-          '片段大小': 'fragmentSize', '测序结果': 'testResult', '原浓度': 'originConcentration',
-          '模板板号': 'templatePlateNo', '模板孔号': 'templateHoleNo', '完成状态': 'performance',
-          '退回状态': 'returnState', '流程名称': 'flowName', '板号': 'plateNo',
-          '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
-          '孔数': 'holeNumber', '排版方式': 'layout', '备注': 'remark'
-       }
-       
+       // Try to identify headers
+       const firstRowTexts = Array.from(rows[0].cells).map(cell => getCellText(cell))
        const getKey = (header) => headerMap[header] || header
-       const validKeys = headers.map(getKey)
+       let validKeys = firstRowTexts.map(getKey)
        
-       const data = []
-       for (let i = 1; i < rows.length; i++) {
+       const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
+       
+       let startRow = 1
+       // If mostly unknown, assume it's data with default order
+       if (knownKeysCount === 0) {
+          validKeys = defaultKeys
+          startRow = 0 // First row is data
+       }
+
+       for (let i = startRow; i < rows.length; i++) {
          const cells = rows[i].cells
          const item = {}
          let hasData = false
@@ -526,58 +553,54 @@ function handleTemplateParse() {
              if (key) item[key] = val
            }
          })
-         if (hasData) {
-           data.push(item)
-         }
+         if (hasData) data.push(item)
        }
-       
-       form.value.sampleInfoList = data
-       proxy.$modal.msgSuccess(`成功解析 ${data.length} 条数据`)
 
     } else {
-      // Fallback: If no table, try to parse as plain text (e.g. user pasted text into editor but it didn't form a table)
-      // Editor might wrap lines in <p>.
-      // Let's grab innerText and try TSV parse
+      // Plain text / TSV fallback
       const text = div.innerText.trim()
       const rows = text.split('\n').map(r => r.trim()).filter(r => r)
-      if (rows.length < 2) {
-          proxy.$modal.msgWarning('未能识别表格数据，请确保粘贴了Excel表格内容')
-          return
-      }
+      if (rows.length < 1) return
       
-      const headers = rows[0].split('\t').map(h => h.trim())
-      // ... Reuse TSV logic logic? 
-      // Simplified TSV fallback:
-       const headerMap = {
-          '样品编号': 'sampleId', '引物类型': 'primerType','样品类型': 'sampleType', '样品位置': 'samplePosition',
-          '引物名称': 'primer', '引物位置': 'primerPosition',
-          '引物浓度': 'primerConcentration', '序列': 'seq', '项目号': 'project',
-          '载体名称': 'carrierName', '抗性': 'antibioticType', '质粒长度': 'plasmidLength',
-          '片段大小': 'fragmentSize', '测序结果': 'testResult', '原浓度': 'originConcentration',
-          '模板板号': 'templatePlateNo', '模板孔号': 'templateHoleNo', '完成状态': 'performance',
-          '退回状态': 'returnState', '流程名称': 'flowName', '板号': 'plateNo',
-          '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
-          '孔数': 'holeNumber', '排版方式': 'layout', '备注': 'remark'
-       }
-       const getKey = (header) => headerMap[header] || header
-       const validKeys = headers.map(getKey)
-       const data = []
-       for (let i = 1; i < rows.length; i++) {
+      const firstRowParts = rows[0].split('\t').map(h => h.trim())
+      const getKey = (header) => headerMap[header] || header
+      let validKeys = firstRowParts.map(getKey)
+
+      const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
+      
+      let startRow = 1
+      if (knownKeysCount === 0) {
+         validKeys = defaultKeys
+         // Handle case where split might produce more cols than default keys (ignore extra) 
+         // or fewer (handle gracefully)
+         startRow = 0
+      }
+
+      for (let i = startRow; i < rows.length; i++) {
          const cells = rows[i].split('\t')
          const item = {}
+         // If using default keys, we blindly map index to key
          validKeys.forEach((key, index) => {
             if (key && index < cells.length) item[key] = cells[index]?.trim()
          })
          data.push(item)
-       }
+      }
+    }
+
+    console.log("data",data)
+    if (data.length > 0) {
+       console.log('Parsed Excel Data:', data)
        form.value.sampleInfoList = data
-       proxy.$modal.msgSuccess(`成功解析 ${data.length} 条数据 (纯文本模式)`)
     }
 
   } catch (error) {
-    console.error('Template parsing error:', error)
-    proxy.$modal.msgError('解析失败，请检查格式')
+    // Silent fail for auto-parse
+    console.warn('Auto parse failed:', error)
   }
+}
+
+function handleTemplateParse() {
+  autoParseTemplate()
 }
 
 /** 搜索按钮操作 */
@@ -623,14 +646,18 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
+      const submitData = { ...form.value }
+      delete submitData.templateContent
+      
       if (form.value.id !== undefined) {
-        updateOrder(form.value).then(response => {
+        updateOrder(submitData).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addOrder(form.value).then(response => {
+        console.log("add", submitData)
+        addOrder(submitData).then(response => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()

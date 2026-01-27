@@ -22,7 +22,7 @@
       @textChange="(e) => $emit('update:modelValue', content)"
       :options="options"
       :style="styles"
-      toolbar="#toolbar" >
+      toolbar="#my-toolbar" >
       <template #toolbar>
         <div id="my-toolbar">
           <!-- Add buttons as you would before -->
