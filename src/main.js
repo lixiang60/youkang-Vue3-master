@@ -17,6 +17,7 @@ import directive from './directive' // directive
 // 注册指令
 import plugins from './plugins' // plugins
 import { download } from '@/utils/request'
+import print from 'vue-print-nb'
 
 // svg图标
 import 'virtual:svg-icons-register'
@@ -43,6 +44,8 @@ import ImageUpload from "@/components/ImageUpload"
 import ImagePreview from "@/components/ImagePreview"
 // 字典标签组件
 import DictTag from '@/components/DictTag'
+import SampleTypeSelect from '@/components/SampleTypeSelect/index.vue'
+import AntibioticTypeSelect from '@/components/AntibioticTypeSelect/index.vue'
 
 const app = createApp(App)
 
@@ -65,11 +68,14 @@ app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)
 app.component('Editor', Editor)
+app.component('SampleTypeSelect', SampleTypeSelect)
+app.component('AntibioticTypeSelect', AntibioticTypeSelect)
 
 app.use(router)
 app.use(store)
 app.use(plugins)
 app.use(elementIcons)
+app.use(print)
 app.component('svg-icon', SvgIcon)
 
 directive(app)

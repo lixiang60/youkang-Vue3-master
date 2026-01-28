@@ -306,6 +306,30 @@
         </div>
       </template>
     </base-dialog>
+
+    <batch-add-order-dialog
+      v-model="batchAddVisible"
+      :customer-options="customerOptions"
+      @success="getList"
+    />
+
+    <add-sequencing-sample-dialog
+      v-model="sampleDialogVisible"
+      :order-id="currentOrderId"
+      :order-row="currentOrderRow"
+      @success="getList"
+    />
+
+    <batch-add-sample-dialog
+      v-model="batchSampleVisible"
+      :order-id="currentOrderId"
+      :order-no="currentOrderNo"
+      @success="getList"
+    />
+
+    <label-print-dialog
+      v-model="labelPrintVisible"
+    />
   </div>
 </template>
 
@@ -317,7 +341,11 @@ import ImageUpload from '@/components/ImageUpload/index.vue'
 import FileUpload from '@/components/FileUpload/index.vue'
 import BaseDialog from '@/components/BaseDialog/index.vue'
 import Editor from '@/components/Editor/index.vue'
-import Editor2 from '@/components/Editor2/index.vue'
+
+import BatchAddOrderDialog from './components/BatchAddOrderDialog.vue'
+import AddSequencingSampleDialog from './components/AddSequencingSampleDialog.vue'
+import BatchAddSampleDialog from './components/BatchAddSampleDialog.vue'
+import LabelPrintDialog from './components/LabelPrintDialog.vue'
 import { QuillEditor } from "@vueup/vue-quill"
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
@@ -328,6 +356,13 @@ const dataList = ref([])
 const customerOptions = ref([])
 const selectedCustomer = ref(null)
 const open = ref(false)
+const batchAddVisible = ref(false)
+const sampleDialogVisible = ref(false)
+const batchSampleVisible = ref(false)
+const labelPrintVisible = ref(false)
+const currentOrderId = ref(null)
+const currentOrderNo = ref('')
+const currentOrderRow = ref({})
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
@@ -445,9 +480,9 @@ function reset() {
     generation: 1,
     belongCompany: '深圳有康',
     produceCompany: '杭州有康',
-    templateType: 2,
+    templateType: 1,
     sampleInfoList: [],
-    genNo: undefined,
+    genNo: 'TEST001',
     remark: undefined,
     // Keep internal UI fields if needed, or map them to new structure if possible
     templateArrangement: '1',
@@ -679,10 +714,35 @@ function handleDelete(row) {
 }
 
 // 占位方法
-function handleSequencingOrder() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSequencingSample() { proxy.$modal.msgInfo('功能开发中...') }
-function handleBatchAdd() { proxy.$modal.msgInfo('功能开发中...') }
-function handleLabelPrint() { proxy.$modal.msgInfo('功能开发中...') }
+function handleSequencingOrder() { 
+  batchAddVisible.value = true
+}
+function handleSequencingSample(row) {
+  const orderId = row?.orderId || ids.value[0]
+  if (!orderId || (!row?.orderId && ids.value.length !== 1)) {
+    proxy.$modal.msgWarning('请选择一条订单数据')
+    return
+  }
+  
+  const targetRow = row?.orderId ? row : dataList.value.find(r => r.orderId === orderId)
+  
+  currentOrderId.value = orderId
+  currentOrderRow.value = targetRow || {}
+  sampleDialogVisible.value = true
+}
+function handleBatchAdd() { 
+  if (ids.value.length !== 1) {
+     proxy.$modal.msgWarning('请选择一条订单数据')
+     return
+  }
+  const row = dataList.value.find(r => r.orderId === ids.value[0])
+  currentOrderId.value = ids.value[0]
+  currentOrderNo.value = row ? row.orderId : ''
+  batchSampleVisible.value = true
+}
+function handleLabelPrint() { 
+  labelPrintVisible.value = true
+}
 function handleInternalOperation() { proxy.$modal.msgInfo('功能开发中...') }
 function handleDailyReport() { proxy.$modal.msgInfo('功能开发中...') }
 function handleOrderMonitor() { proxy.$modal.msgInfo('功能开发中...') }

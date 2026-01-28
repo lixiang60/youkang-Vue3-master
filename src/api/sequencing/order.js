@@ -43,11 +43,34 @@ export function delOrder(id) {
   })
 }
 
+
 // 导出订单管理
 export function exportOrder(query) {
   return request({
     url: '/sequencing/order/export',
     method: 'post',
     params: query
+  })
+}
+
+
+// 批量添加订单
+export function batchAddOrder(data) {
+  return request({
+    url: '/sequencing/order/importData',
+    method: 'post',
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 标签打印
+export function printOrderLabel(data) {
+  return request({
+    url: '/sequencing/order/printLabel',
+    method: 'post',
+    data: data
   })
 }

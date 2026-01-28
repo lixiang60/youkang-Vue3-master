@@ -43,11 +43,24 @@ export function delSamples(id) {
   })
 }
 
+
 // 导出测序样品
 export function exportSamples(query) {
   return request({
     url: '/sequencing/samples/export',
     method: 'get',
     params: query
+  })
+}
+
+// 批量添加测序样品
+export function batchAddSample(data) {
+  return request({
+    url: '/sequencing/samples/importData',
+    method: 'post',
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
