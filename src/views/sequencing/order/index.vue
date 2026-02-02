@@ -139,7 +139,7 @@
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
-      @selection-change="handleSelectionChange"
+      @select="handleSelect"
     >
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime) }}</span>
@@ -650,12 +650,25 @@ function handleRefresh() {
   proxy.$modal.msgSuccess('刷新成功')
 }
 
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
+function handleSelect(selection, row) {
+  console.log("handleSelect Current operated row:", row)
+  // Fallback to orderId if id is missing
+  ids.value = selection.map(item => item.id || item.orderId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
+  // Update current row state
+  if (selection.find(r => r.orderId === row.orderId)) {
+      // Row was selected
+      currentOrderRow.value = row
+  } else {
+      // Row was deselected
+      if (currentOrderRow.value.orderId === row.orderId) {
+          // Fallback to the last selected item if available, or empty
+          currentOrderRow.value = selection.length > 0 ? selection[selection.length - 1] : {}
+      }
+  }
 }
+
 
 /** 新增按钮操作 */
 function handleAdd() {
@@ -714,22 +727,24 @@ function handleDelete(row) {
 }
 
 // 占位方法
-function handleSequencingOrder() { 
-  batchAddVisible.value = true
+function handleSequencingOrder() {
+batchAddVisible.value = true
 }
-function handleSequencingSample(row) {
-  const orderId = row?.orderId || ids.value[0]
-  if (!orderId || (!row?.orderId && ids.value.length !== 1)) {
-    proxy.$modal.msgWarning('请选择一条订单数据')
-    return
+function handleSequencingSample() {
+  if (ids.value.length !== 1) {
+     proxy.$modal.msgWarning('请选择一条订单数据')
+     return
   }
-  
-  const targetRow = row?.orderId ? row : dataList.value.find(r => r.orderId === orderId)
-  
-  currentOrderId.value = orderId
-  currentOrderRow.value = targetRow || {}
+
+  currentOrderId.value = ids.value[0]
+  // Pass the full row object to the dialog for immediate data population (echo)
+  currentOrderRow.value = currentOrderRow.value || {}
+
+  console.log('Opening Sample Dialog. OrderID:', currentOrderId.value, 'RowData:', currentOrderRow.value)
   sampleDialogVisible.value = true
 }
+
+
 function handleBatchAdd() { 
   if (ids.value.length !== 1) {
      proxy.$modal.msgWarning('请选择一条订单数据')
@@ -740,6 +755,7 @@ function handleBatchAdd() {
   currentOrderNo.value = row ? row.orderId : ''
   batchSampleVisible.value = true
 }
+
 function handleLabelPrint() { 
   labelPrintVisible.value = true
 }

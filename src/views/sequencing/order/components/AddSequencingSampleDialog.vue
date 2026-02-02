@@ -173,6 +173,7 @@ const rules = {
 }
 
 watch(() => props.modelValue, (val) => {
+  console.log('Dialog Opening:', props)
   if (val && props.orderId) {
     console.log('Dialog Opening with Order ID:', props.orderId)
     loadOrderInfo()

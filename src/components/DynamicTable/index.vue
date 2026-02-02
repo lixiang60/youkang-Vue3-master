@@ -6,6 +6,7 @@
     :stripe="stripe"
     style="width: 100%"
     @selection-change="handleSelectionChange"
+    @select="handleSelect"
   >
     <template v-for="(col, index) in columns" :key="col.key || col.prop || index">
       <!-- 显隐控制：如果 col.visible 为 undefined，默认显示；如果不为 undefined，则根据值判断 -->
@@ -77,10 +78,14 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['selection-change', 'update:page', 'update:limit', 'pagination'])
+const emit = defineEmits(['selection-change', 'select', 'update:page', 'update:limit', 'pagination'])
 
 function handleSelectionChange(selection) {
   emit('selection-change', selection)
+}
+
+function handleSelect(selection, row) {
+  emit('select', selection, row)
 }
 
 function handlePageUpdate(val) {
