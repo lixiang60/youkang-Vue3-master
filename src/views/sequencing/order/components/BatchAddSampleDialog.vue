@@ -59,6 +59,7 @@
           :minHeight="200"
           :toolbar="false"
           style="width: 100%;"
+          @paste-analyze="handlePasteAnalyze"
         />
       </el-form-item>
       
@@ -81,6 +82,7 @@
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import { batchAddSample } from '@/api/sequencing/samples'
+import { batchAddSampleByOrder } from '@/api/sequencing/order'
 import { ElMessage } from 'element-plus'
 import Editor from '@/components/Editor/index.vue'
 
@@ -108,7 +110,8 @@ const form = reactive({
   isEmail: 0,
   templateStyle: 1, // 1: Copy Excel, 2: Excel Template
   attachment: null,
-  templateContent: ''
+  templateContent: '',
+  sampleInfoList: []
 })
 
 const rules = {
@@ -127,6 +130,7 @@ function reset() {
   form.templateStyle = 1
   form.attachment = null
   form.templateContent = ''
+  form.sampleInfoList = []
   fileName.value = ''
   if (formRef.value) formRef.value.resetFields()
 }
@@ -144,36 +148,163 @@ function handleCancel() {
   emit('update:modelValue', false)
 }
 
+function handlePasteAnalyze(content) {
+  autoParseTemplate(content)
+}
+
+function autoParseTemplate(rawContent) {
+  const contentToParse = rawContent || form.templateContent
+  
+  if (!contentToParse) {
+    return
+  }
+  try {
+    const div = document.createElement('div')
+    div.innerHTML = contentToParse
+    const table = div.querySelector('table')
+    
+    const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
+    
+    let data = []
+    
+    const defaultKeys = [
+      'sampleId', 'primer', 'primerConcentration', 'primerType', 
+      'sampleType', 'antibioticType', 'carrierName', 'fragmentSize', 
+      'testResult', 'returnState', 'returnType', 'remark'
+    ]
+
+    const headerMap = {
+      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer', 
+      '引物浓度': 'primerConcentration', '引物类型': 'primerType',
+      '样品类型': 'sampleType', '抗生素类': 'antibioticType', '抗性': 'antibioticType',
+      '载体名称': 'carrierName', '片段大小': 'fragmentSize', 
+      '是否测通': 'testResult', '测序结果': 'testResult',
+      '是否返还': 'returnState', '退回状态': 'returnState',
+      '返还类型': 'returnType', 
+      '样品备注': 'remark', '备注': 'remark',
+      
+      '样品位置': 'samplePosition', '引物位置': 'primerPosition',
+      '序列': 'seq', '项目号': 'project', '质粒长度': 'plasmidLength',
+      '原浓度': 'originConcentration', '模板板号': 'templatePlateNo', 
+      '模板孔号': 'templateHoleNo', '完成状态': 'performance', 
+      '流程名称': 'flowName', '板号': 'plateNo',
+      '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
+      '孔数': 'holeNumber', '排版方式': 'layout'
+    }
+
+    if (table) {
+       const rows = table.rows
+       if (rows.length < 1) return
+
+       const firstRowTexts = Array.from(rows[0].cells).map(cell => getCellText(cell))
+       const getKey = (header) => headerMap[header] || header
+       let validKeys = firstRowTexts.map(getKey)
+       
+       const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
+       
+       let startRow = 1
+       if (knownKeysCount === 0) {
+          validKeys = defaultKeys
+          startRow = 0 
+       }
+
+       for (let i = startRow; i < rows.length; i++) {
+         const cells = rows[i].cells
+         const item = {}
+         let hasData = false
+         validKeys.forEach((key, index) => {
+           if (index < cells.length) {
+             const val = getCellText(cells[index])
+             if (val) hasData = true
+             if (key) item[key] = val
+           }
+         })
+         if (hasData) data.push(item)
+       }
+
+    } else {
+      const text = div.innerText.trim()
+      const rows = text.split('\n').map(r => r.trim()).filter(r => r)
+      if (rows.length < 1) return
+      
+      const firstRowParts = rows[0].split('\t').map(h => h.trim())
+      const getKey = (header) => headerMap[header] || header
+      let validKeys = firstRowParts.map(getKey)
+
+      const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
+      
+      let startRow = 1
+      if (knownKeysCount === 0) {
+         validKeys = defaultKeys
+         startRow = 0
+      }
+
+      for (let i = startRow; i < rows.length; i++) {
+         const cells = rows[i].split('\t')
+         const item = {}
+         validKeys.forEach((key, index) => {
+            if (key && index < cells.length) item[key] = cells[index]?.trim()
+         })
+         data.push(item)
+      }
+    }
+
+    if (data.length > 0) {
+       form.sampleInfoList = data
+    }
+
+  } catch (error) {
+    console.warn('Auto parse failed:', error)
+  }
+}
+
 function handleSubmit() {
   formRef.value.validate((valid) => {
     if (valid) {
-      const formData = new FormData()
-      formData.append('orderId', props.orderId)
-      formData.append('isEmail', form.isEmail)
-      formData.append('templateStyle', form.templateStyle)
-      
-      if (form.templateStyle === 2) {
-        if (!form.attachment) {
-          ElMessage.error('请选择文件')
-          return
-        }
-        formData.append('file', form.attachment)
-      } else {
+      if (form.templateStyle === 1) {
         if (!form.templateContent) {
            ElMessage.error('请输入模板内容')
            return
         }
-        formData.append('templateContent', form.templateContent)
-      }
+        if (!form.sampleInfoList || form.sampleInfoList.length === 0) {
+           autoParseTemplate()
+        }
+        if (!form.sampleInfoList || form.sampleInfoList.length === 0) {
+           ElMessage.error('解析失败或没有数据')
+           return
+        }
+        
+        const sampleList = form.sampleInfoList.map(item => ({
+          ...item,
+          orderId: props.orderId
+        }))
 
-      batchAddSample(formData).then(response => {
-        ElMessage.success('批量添加成功')
-        emit('success')
-        emit('update:modelValue', false)
-      })
+        batchAddSampleByOrder({ sampleList }).then(response => {
+          ElMessage.success('批量添加成功')
+          emit('success')
+          emit('update:modelValue', false)
+        })
+      } else {
+        if (!form.attachment) {
+          ElMessage.error('请选择文件')
+          return
+        }
+        const formData = new FormData()
+        formData.append('orderId', props.orderId)
+        formData.append('isEmail', form.isEmail)
+        formData.append('templateStyle', form.templateStyle)
+        formData.append('file', form.attachment)
+
+        batchAddSample(formData).then(response => {
+          ElMessage.success('批量添加成功')
+          emit('success')
+          emit('update:modelValue', false)
+        })
+      }
     }
   })
 }
+
 </script>
 
 <style scoped>

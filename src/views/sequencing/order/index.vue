@@ -146,166 +146,22 @@
       </template>
     </dynamic-table>
 
-    <!-- 添加或修改对话框 -->
-    <base-dialog :title="title" v-model="open" width="1000px">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px" label-position="left">
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="客户选择" prop="customerInfo.customerId">
-              <el-select v-model="selectedCustomer" placeholder="请选择客户" filterable clearable style="width: 92%" value-key="customerId" @change="handleCustomerChange">
-                <el-option
-                  v-for="item in customerOptions"
-                  :key="item.customerId"
-                  :label="`${item.customerId}-${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
-                  :value="item"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="邮件是否发送：" prop="isEmail">
-              <el-radio-group v-model="form.isEmail">
-                <el-radio :label="1">是</el-radio>
-                <el-radio :label="0">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否模板排版：" prop="templateArrangement">
-              <el-radio-group v-model="form.templateArrangement">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="测序生产实验室：" prop="sequencingLab">
-              <el-select v-model="form.sequencingLab" placeholder="请选择" style="width: 80%">
-                <el-option label="合肥有康" value="A" />
-                <el-option label="杭州有康" value="B" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="合成生产实验室：" prop="synthesisLab">
-              <el-select v-model="form.synthesisLab" placeholder="请选择" style="width: 80%">
-                <el-option label="合肥有康" value="A" />
-                <el-option label="杭州有康" value="B" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="信息不全：" prop="infoIncomplete">
-              <el-select v-model="form.infoIncomplete" placeholder="请选择" style="width: 80%">
-                <el-option label="是" value="1" />
-                <el-option label="否" value="0" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="送样日期：" prop="sampleDeliveryDate">
-              <el-date-picker
-                v-model="form.sampleDeliveryDate"
-                type="date"
-                placeholder="选择日期"
-                style="width: 80%"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="加急：" prop="urgent">
-              <el-radio-group v-model="form.urgent">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="模板样式：" prop="templateType">
-              <el-radio-group v-model="form.templateType">
-                <el-radio :label="1">复制excel模式(无格式)</el-radio>
-                <el-radio :label="2">EXCEL模板</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="测序级别：" prop="generation">
-              <el-radio-group v-model="form.generation">
-                <el-radio :label="1">一代</el-radio>
-                <el-radio :label="4">四代</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="模板内容：" prop="templateContent">
-                <Editor
-                   :toolbar="false"
-                   v-model="form.templateContent"
-                   :minHeight="150"
-                   style="width: 100%;"
-                   @paste-analyze="handlePasteAnalyze"
-                 />
-               <!-- <div class="mt5">
-                <el-button type="text" @click="handleTemplateParse">解析模板</el-button>
-              </div> -->
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="测序模板附件：" prop="sequencingTemplateAttachment">
-              <file-upload v-model="form.sequencingTemplateAttachment" :limit="1" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="加测合成模板附件：" prop="synthesisTemplateAttachment">
-              <file-upload v-model="form.synthesisTemplateAttachment" :limit="1" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="拍照附件：" prop="photoAttachment">
-              <image-upload v-model="form.photoAttachment" :limit="1" width="80px" height="80px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="关联基因样品编号：" prop="genNo">
-              <div style="display: flex; width: 100%">
-                <el-input v-model="form.genNo" />
-                <span class="ml10" style="white-space: nowrap">(非必填项目)</span>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
+    <!-- 添加对话框 -->
+    <order-dialog
+      v-model="open"
+      :title="title"
+      :order-row="currentOrderRow"
+      :customer-options="customerOptions"
+      @success="getList"
+    />
 
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注：" prop="remark">
-              <el-input v-model="form.remark" type="textarea" :rows="3" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer" style="text-align: center">
-          <el-button type="primary" @click="submitForm">添 加</el-button>
-        </div>
-      </template>
-    </base-dialog>
+    <!-- 修改对话框 -->
+    <edit-order-dialog
+      v-model="openEdit"
+      :order-row="currentOrderRow"
+      :customer-options="customerOptions"
+      @success="getList"
+    />
 
     <batch-add-order-dialog
       v-model="batchAddVisible"
@@ -346,6 +202,8 @@ import BatchAddOrderDialog from './components/BatchAddOrderDialog.vue'
 import AddSequencingSampleDialog from './components/AddSequencingSampleDialog.vue'
 import BatchAddSampleDialog from './components/BatchAddSampleDialog.vue'
 import LabelPrintDialog from './components/LabelPrintDialog.vue'
+import OrderDialog from './components/OrderDialog.vue'
+import EditOrderDialog from './components/EditOrderDialog.vue'
 import { QuillEditor } from "@vueup/vue-quill"
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
@@ -356,6 +214,7 @@ const dataList = ref([])
 const customerOptions = ref([])
 const selectedCustomer = ref(null)
 const open = ref(false)
+const openEdit = ref(false)
 const batchAddVisible = ref(false)
 const sampleDialogVisible = ref(false)
 const batchSampleVisible = ref(false)
@@ -391,17 +250,11 @@ const columns = ref([
 ])
 
 const data = reactive({
-  form: {},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     name: undefined,
     status: undefined
-  },
-  rules: {
-    customerId: [
-      { required: true, message: '客户不能为空', trigger: 'blur' }
-    ]
   }
 })
 
@@ -430,26 +283,9 @@ const editorOptions = ref({
   readOnly: false
 })
 
-const { queryParams, form, rules } = toRefs(data)
+const { queryParams } = toRefs(data)
 
-const localContent = ref("")
-const parseTimer = ref(null)
 
-// De-couple auto-parse from watcher if needed, 
-// But now we rely on explicit event BUT watcher might still fire if user types manually?
-// User said "Editor first parses excel value, then inserts excel as image". 
-// If inserted as image, templateContent changes to <img src...>. 
-// We should probably keep the watcher for manual typing, but the event is for the paste-override case.
-watch(() => form.value.templateContent, (v) => {
-  if (v !== localContent.value) {
-    localContent.value = v === undefined ? "<p></p>" : v
-  }
-  // We keep the watcher for manual text entry fallback
-  if (parseTimer.value) clearTimeout(parseTimer.value)
-  parseTimer.value = setTimeout(() => {
-    // autoParseTemplate() // Call without args uses form.value.templateContent
-  }, 500)
-}, { immediate: true })
 
 /** 查询列表 */
 function getList() {
@@ -672,22 +508,20 @@ function handleSelect(selection, row) {
 
 /** 新增按钮操作 */
 function handleAdd() {
-  reset()
+  currentOrderRow.value = {}
   open.value = true
   title.value = '添加订单'
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
-  reset()
-  const id = row.id || ids.value
-  getOrder(id).then(response => {
-    form.value = response.data
-    open.value = true
-    if (form.value.customerId) {
-      selectedCustomer.value = customerOptions.value.find(item => item.customerId === form.value.customerId) || null
-    }
-  })
+  const listRow = row.orderId ? row : currentOrderRow.value
+  if (listRow && listRow.orderId) {
+    currentOrderRow.value = { ...listRow }
+    openEdit.value = true
+  } else {
+    proxy.$modal.msgWarning('获取订单数据失败')
+  }
 }
 
 /** 提交按钮 */
@@ -697,11 +531,10 @@ function submitForm() {
       const submitData = { ...form.value }
       delete submitData.templateContent
       
-      if (form.value.id !== undefined) {
+      if (form.value.orderId !== undefined) {
         updateOrder(submitData).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
-          getList()
         })
       } else {
         console.log("add", submitData)
@@ -717,7 +550,7 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const idList = row.id || ids.value
+  const idList = row.orderId || ids.value.join(',')
   proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
     return delOrder(idList)
   }).then(() => {
@@ -728,7 +561,7 @@ function handleDelete(row) {
 
 // 占位方法
 function handleSequencingOrder() {
-batchAddVisible.value = true
+  batchAddVisible.value = true
 }
 function handleSequencingSample() {
   if (ids.value.length !== 1) {

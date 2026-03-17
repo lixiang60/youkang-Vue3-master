@@ -12,7 +12,7 @@ export function listOrder(query) {
 // 查询订单管理详细
 export function getOrder(id) {
   return request({
-    url: '/sequencing/order/' + id,
+    url: '/order/info/' + id,
     method: 'get'
   })
 }
@@ -26,11 +26,20 @@ export function addOrder(data) {
   })
 }
 
+// 通过订单新增单个样品
+export function addSampleByOrder(data) {
+  return request({
+    url: '/order/info/addSample',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改订单管理
 export function updateOrder(data) {
   return request({
-    url: '/sequencing/order',
-    method: 'post',
+    url: '/order/info',
+    method: 'put',
     data: data
   })
 }
@@ -38,8 +47,8 @@ export function updateOrder(data) {
 // 删除订单管理
 export function delOrder(id) {
   return request({
-    url: '/sequencing/order/' + id,
-    method: 'post'
+    url: '/order/info/' + id,
+    method: 'delete'
   })
 }
 
@@ -74,3 +83,13 @@ export function printOrderLabel(data) {
     data: data
   })
 }
+
+// 通过订单批量新增样品
+export function batchAddSampleByOrder(data) {
+  return request({
+    url: '/order/info/batchAddSample',
+    method: 'post',
+    data: data
+  })
+}
+

@@ -130,8 +130,7 @@
 import { ref, reactive, watch, getCurrentInstance } from 'vue'
 // import SampleTypeSelect from './SampleTypeSelect.vue' // Global registered
 // import AntibioticTypeSelect from './AntibioticTypeSelect.vue' // Global registered
-import { getOrder } from '@/api/sequencing/order'
-import { addSamples } from '@/api/sequencing/samples'
+import { getOrder, addSampleByOrder } from '@/api/sequencing/order'
 import { ElMessage } from 'element-plus'
 
 const { proxy } = getCurrentInstance()
@@ -189,11 +188,6 @@ function loadOrderInfo() {
       orderInfo.value = { ...props.orderRow }
       // Do not return, fetch full details to ensure all fields (like primerConcentration) are present
   }
-  getOrder(props.orderId).then(response => {
-    console.log('getOrder Response:', response)
-    orderInfo.value = response.data || {}
-    console.log('orderInfo value:', orderInfo.value)
-  })
 }
 
 function reset() {
@@ -221,9 +215,10 @@ function handleSubmit() {
     if (valid) {
       const submitData = {
         ...form,
-        orderId: props.orderId
+        orderId: props.orderId,
+        produceId: 0
       }
-      addSamples(submitData).then(response => {
+      addSampleByOrder(submitData).then(response => {
         ElMessage.success('添加成功')
         emit('success')
         emit('update:modelValue', false)
