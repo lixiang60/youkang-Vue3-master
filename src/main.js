@@ -17,7 +17,7 @@ import directive from './directive' // directive
 // 注册指令
 import plugins from './plugins' // plugins
 import { download } from '@/utils/request'
-import print from 'vue-print-nb'
+import print from 'vue3-print-nb'
 
 // svg图标
 import 'virtual:svg-icons-register'
