@@ -81,7 +81,7 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
-import { batchAddSample } from '@/api/sequencing/samples'
+import { importSamples } from '@/api/sequencing/samples'
 import { batchAddSampleByOrder } from '@/api/sequencing/order'
 import { ElMessage } from 'element-plus'
 import Editor from '@/components/Editor/index.vue'
@@ -295,7 +295,7 @@ function handleSubmit() {
         formData.append('templateStyle', form.templateStyle)
         formData.append('file', form.attachment)
 
-        batchAddSample(formData).then(response => {
+        importSamples(formData).then(response => {
           ElMessage.success('批量添加成功')
           emit('success')
           emit('update:modelValue', false)

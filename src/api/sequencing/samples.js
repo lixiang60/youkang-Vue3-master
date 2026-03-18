@@ -1,62 +1,61 @@
 import request from '@/utils/request'
 
-// 查询测序样品列表
-export function listSamples(query) {
+// 查询样品列表
+export function listSamples(data) {
   return request({
-    url: '/sequencing/samples/list',
-    method: 'get',
-    params: query
-  })
-}
-
-// 查询测序样品详细
-export function getSamples(id) {
-  return request({
-    url: '/sequencing/samples/' + id,
-    method: 'get'
-  })
-}
-
-// 新增测序样品
-export function addSamples(data) {
-  return request({
-    url: '/sequencing/samples',
+    url: '/order/sample/list',
     method: 'post',
     data: data
   })
 }
 
-// 修改测序样品
+// 获取样品详情
+export function getSamples(sampleId) {
+  return request({
+    url: '/order/sample/' + sampleId,
+    method: 'get'
+  })
+}
+
+// 新增样品
+export function addSamples(data) {
+  return request({
+    url: '/order/sample',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改样品
 export function updateSamples(data) {
   return request({
-    url: '/sequencing/samples',
+    url: '/order/sample',
     method: 'put',
     data: data
   })
 }
 
-// 删除测序样品
-export function delSamples(id) {
+// 批量删除样品
+export function delSamples(sampleIds) {
   return request({
-    url: '/sequencing/samples/' + id,
+    url: '/order/sample/' + sampleIds,
     method: 'delete'
   })
 }
 
-
-// 导出测序样品
-export function exportSamples(query) {
+// 导出样品
+export function exportSamples(data) {
   return request({
-    url: '/sequencing/samples/export',
-    method: 'get',
-    params: query
+    url: '/order/sample/export',
+    method: 'post',
+    data: data
   })
 }
 
-// 批量添加测序样品
-export function batchAddSample(data) {
+// 导入样品
+export function importSamples(data) {
   return request({
-    url: '/sequencing/samples/importData',
+    url: '/order/sample/import',
     method: 'post',
     data: data,
     headers: {
