@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 // 查询模板管理列表
-export function listTemplate(query) {
+export function listTemplate(data) {
   return request({
-    url: '/sequencing/template/list',
-    method: 'get',
-    params: query
+    url: '/order/sample/template/list',
+    method: 'post',
+    data: data
   })
 }
 

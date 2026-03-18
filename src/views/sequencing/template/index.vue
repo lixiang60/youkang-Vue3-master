@@ -67,23 +67,26 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="生产编号" align="center" prop="productionNo" width="120" fixed sortable />
-      <el-table-column label="订单号" align="center" prop="orderNo" width="120" fixed />
+      <el-table-column label="订单号" align="center" prop="orderId" width="120" fixed />
+      <el-table-column label="模板排版号" align="center" prop="templateNumber" width="120" fixed sortable />
       <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
       <el-table-column label="客户地址" align="center" prop="customerAddress" width="150" show-overflow-tooltip />
-      <el-table-column label="客户等级" align="center" prop="customerLevel" width="80" />
-      <el-table-column label="课题组" align="center" prop="researchGroup" width="120" show-overflow-tooltip />
-      <el-table-column label="样品对应号" align="center" prop="sampleCorrespondingNo" width="100" />
-      <el-table-column label="样品编号" align="center" prop="sampleNo" width="100" />
-      <el-table-column label="测序引物" align="center" prop="sequencingPrimer" width="100" />
-      <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
+      <el-table-column label="样品编号" align="center" prop="sampleId" width="120" fixed />
       <el-table-column label="样品类型" align="center" prop="sampleType" width="80" />
-      <el-table-column label="载体名称" align="center" prop="vectorName" width="100" />
+      <el-table-column label="测序引物" align="center" prop="primer" width="100" />
+      <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
+      <el-table-column label="载体名称" align="center" prop="carrierName" width="100" />
       <el-table-column label="抗生素类型" align="center" prop="antibioticType" width="100" />
+      <el-table-column label="片段大小" align="center" prop="fragmentSize" width="80" />
+      <el-table-column label="是否测通" align="center" prop="testResult" width="80" />
+      <el-table-column label="原浓度" align="center" prop="originConcentration" width="80" />
       <el-table-column label="模板板号" align="center" prop="templatePlateNo" width="80" />
-      <el-table-column label="模板排版类" align="center" prop="templateLayoutType" width="100" />
-      <el-table-column label="模板孔号" align="center" prop="templateWellNo" width="80" />
-      <el-table-column label="返回状态" align="center" prop="returnStatus" width="80" />
+      <el-table-column label="模板孔号" align="center" prop="templateHoleNo" width="80" />
+      <el-table-column label="完成情况" align="center" prop="performance" width="100" />
+      <el-table-column label="返回状态" align="center" prop="returnState" width="80" />
+      <el-table-column label="流程名称" align="center" prop="flowName" width="120" />
+      <el-table-column label="创建人" align="center" prop="createUser" width="100" />
+      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
     </el-table>
 
     <!-- 分页 -->
@@ -100,15 +103,15 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="生产编号" prop="productionNo">
-              <el-input v-model="form.productionNo" placeholder="请输入生产编号" />
+            <el-form-item label="模板排版号" prop="templateNumber">
+              <el-input v-model="form.templateNumber" placeholder="请输入模板排版号" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="订单号" prop="orderNo">
-              <el-input v-model="form.orderNo" placeholder="请输入订单号" />
+            <el-form-item label="订单号" prop="orderId">
+              <el-input v-model="form.orderId" placeholder="请输入订单号" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -151,12 +154,14 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    status: undefined
+    orderId: undefined,
+    sampleId: undefined,
+    customerName: undefined,
+    returnState: undefined
   },
   rules: {
-    productionNo: [
-      { required: true, message: '生产编号不能为空', trigger: 'blur' }
+    templateNumber: [
+      { required: true, message: '模板排版号不能为空', trigger: 'blur' }
     ]
   }
 })
@@ -167,8 +172,8 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listTemplate(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+    dataList.value = response.data.rows
+    total.value = response.data.total
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -185,8 +190,8 @@ function cancel() {
 function reset() {
   form.value = {
     id: undefined,
-    productionNo: undefined,
-    orderNo: undefined,
+    templateNumber: undefined,
+    orderId: undefined,
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -269,12 +274,6 @@ function handleExport() {
 }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
 })
 </script>
