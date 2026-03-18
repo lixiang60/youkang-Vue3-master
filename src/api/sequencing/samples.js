@@ -38,8 +38,11 @@ export function updateSamples(data) {
 // 批量删除样品
 export function delSamples(sampleIds) {
   return request({
-    url: '/order/sample/' + sampleIds,
-    method: 'delete'
+    url: '/order/sample',
+    method: 'delete',
+    params: {
+      sampleIds: sampleIds.toString()
+    }
   })
 }
 

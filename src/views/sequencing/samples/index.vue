@@ -475,7 +475,7 @@ function handleRefresh() {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
+  ids.value = selection.map(item => item.sampleId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
@@ -490,9 +490,10 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
-  const id = row.id || ids.value
-  getSamples(id).then(response => {
+  const sampleId = row.sampleId || ids.value
+  getSamples(sampleId).then(response => {
     form.value = response.data
+    form.value._isEdit = true
     open.value = true
     title.value = '修改测序样品'
   })
@@ -502,7 +503,7 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
-      if (form.value.id !== undefined) {
+      if (form.value._isEdit) {
         updateSamples(form.value).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
@@ -521,7 +522,7 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const idList = row.id || ids.value
+  const idList = row.sampleId || ids.value
   proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
     return delSamples(idList)
   }).then(() => {
