@@ -105,8 +105,8 @@
         </el-col>
       </el-row>
       
-      <el-form-item label="是否测通：" prop="isTestThrough">
-        <el-radio-group v-model="form.isTestThrough">
+      <el-form-item label="是否测通：" prop="testResult">
+        <el-radio-group v-model="form.testResult">
           <el-radio :label="1">是</el-radio>
           <el-radio :label="0">否</el-radio>
         </el-radio-group>
@@ -163,7 +163,7 @@ const form = reactive({
   antibioticType: undefined,
   carrierName: '',
   fragmentSize: '',
-  isTestThrough: 0,
+  testResult: 0,
   remark: ''
 })
 
@@ -197,7 +197,7 @@ function reset() {
   form.antibioticType = undefined
   form.carrierName = ''
   form.fragmentSize = ''
-  form.isTestThrough = 0
+  form.testResult = 0
   form.remark = ''
   if (formRef.value) formRef.value.resetFields()
 }

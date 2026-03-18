@@ -387,12 +387,12 @@ function autoParseTemplate(rawContent) {
       
       // Old/Other mappings
       '样品位置': 'samplePosition', '引物位置': 'primerPosition',
-      '序列': 'seq', '项目号': 'project', '质粒长度': 'plasmidLength',
+      '序列': 'seq', '项目号': 'project', '测序项目': 'project', '质粒长度': 'plasmidLength',
       '原浓度': 'originConcentration', '模板板号': 'templatePlateNo', 
-      '模板孔号': 'templateHoleNo', '完成状态': 'performance', 
+      '模板孔号': 'templateHoleNo', '完成状态': 'performance', '完成情况': 'performance',
       '流程名称': 'flowName', '板号': 'plateNo',
       '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
-      '孔数': 'holeNumber', '排版方式': 'layout'
+      '孔数': 'holeNumber', '孔号数量': 'holeNumber', '排版方式': 'layout'
     }
 
     if (table) {

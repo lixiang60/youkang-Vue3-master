@@ -64,20 +64,20 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| pageNum | Integer | 是 | 页码 |
-| pageSize | Integer | 是 | 每页数量 |
-| orderId | String | 否 | 订单ID |
-| customerId | Integer | 否 | 客户ID |
-| groupId | Integer | 否 | 课题组ID |
-| orderType | String | 否 | 订单类型 |
-| isAsync | Integer | 否 | 是否同步（0:同步康为，1:不同步） |
-| generation | Integer | 否 | 测序代数（1代：1，4代：4） |
-| belongCompany | String | 否 | 所属公司 |
-| produceCompany | String | 否 | 生产公司 |
-| genNo | String | 否 | 关联基因号 |
-| createBy | String | 否 | 创建者 |
+| 参数名         | 类型    | 必填 | 说明                             |
+| -------------- | ------- | ---- | -------------------------------- |
+| pageNum        | Integer | 是   | 页码                             |
+| pageSize       | Integer | 是   | 每页数量                         |
+| orderId        | String  | 否   | 订单ID                           |
+| customerId     | Integer | 否   | 客户ID                           |
+| groupId        | Integer | 否   | 课题组ID                         |
+| orderType      | String  | 否   | 订单类型                         |
+| isAsync        | Integer | 否   | 是否同步（0:同步康为，1:不同步） |
+| generation     | Integer | 否   | 测序代数（1代：1，4代：4）       |
+| belongCompany  | String  | 否   | 所属公司                         |
+| produceCompany | String  | 否   | 生产公司                         |
+| genNo          | String  | 否   | 关联基因号                       |
+| createBy       | String  | 否   | 创建者                           |
 
 **请求示例**:
 
@@ -135,22 +135,22 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| customerInfo | Object | 是 | 客户信息 |
-| customerInfo.customerId | Integer | 是 | 客户ID |
-| customerInfo.customerName | String | 是 | 客户姓名 |
-| customerInfo.subjectGroupId | Integer | 是 | 课题组ID |
-| customerInfo.email | String | 否 | 客户邮箱 |
-| orderId | String | 否 | 订单ID（为空自动生成） |
-| isEmail | Integer | 否 | 是否发送邮件（1:发送） |
-| belongCompany | String | 否 | 所属公司 |
-| produceCompany | String | 否 | 生产公司 |
-| templateType | Integer | 否 | 订单模板类型（1:excel文件;2:集合） |
-| sampleInfoList | Array | 否 | 样品列表 |
-| genNo | String | 否 | 关联基因号 |
-| remark | String | 否 | 备注 |
-| generation | Integer | 否 | 测序代数 |
+| 参数名                      | 类型    | 必填 | 说明                               |
+| --------------------------- | ------- | ---- | ---------------------------------- |
+| customerInfo                | Object  | 是   | 客户信息                           |
+| customerInfo.customerId     | Integer | 是   | 客户ID                             |
+| customerInfo.customerName   | String  | 是   | 客户姓名                           |
+| customerInfo.subjectGroupId | Integer | 是   | 课题组ID                           |
+| customerInfo.email          | String  | 否   | 客户邮箱                           |
+| orderId                     | String  | 否   | 订单ID（为空自动生成）             |
+| isEmail                     | Integer | 否   | 是否发送邮件（1:发送）             |
+| belongCompany               | String  | 否   | 所属公司                           |
+| produceCompany              | String  | 否   | 生产公司                           |
+| templateType                | Integer | 否   | 订单模板类型（1:excel文件;2:集合） |
+| sampleInfoList              | Array   | 否   | 样品列表                           |
+| genNo                       | String  | 否   | 关联基因号                         |
+| remark                      | String  | 否   | 备注                               |
+| generation                  | Integer | 否   | 测序代数                           |
 
 **请求示例**:
 
@@ -202,14 +202,51 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| orderId | String | 是 | 订单号 |
-| sampleId | String | 是 | 样品编号 |
-| sampleType | String | 否 | 样品类型 |
-| primer | String | 否 | 引物 |
-| project | String | 否 | 测序项目 |
-| （其他字段见 SampleItemReq） | | | |
+| 参数名                       | 类型   | 必填 | 说明     |
+| ---------------------------- | ------ | ---- | -------- |
+| orderId                      | String | 是   | 订单号   |
+| sampleId                     | String | 是   | 样品编号 |
+| sampleType                   | String | 否   | 样品类型 |
+| primer                       | String | 否   | 引物     |
+| project                      | String | 否   | 测序项目 |
+| （其他字段见 SampleItemReq） |        |      |          |
+
+请求示例
+
+```json
+
+  "orderId": "订单号",
+  "orderHistory": "历史订单号",
+  "sampleId": "样品编号",
+  "sampleType": "样品类型",
+  "samplePosition": "样品位置",
+  "primer": "引物",
+  "primerType": "引物类型",
+  "primerPosition": "引物位置",
+  "primerConcentration": "引物浓度",
+  "seq": "序列",
+  "project": "测序项目",
+  "carrierName": "载体名称",
+  "antibioticType": "抗生素类型",
+  "plasmidLength": "质粒长度",
+  "fragmentSize": "片段大小",
+  "testResult": "是否测通",
+  "originConcentration": "原浓度",
+  "templatePlateNo": "模板板号",
+  "templateHoleNo": "模板孔号",
+  "performance": "完成情况",
+  "returnState": "返回状态",
+  "flowName": "流程名称",
+  "plateNo": "板号",
+  "holeNo": "孔号",
+  "belongCompany": "所属公司",
+  "produceCompany": "生产公司",
+  "produceId": "生产编号",
+  "holeNumber": "孔号数量",
+  "layout": "排版方式",
+  "remark": "备注"
+}
+```
 
 **响应示例**:
 
@@ -234,9 +271,9 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| sampleList | Array | 是 | 样品列表（SampleItemReq数组） |
+| 参数名     | 类型  | 必填 | 说明                          |
+| ---------- | ----- | ---- | ----------------------------- |
+| sampleList | Array | 是   | 样品列表（SampleItemReq数组） |
 
 **响应示例**:
 
@@ -277,10 +314,10 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| file | MultipartFile | 是 | Excel文件 |
-| updateSupport | Boolean | 否 | 是否更新已存在的数据，默认false |
+| 参数名        | 类型          | 必填 | 说明                            |
+| ------------- | ------------- | ---- | ------------------------------- |
+| file          | MultipartFile | 是   | Excel文件                       |
+| updateSupport | Boolean       | 否   | 是否更新已存在的数据，默认false |
 
 **响应示例**:
 
@@ -317,9 +354,9 @@
 
 **路径参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| orderId | String | 是 | 订单ID |
+| 参数名  | 类型   | 必填 | 说明   |
+| ------- | ------ | ---- | ------ |
+| orderId | String | 是   | 订单ID |
 
 **响应示例**:
 
@@ -360,18 +397,18 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| orderId | String | 是 | 订单ID |
-| customerId | Integer | 否 | 客户ID |
-| groupId | Integer | 否 | 课题组ID |
-| orderType | String | 否 | 订单类型 |
-| isAsync | Integer | 否 | 是否同步 |
-| generation | Integer | 否 | 测序代数 |
-| belongCompany | String | 否 | 所属公司 |
-| produceCompany | String | 否 | 生产公司 |
-| genNo | String | 否 | 关联基因号 |
-| remark | String | 否 | 备注 |
+| 参数名         | 类型    | 必填 | 说明       |
+| -------------- | ------- | ---- | ---------- |
+| orderId        | String  | 是   | 订单ID     |
+| customerId     | Integer | 否   | 客户ID     |
+| groupId        | Integer | 否   | 课题组ID   |
+| orderType      | String  | 否   | 订单类型   |
+| isAsync        | Integer | 否   | 是否同步   |
+| generation     | Integer | 否   | 测序代数   |
+| belongCompany  | String  | 否   | 所属公司   |
+| produceCompany | String  | 否   | 生产公司   |
+| genNo          | String  | 否   | 关联基因号 |
+| remark         | String  | 否   | 备注       |
 
 **响应示例**:
 
@@ -396,9 +433,9 @@
 
 **路径参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| orderIds | String[] | 是 | 订单ID数组（逗号分隔） |
+| 参数名   | 类型     | 必填 | 说明                   |
+| -------- | -------- | ---- | ---------------------- |
+| orderIds | String[] | 是   | 订单ID数组（逗号分隔） |
 
 **响应示例**:
 
@@ -433,27 +470,27 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| pageNum | Integer | 是 | 页码 |
-| pageSize | Integer | 是 | 每页数量 |
-| orderId | String | 否 | 订单号 |
-| orderHistory | String | 否 | 历史订单号 |
-| sampleId | String | 否 | 样品编号 |
-| sampleType | String | 否 | 样品类型 |
-| primer | String | 否 | 引物 |
-| primerType | String | 否 | 引物类型 |
-| project | String | 否 | 测序项目 |
-| carrierName | String | 否 | 载体名称 |
-| antibioticType | String | 否 | 抗生素类型 |
-| testResult | String | 否 | 是否测通 |
-| performance | String | 否 | 完成情况 |
-| returnState | Integer | 否 | 返回状态 |
-| flowName | String | 否 | 流程名称 |
-| plateNo | String | 否 | 板号 |
-| belongCompany | String | 否 | 所属公司 |
-| produceCompany | String | 否 | 生产公司 |
-| createUser | String | 否 | 创建人 |
+| 参数名         | 类型    | 必填 | 说明       |
+| -------------- | ------- | ---- | ---------- |
+| pageNum        | Integer | 是   | 页码       |
+| pageSize       | Integer | 是   | 每页数量   |
+| orderId        | String  | 否   | 订单号     |
+| orderHistory   | String  | 否   | 历史订单号 |
+| sampleId       | String  | 否   | 样品编号   |
+| sampleType     | String  | 否   | 样品类型   |
+| primer         | String  | 否   | 引物       |
+| primerType     | String  | 否   | 引物类型   |
+| project        | String  | 否   | 测序项目   |
+| carrierName    | String  | 否   | 载体名称   |
+| antibioticType | String  | 否   | 抗生素类型 |
+| testResult     | String  | 否   | 是否测通   |
+| performance    | String  | 否   | 完成情况   |
+| returnState    | Integer | 否   | 返回状态   |
+| flowName       | String  | 否   | 流程名称   |
+| plateNo        | String  | 否   | 板号       |
+| belongCompany  | String  | 否   | 所属公司   |
+| produceCompany | String  | 否   | 生产公司   |
+| createUser     | String  | 否   | 创建人     |
 
 **响应示例**:
 
@@ -530,10 +567,10 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| file | MultipartFile | 是 | Excel文件 |
-| updateSupport | Boolean | 否 | 是否更新已存在的数据 |
+| 参数名        | 类型          | 必填 | 说明                 |
+| ------------- | ------------- | ---- | -------------------- |
+| file          | MultipartFile | 是   | Excel文件            |
+| updateSupport | Boolean       | 否   | 是否更新已存在的数据 |
 
 ---
 
@@ -561,9 +598,9 @@
 
 **路径参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| sampleId | String | 是 | 样品ID |
+| 参数名   | 类型   | 必填 | 说明   |
+| -------- | ------ | ---- | ------ |
+| sampleId | String | 是   | 样品ID |
 
 ---
 
@@ -631,14 +668,14 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| pageNum | Integer | 是 | 页码 |
-| pageSize | Integer | 是 | 每页数量 |
-| orderId | String | 否 | 订单号 |
-| sampleId | String | 否 | 样品编号 |
-| customerName | String | 否 | 客户名称 |
-| returnState | Integer | 否 | 返回状态 |
+| 参数名       | 类型    | 必填 | 说明     |
+| ------------ | ------- | ---- | -------- |
+| pageNum      | Integer | 是   | 页码     |
+| pageSize     | Integer | 是   | 每页数量 |
+| orderId      | String  | 否   | 订单号   |
+| sampleId     | String  | 否   | 样品编号 |
+| customerName | String  | 否   | 客户名称 |
+| returnState  | Integer | 否   | 返回状态 |
 
 **响应示例**:
 
@@ -690,22 +727,22 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| templateInfo | Array | 是 | 模板信息列表 |
-| templateInfo[].orderId | String | 是 | 订单号 |
-| templateInfo[].sampleId | String | 是 | 样品编号 |
-| templateStype | String | 是 | 排版方式（横排/竖排） |
-| templatePlateNo | String | 是 | 模板板号 |
-| remark | String | 否 | 备注 |
+| 参数名                  | 类型   | 必填 | 说明                  |
+| ----------------------- | ------ | ---- | --------------------- |
+| templateInfo            | Array  | 是   | 模板信息列表          |
+| templateInfo[].orderId  | String | 是   | 订单号                |
+| templateInfo[].sampleId | String | 是   | 样品编号              |
+| templateStype           | String | 是   | 排版方式（横排/竖排） |
+| templatePlateNo         | String | 是   | 模板板号              |
+| remark                  | String | 否   | 备注                  |
 
 **请求示例**:
 
 ```json
 {
   "templateInfo": [
-    {"orderId": "20260317143052051", "sampleId": "S001"},
-    {"orderId": "20260317143052051", "sampleId": "S002"}
+    { "orderId": "20260317143052051", "sampleId": "S001" },
+    { "orderId": "20260317143052051", "sampleId": "S002" }
   ],
   "templateStype": "横排",
   "templatePlateNo": "P001",
@@ -727,12 +764,12 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| orderId | String | 是 | 订单号 |
-| sampleId | String | 是 | 样品编号 |
-| templatePlateNo | String | 是 | 模板板号 |
-| templateHoleNo | String | 是 | 模板孔号 |
+| 参数名          | 类型   | 必填 | 说明     |
+| --------------- | ------ | ---- | -------- |
+| orderId         | String | 是   | 订单号   |
+| sampleId        | String | 是   | 样品编号 |
+| templatePlateNo | String | 是   | 模板板号 |
+| templateHoleNo  | String | 是   | 模板孔号 |
 
 ---
 
@@ -764,9 +801,9 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| templateNo | String | 是 | 模板编号 |
+| 参数名     | 类型   | 必填 | 说明     |
+| ---------- | ------ | ---- | -------- |
+| templateNo | String | 是   | 模板编号 |
 
 **响应示例**:
 
@@ -796,9 +833,9 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| templateNo | String | 是 | 板号 |
+| 参数名     | 类型   | 必填 | 说明 |
+| ---------- | ------ | ---- | ---- |
+| templateNo | String | 是   | 板号 |
 
 **响应示例**:
 
@@ -834,16 +871,16 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| pageNum | Integer | 是 | 页码 |
-| pageSize | Integer | 是 | 每页数量 |
-| templateNo | String | 否 | 模板板号 |
-| orderId | String | 否 | 订单号 |
-| customerName | String | 否 | 客户名称 |
-| sampleId | String | 否 | 样品编号 |
-| sampleType | String | 否 | 样品类型 |
-| createUser | String | 否 | 创建人 |
+| 参数名       | 类型    | 必填 | 说明     |
+| ------------ | ------- | ---- | -------- |
+| pageNum      | Integer | 是   | 页码     |
+| pageSize     | Integer | 是   | 每页数量 |
+| templateNo   | String  | 否   | 模板板号 |
+| orderId      | String  | 否   | 订单号   |
+| customerName | String  | 否   | 客户名称 |
+| sampleId     | String  | 否   | 样品编号 |
+| sampleType   | String  | 否   | 样品类型 |
+| createUser   | String  | 否   | 创建人   |
 
 **响应示例**:
 
@@ -895,11 +932,11 @@
 
 **请求参数**:
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| orderId | Array | 是 | 订单号列表 |
-| returnState | String | 是 | 返回状态 |
-| remark | String | 否 | 备注 |
+| 参数名      | 类型   | 必填 | 说明       |
+| ----------- | ------ | ---- | ---------- |
+| orderId     | Array  | 是   | 订单号列表 |
+| returnState | String | 是   | 返回状态   |
+| remark      | String | 否   | 备注       |
 
 **请求示例**:
 
@@ -925,28 +962,28 @@
 }
 ```
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| code | Integer | 响应码（200:成功，其他:失败） |
-| msg | String | 响应消息 |
-| data | Object/Array | 响应数据 |
+| 字段 | 类型         | 说明                          |
+| ---- | ------------ | ----------------------------- |
+| code | Integer      | 响应码（200:成功，其他:失败） |
+| msg  | String       | 响应消息                      |
+| data | Object/Array | 响应数据                      |
 
 ### 状态码说明
 
-| 状态码 | 说明 |
-|--------|------|
-| 200 | 操作成功 |
-| 401 | 未授权 |
-| 403 | 无权限 |
-| 500 | 服务器错误 |
+| 状态码 | 说明       |
+| ------ | ---------- |
+| 200    | 操作成功   |
+| 401    | 未授权     |
+| 403    | 无权限     |
+| 500    | 服务器错误 |
 
 ### 请求头说明
 
-| 请求头 | 说明 | 示例 |
-|--------|------|------|
-| Authorization | 认证Token | Bearer {token} |
-| Content-Type | 内容类型 | application/json |
+| 请求头        | 说明      | 示例             |
+| ------------- | --------- | ---------------- |
+| Authorization | 认证Token | Bearer {token}   |
+| Content-Type  | 内容类型  | application/json |
 
 ---
 
-*文档生成时间: 2026-03-17*
+_文档生成时间: 2026-03-17_
