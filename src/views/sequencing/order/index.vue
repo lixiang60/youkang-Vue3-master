@@ -336,15 +336,6 @@ function reset() {
   proxy.resetForm('formRef')
 }
 
-/** 处理客户选择变更 */
-function handleCustomerChange(val) {
-  if (val) {
-    form.value.customerInfo = { ...val }
-  } else {
-    form.value.customerInfo = {}
-  }
-}
-
 function handlePasteAnalyze(content) {
   console.log("handlePasteAnalyze content length:", content?.length)
   autoParseTemplate(content)
