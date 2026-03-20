@@ -3,84 +3,15 @@
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
         <h2>有康后台管理</h2>
-        <p>
-          Welcome to YouKang!!!
-        </p>
+        <p>Welcome to YouKang!!!</p>
         <p>
           <b>当前版本:</b> <span>v{{ version }}</span>
         </p>
-        <p>
-          <el-tag type="danger">&yen;免费开源</el-tag>
-        </p>
-        <p>
-          <el-button
-            type="primary"
-            icon="Cloudy"
-            plain
-            @click="goTarget('https://gitee.com/y_project/RuoYi-Vue')"
-            >访问码云</el-button
-          >
-          <el-button
-            icon="HomeFilled"
-            plain
-            @click="goTarget('http://ruoyi.vip')"
-            >访问主页</el-button
-          >
-        </p>
-      </el-col>
-
-      <el-col :sm="24" :lg="12" style="padding-left: 50px">
-        <el-row>
-          <el-col :span="12">
-            <h2>欢迎来到有康</h2>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <ul>
-              Welcome to YouKang!!!
-            </ul>
-          </el-col>
-        </el-row>
       </el-col>
     </el-row>
     <el-divider />
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
-          <template v-slot:header>
-            <div class="clearfix">
-              <span>联系信息</span>
-            </div>
-          </template>
-          <div class="body">
-            <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link
-                href="http://www.ruoyi.vip"
-                target="_blank"
-                >http://www.youkang.com</el-link
-              >
-            </p>
-            <p>
-			  <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=EeCBXu51I1zPWRia2uskpjDRx6VrbnFN&authKey=Xm8yDxk0%2FyYGI11oxhXaQnTn4K7UwCk7Kn2MZTh3P1JxLctollAkyeySjnaILDkb&noverify=0&group_code=174569686" target="_blank">174569686</a>
-            </p>
-            <p>
-              <i class="el-icon-chat-dot-round"></i> 微信：<a
-                href="javascript:;"
-                >/ WeChat</a
-              >
-            </p>
-            <p>
-              <i class="el-icon-money"></i> 支付宝：<a
-                href="javascript:;"
-                class="支付宝信息"
-                >/ Alipay</a
-              >
-            </p>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+      <el-col :xs="24" :sm="24" :md="24" :lg="12">
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
@@ -88,40 +19,14 @@
             </div>
           </template>
           <el-collapse accordion>
-            <el-collapse-item title="v3.9.0 - 2025-05-28">
+            <el-collapse-item title="v1.0.0 - 2026-03-20">
               <ol>
-                <li>优化菜单搜索查询页</li>
-                <li>导航栏显示昵称&设置</li>
-                <li>菜单管理新增路由名称</li>
-                <li>添加底部版权信息&开关</li>
-                <li>分配角色禁用不允许勾选</li>
-              </ol>
-            </el-collapse-item>
-            <el-collapse-item title="v1.0.0 - 2019-10-08">
-              <ol>
-                <li>若依前后端分离系统正式发布</li>
+                <li>有康后台管理系统功能上线</li>
+                <li>涵盖测序、订单、样品管理模块控制</li>
+                <li>修复了批处理和导出相关的 API 集成路径</li>
               </ol>
             </el-collapse-item>
           </el-collapse>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
-          <template v-slot:header>
-            <div class="clearfix">
-              <span>联系信息</span>
-            </div>
-          </template>
-          <div class="body">
-            <!-- <img
-              src="@/assets/images/pay.png"
-              alt="donate"
-              style="width:100%"
-            /> -->
-            <span style="display: inline-block; height: 30px; line-height: 30px"
-              >有康</span
-            >
-          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -129,11 +34,7 @@
 </template>
 
 <script setup name="Index">
-const version = ref('3.9.0')
-
-function goTarget(url) {
-  window.open(url, '__blank')
-}
+const version = ref('1.0.0')
 </script>
 
 <style scoped lang="scss">

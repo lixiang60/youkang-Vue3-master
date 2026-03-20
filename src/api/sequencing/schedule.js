@@ -51,3 +51,12 @@ export function exportSchedule(query) {
     params: query
   })
 }
+
+// 查询模板列表 (对接 SampleInfoController.md)
+export function listLayoutTemplate(data) {
+  return request({
+    url: '/order/sample/template/list',
+    method: 'post',
+    data: data
+  })
+}

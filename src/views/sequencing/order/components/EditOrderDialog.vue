@@ -102,7 +102,7 @@
           <el-form-item label="送样时间：">
              <!-- Screenshot: 送样时间，使用时间选择器、或带秒 -->
             <el-date-picker 
-               v-model="form.sampleDeliveryDate" 
+               v-model="form.createTime" 
                type="datetime" 
                placeholder="选择时间" 
                style="width: 100%" 
@@ -288,8 +288,9 @@ watch(() => props.modelValue, (val) => {
   if (val) {
     reset()
     if (props.orderRow && props.orderRow.orderId) {
-      console.log('EditOrderDialog Loading Data for ID:', props.orderRow.orderId)
+      console.log('EditOrderDialog Loading Data:', props.orderRow)
       getOrder(props.orderRow.orderId).then(response => {
+        console.log('EditOrderDialog Final response Data:', response)
         const data = response.data
         form.value = { ...form.value, ...data }
       })
@@ -311,7 +312,7 @@ function reset() {
     infoIncomplete: undefined,
     orderInfo: undefined,
     urgent: '0',
-    sampleDeliveryDate: undefined,
+    createTime: undefined,
     remark: undefined,
     belongCompanyId: undefined,
     belongCompany: undefined

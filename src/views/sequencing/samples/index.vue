@@ -533,7 +533,7 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/samples/export', {
+  proxy.download('order/sample/export', {
     ...queryParams.value
   }, `samples_${new Date().getTime()}.xlsx`)
 }

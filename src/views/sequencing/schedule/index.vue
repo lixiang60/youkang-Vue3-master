@@ -69,31 +69,27 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="生产编号" align="center" prop="productionNo" width="100" fixed sortable />
-      <el-table-column label="个数" align="center" prop="count" width="60" />
-      <el-table-column label="订单号" align="center" prop="orderNo" width="120" />
+      <el-table-column label="生产编号" align="center" prop="produceId" width="100" fixed sortable />
+      <el-table-column label="个数" align="center" prop="templateNumber" width="60" />
+      <el-table-column label="订单号" align="center" prop="orderId" width="120" />
       <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
       <el-table-column label="客户地址" align="center" prop="customerAddress" width="150" show-overflow-tooltip />
-      <el-table-column label="客户等级" align="center" prop="customerLevel" width="80" />
-      <el-table-column label="课题组" align="center" prop="researchGroup" width="100" show-overflow-tooltip />
-      <el-table-column label="样品编号" align="center" prop="sampleNo" width="100" />
-      <el-table-column label="测序引物" align="center" prop="sequencingPrimer" width="100" />
+      <el-table-column label="样品编号" align="center" prop="sampleId" width="100" />
+      <el-table-column label="测序引物" align="center" prop="primer" width="100" />
       <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
       <el-table-column label="样品类型" align="center" prop="sampleType" width="80" />
       <el-table-column label="抗生素类型" align="center" prop="antibioticType" width="100" />
-      <el-table-column label="载体名称" align="center" prop="vectorName" width="100" />
+      <el-table-column label="载体名称" align="center" prop="carrierName" width="100" />
       <el-table-column label="片段大小" align="center" prop="fragmentSize" width="80" />
-      <el-table-column label="是否测通" align="center" prop="isLiquid" width="80">
-        <template #default="scope">
-          <dict-tag :options="sys_yes_no" :value="scope.row.isLiquid" />
-        </template>
-      </el-table-column>
-      <el-table-column label="完成情况" align="center" prop="completionStatus" width="80" />
-      <el-table-column label="返回状态" align="center" prop="returnStatus" width="80" />
-      <el-table-column label="原孔号" align="center" prop="originalWellNo" width="80" />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-      <el-table-column label="流程名称" align="center" prop="processName" width="100" />
+      <el-table-column label="是否测通" align="center" prop="testResult" width="80" />
+      <el-table-column label="完成情况" align="center" prop="performance" width="80" />
+      <el-table-column label="返回状态" align="center" prop="returnState" width="80" />
       <el-table-column label="模板板号" align="center" prop="templatePlateNo" width="80" />
+      <el-table-column label="模板孔号" align="center" prop="templateHoleNo" width="80" />
+      <el-table-column label="原浓度" align="center" prop="originConcentration" width="80" />
+      <el-table-column label="流程名称" align="center" prop="flowName" width="100" />
+      <el-table-column label="创建人" align="center" prop="createUser" width="100" />
+      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
     </el-table>
 
     <!-- 分页 -->
@@ -142,7 +138,7 @@
 </template>
 
 <script setup name="Schedule">
-import { listSchedule, getSchedule, addSchedule, updateSchedule, delSchedule } from '@/api/sequencing/schedule'
+import { listLayoutTemplate } from '@/api/sequencing/schedule'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
@@ -162,8 +158,10 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    status: undefined
+    orderId: undefined,
+    sampleId: undefined,
+    customerName: undefined,
+    returnState: undefined
   },
   rules: {
     name: [
@@ -177,9 +175,9 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listSchedule(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+  listLayoutTemplate(queryParams.value).then(response => {
+    dataList.value = response.data ? response.data.rows : response.rows
+    total.value = response.data ? response.data.total : response.total
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -286,12 +284,6 @@ function handleLayoutStrategy() { proxy.$modal.msgInfo('功能开发中...') }
 function handleTemplateBDT() { proxy.$modal.msgInfo('功能开发中...') }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
 })
 </script>

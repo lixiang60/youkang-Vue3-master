@@ -51,3 +51,12 @@ export function exportProduction(query) {
     params: query
   })
 }
+
+// 查询模板生产列表 (对接 SampleInfoController.md)
+export function listProduceTemplate(data) {
+  return request({
+    url: '/order/sample/template/produce/list',
+    method: 'post',
+    data: data
+  })
+}
