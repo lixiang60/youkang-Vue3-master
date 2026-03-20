@@ -1,5 +1,7 @@
 <template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -16,7 +18,7 @@
         <el-button
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -61,30 +63,15 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
+    <dynamic-table
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
       v-loading="loading" 
       :data="dataList" 
+      :columns="columns"
+      :total="total"
       @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="id" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
-      <el-table-column label="订单号" align="center" prop="orderNo" width="120" />
-      <el-table-column label="安排时间" align="center" prop="arrangeTime" width="160" />
-      <el-table-column label="安排人" align="center" prop="arrangeBy" width="100" />
-      <el-table-column label="返还类型" align="center" prop="returnType" width="120" show-overflow-tooltip />
-      <el-table-column label="返还数量" align="center" prop="returnQuantity" width="80" />
-      <el-table-column label="生产编号范围" align="center" prop="productionNoRange" width="150" show-overflow-tooltip />
-      <el-table-column label="生产编号集" align="center" prop="productionNoSet" width="150" show-overflow-tooltip />
-      <el-table-column label="状态" align="center" prop="status" width="100" />
-      <el-table-column label="返还时间" align="center" prop="returnTime" width="160" />
-      <el-table-column label="返还人" align="center" prop="returnBy" width="100" />
-      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" show-overflow-tooltip />
-      <el-table-column label="生产公司" align="center" prop="productionCompany" width="120" show-overflow-tooltip />
-    </el-table>
+    />
 
     <!-- 分页 -->
     <pagination
@@ -146,6 +133,52 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: 'id', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { key: 'orderNo', label: '订单号', width: 160, visible: true },
+  { key: 'arrangeTime', label: '安排时间', width: 160, visible: true },
+  { key: 'arrangeBy', label: '安排人', width: 100, visible: true },
+  { key: 'returnType', label: '返还类型', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'returnQuantity', label: '返还数量', width: 80, visible: true },
+  { key: 'productionNoRange', label: '生产编号范围', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'productionNoSet', label: '生产编号集', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'status', label: '状态', width: 100, visible: true },
+  { key: 'returnTime', label: '返还时间', width: 160, visible: true },
+  { key: 'returnBy', label: '返还人', width: 100, visible: true },
+  { key: 'belongCompany', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'productionCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: true }
+])
+
+const cacheKey = 'sequencing_return_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
+// 检索配置
+const searchFields = ref([
+  { prop: 'orderNo', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' }
+])
+
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
+
 
 const data = reactive({
   form: {},

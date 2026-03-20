@@ -1,9 +1,11 @@
 <template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Plus"
@@ -12,7 +14,7 @@
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="primary"
           plain
           icon="Edit"
@@ -22,7 +24,7 @@
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="danger"
           plain
           icon="Delete"
@@ -32,21 +34,21 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Refresh"
           @click="handleRefresh"
         >刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="warning"
           plain
           icon="Download"
@@ -58,36 +60,15 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
+    <dynamic-table
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
       v-loading="loading" 
       :data="dataList" 
+      :columns="columns"
+      :total="total"
       @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="订单号" align="center" prop="orderId" width="120" fixed />
-      <el-table-column label="模板排版号" align="center" prop="templateNumber" width="120" fixed sortable />
-      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
-      <el-table-column label="客户地址" align="center" prop="customerAddress" width="150" show-overflow-tooltip />
-      <el-table-column label="样品编号" align="center" prop="sampleId" width="120" fixed />
-      <el-table-column label="样品类型" align="center" prop="sampleType" width="80" />
-      <el-table-column label="测序引物" align="center" prop="primer" width="100" />
-      <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
-      <el-table-column label="载体名称" align="center" prop="carrierName" width="100" />
-      <el-table-column label="抗生素类型" align="center" prop="antibioticType" width="100" />
-      <el-table-column label="片段大小" align="center" prop="fragmentSize" width="80" />
-      <el-table-column label="是否测通" align="center" prop="testResult" width="80" />
-      <el-table-column label="原浓度" align="center" prop="originConcentration" width="80" />
-      <el-table-column label="模板板号" align="center" prop="templatePlateNo" width="80" />
-      <el-table-column label="模板孔号" align="center" prop="templateHoleNo" width="80" />
-      <el-table-column label="完成情况" align="center" prop="performance" width="100" />
-      <el-table-column label="返回状态" align="center" prop="returnState" width="80" />
-      <el-table-column label="流程名称" align="center" prop="flowName" width="120" />
-      <el-table-column label="创建人" align="center" prop="createUser" width="100" />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-    </el-table>
+    />
 
     <!-- 分页 -->
     <pagination
@@ -148,6 +129,59 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
+  { key: 'templateNumber', label: '模板排版号', width: 120, fixed: true, sortable: true, visible: true },
+  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'sampleId', label: '样品编号', width: 120, fixed: true, visible: true },
+  { key: 'sampleType', label: '样品类型', width: 80, visible: true },
+  { key: 'primer', label: '测序引物', width: 100, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
+  { key: 'carrierName', label: '载体名称', width: 100, visible: true },
+  { key: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
+  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
+  { key: 'testResult', label: '是否测通', width: 80, visible: true },
+  { key: 'originConcentration', label: '原浓度', width: 80, visible: true },
+  { key: 'templatePlateNo', label: '模板板号', width: 80, visible: true },
+  { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
+  { key: 'performance', label: '完成情况', width: 100, visible: true },
+  { key: 'returnState', label: '返回状态', width: 80, visible: true },
+  { key: 'flowName', label: '流程名称', width: 120, visible: true },
+  { key: 'createUser', label: '创建人', width: 100, visible: true },
+  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
+])
+
+const cacheKey = 'sequencing_template_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
+// 检索配置
+const searchFields = ref([
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'sampleId', label: '样品编号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' }
+])
+
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
+
 
 const data = reactive({
   form: {},
@@ -277,3 +311,12 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style scoped>
+
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+
+</style>

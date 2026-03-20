@@ -1,9 +1,13 @@
 <template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Plus"
@@ -12,7 +16,7 @@
         >添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="primary"
           plain
           icon="Edit"
@@ -22,7 +26,7 @@
         >编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="danger"
           plain
           icon="Delete"
@@ -32,42 +36,42 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Search"
           @click="handleQuery"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Refresh"
           @click="handleRefresh"
         >刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Document"
           @click="handleSequencingOrder"
         >测序订单</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="DocumentCopy"
           @click="handleSequencingSample"
         >测序样品</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Files"
           @click="handleBatchAdd"
         >批量添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="warning"
           plain
           icon="Printer"
@@ -75,7 +79,7 @@
         >标签打印</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="info"
           plain
           icon="Operation"
@@ -83,21 +87,21 @@
         >内部操作表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="DataBoard"
           @click="handleDailyReport"
         >业务员日报表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Monitor"
           @click="handleOrderMonitor"
         >订单量监控</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Switch"
@@ -105,7 +109,7 @@
         >调拨</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="primary"
           plain
           icon="List"
@@ -113,7 +117,7 @@
         >基因测序单</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="danger"
           plain
           icon="CollectionTag"
@@ -121,7 +125,7 @@
         >模板标签</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="RefreshRight"
           @click="handleSyncYoukang"
@@ -131,7 +135,7 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table
+    <dynamic-table :header-cell-style="{ fontSize: '12px' }" size="small"
       :loading="loading"
       :data="dataList"
       :columns="columns"
@@ -193,6 +197,7 @@
 import { listOrder, getOrder, addOrder, updateOrder, delOrder } from '@/api/sequencing/order'
 import { listCustomerOption } from '@/api/common'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import ImageUpload from '@/components/ImageUpload/index.vue'
 import FileUpload from '@/components/FileUpload/index.vue'
 import BaseDialog from '@/components/BaseDialog/index.vue'
@@ -249,14 +254,55 @@ const columns = ref([
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
 ])
 
+// 显隐列缓存加载
+const cacheKey = 'sequencing_order_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) {
+        col.visible = cache[key]
+      }
+    })
+  } catch (e) {
+    console.warn('Failed to parse order columns cache:', e)
+  }
+}
+
+// 监听显隐列变化并缓存
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => {
+    const key = col.key || col.prop || col.type
+    if (key) {
+      cache[key] = col.visible
+    }
+  })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
 const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    status: undefined
+    orderId: undefined,
+    genNo: undefined,
+    createBy: undefined
   }
 })
+
+// 检索条件字段配置
+const searchFields = ref([
+  { prop: 'orderId', label: '订单编号', type: 'input' },
+  { prop: 'genNo', label: '基因编号', type: 'input' },
+  { prop: 'createBy', label: '创建人', type: 'input' }
+])
+
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
 
 
 
@@ -609,6 +655,12 @@ onMounted(() => {
 .editor-global-fix .ql-container {
   white-space: pre-wrap !important;
 }
+
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+
 </style>
 
 <style scoped>

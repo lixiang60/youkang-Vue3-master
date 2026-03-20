@@ -18,10 +18,12 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="Search" @click="toggleSearchPanel">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
+
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
@@ -81,46 +83,15 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
+    <dynamic-table
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
       v-loading="loading" 
       :data="dataList" 
+      :columns="columns"
+      :total="total"
       @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="状态" align="center" prop="status">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['sequencing:resend_email:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['sequencing:resend_email:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    />
 
     <!-- 分页 -->
     <pagination
@@ -182,6 +153,41 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '名称', width: 200, visible: true },
+  { key: 'status', label: '状态', width: 80, visible: true },
+  { key: 'createTime', label: '创建时间', width: 160, visible: true }
+])
+
+const cacheKey = 'sequencing_resend_email_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
+// 检索配置
+const searchFields = ref([
+  { prop: 'name', label: '名称', type: 'input' }
+])
+
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
+
 
 const data = reactive({
   form: {},

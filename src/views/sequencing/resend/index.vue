@@ -1,12 +1,14 @@
 <template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -43,38 +45,15 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
+    <dynamic-table
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
       v-loading="loading" 
       :data="dataList" 
+      :columns="columns"
+      :total="total"
       @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="生产编号" align="center" prop="productionNo" width="100" fixed sortable />
-      <el-table-column label="订单号" align="center" prop="orderNo" width="120" />
-      <el-table-column label="客户姓名" align="center" prop="customerName" width="100" />
-      <el-table-column label="客户地址" align="center" prop="customerAddress" width="150" show-overflow-tooltip />
-      <el-table-column label="客户等级" align="center" prop="customerLevel" width="80" />
-      <el-table-column label="课题组" align="center" prop="researchGroup" width="100" show-overflow-tooltip />
-      <el-table-column label="样品编号" align="center" prop="sampleNo" width="100" />
-      <el-table-column label="测序引物" align="center" prop="sequencingPrimer" width="100" />
-      <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
-      <el-table-column label="样品类型" align="center" prop="sampleType" width="80" />
-      <el-table-column label="载体名称" align="center" prop="vectorName" width="100" />
-      <el-table-column label="片段大小" align="center" prop="fragmentSize" width="80" />
-      <el-table-column label="是否测通" align="center" prop="isLiquid" width="80">
-        <template #default="scope">
-          <dict-tag :options="sys_yes_no" :value="scope.row.isLiquid" />
-        </template>
-      </el-table-column>
-      <el-table-column label="完成情况" align="center" prop="completionStatus" width="80" />
-      <el-table-column label="返回状态" align="center" prop="returnStatus" width="80" />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-      <el-table-column label="流程名称" align="center" prop="processName" width="100" />
-      <el-table-column label="板号" align="center" prop="plateNo" width="80" />
-    </el-table>
+    />
 
     <!-- 分页 -->
     <pagination
@@ -136,6 +115,52 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'productionNo', label: '生产编号', width: 100, fixed: true, sortable: true, visible: true },
+  { key: 'orderNo', label: '订单号', width: 160, visible: true },
+  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'customerLevel', label: '客户等级', width: 80, visible: true },
+  { key: 'researchGroup', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'sampleNo', label: '样品编号', width: 120, visible: true },
+  { key: 'sequencingPrimer', label: '测序引物', width: 100, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
+  { key: 'sampleType', label: '样品类型', width: 80, visible: true },
+  { key: 'vectorName', label: '载体名称', width: 100, visible: true },
+  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
+  { key: 'isLiquid', label: '是否测通', width: 80, visible: true },
+  { key: 'completionStatus', label: '完成情况', width: 80, visible: true }
+])
+
+const cacheKey = 'sequencing_resend_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
+// 检索配置
+const searchFields = ref([
+  { prop: 'orderNo', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' }
+])
+
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
+
 
 const data = reactive({
   form: {},

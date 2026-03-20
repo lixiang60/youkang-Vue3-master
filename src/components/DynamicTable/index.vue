@@ -1,5 +1,6 @@
 <template>
   <el-table
+    v-bind="$attrs"
     v-loading="loading"
     :data="data"
     :border="border"

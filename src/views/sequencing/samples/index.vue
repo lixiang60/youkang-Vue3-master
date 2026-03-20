@@ -1,9 +1,11 @@
 <template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="primary"
           plain
           icon="Edit"
@@ -13,7 +15,7 @@
         >编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="danger"
           plain
           icon="Delete"
@@ -23,35 +25,35 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Refresh"
           @click="handleRefresh"
         >刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="EditPen"
           @click="handleOriginalConcentration"
         >原浓度</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="CircleClose"
           @click="handleClearWellNo"
         >清除孔号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Delete"
@@ -59,7 +61,7 @@
         >清空浓度</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="warning"
           plain
           icon="DeleteFilled"
@@ -67,7 +69,7 @@
         >清空模板</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="danger"
           plain
           icon="DocumentDelete"
@@ -75,14 +77,14 @@
         >清空报告</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="DataLine"
           @click="handleWeeklyReport"
         >周报</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Promotion"
@@ -90,28 +92,28 @@
         >安排返还</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="ShoppingBag"
           @click="handleSelfProvidedPrimer"
         >自备引物</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="Box"
           @click="handleTemplateVolumeMonitor"
         >模板量监控</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="DocumentCopy"
           @click="handleBatchEdit"
         >批量编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="warning"
           plain
           icon="Key"
@@ -119,7 +121,7 @@
         >加测</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Link"
@@ -127,7 +129,7 @@
         >关联引物</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="warning"
           plain
           icon="Files"
@@ -135,7 +137,7 @@
         >加测模板</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="Timer"
@@ -143,7 +145,7 @@
         >补样标签</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="success"
           plain
           icon="CircleCheck"
@@ -151,7 +153,7 @@
         >重新启用</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           type="info"
           plain
           icon="Camera"
@@ -159,66 +161,59 @@
         >添加引物</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <el-button size="small"
           plain
           icon="List"
           @click="handleSampleInfo"
         >样品信息</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
-      v-loading="loading" 
-      :data="dataList" 
-      @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="订单号" align="center" prop="orderId" width="120" fixed />
-      <el-table-column label="历史订单" align="center" prop="orderHistory" width="120" />
-      <el-table-column label="样品编号" align="center" prop="sampleId" width="120" fixed />
-      <el-table-column label="样品类型" align="center" prop="sampleType" width="80" />
-      <el-table-column label="样品位置" align="center" prop="samplePosition" width="80" />
-      <el-table-column label="测序引物" align="center" prop="primer" width="100" />
-      <el-table-column label="引物类型" align="center" prop="primerType" width="80" />
-      <el-table-column label="引物位置" align="center" prop="primerPosition" width="80" />
-      <el-table-column label="引物浓度" align="center" prop="primerConcentration" width="80" />
-      <el-table-column label="序列" align="center" prop="seq" width="100" show-overflow-tooltip />
-      <el-table-column label="测序项目" align="center" prop="project" width="100" />
-      <el-table-column label="载体名称" align="center" prop="carrierName" width="100" />
-      <el-table-column label="抗生素类型" align="center" prop="antibioticType" width="100" />
-      <el-table-column label="质粒长度" align="center" prop="plasmidLength" width="80" />
-      <el-table-column label="片段大小" align="center" prop="fragmentSize" width="80" />
-      <el-table-column label="是否测通" align="center" prop="testResult" width="80" />
-      <el-table-column label="原浓度" align="center" prop="originConcentration" width="80" />
-      <el-table-column label="模板板号" align="center" prop="templatePlateNo" width="80" />
-      <el-table-column label="模板孔号" align="center" prop="templateHoleNo" width="80" />
-      <el-table-column label="完成情况" align="center" prop="performance" width="80" />
-      <el-table-column label="返回状态" align="center" prop="returnState" width="80" />
-      <el-table-column label="流程名称" align="center" prop="flowName" width="100" />
-      <el-table-column label="板号" align="center" prop="plateNo" width="80" />
-      <el-table-column label="孔号" align="center" prop="holeNo" width="80" />
-      <el-table-column label="所属公司" align="center" prop="belongCompany" width="120" />
-      <el-table-column label="生产公司" align="center" prop="produceCompany" width="120" />
-      <el-table-column label="孔号数量" align="center" prop="holeNumber" width="80" />
-      <el-table-column label="排版方式" align="center" prop="layout" width="80" />
-      <el-table-column label="创建人" align="center" prop="createUser" width="100" />
-      <el-table-column label="完成时间" align="center" prop="createTime" width="160" />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
+    <dynamic-table
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      v-loading="loading"
+      :data="dataList"
+      :columns="columns"
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
-    />
+      @selection-change="handleSelectionChange"
+    >
+      <template #expand="{ row }">
+        <div style="padding: 12px 24px; background: #fafafa;">
+          <el-descriptions :column="4" border size="small" title="样品详情" direction="horizontal">
+            <el-descriptions-item label="历史订单" label-align="right" align="center">{{ row.orderHistory }}</el-descriptions-item>
+            <el-descriptions-item label="样品位置" label-align="right" align="center">{{ row.samplePosition }}</el-descriptions-item>
+            <el-descriptions-item label="引物类型" label-align="right" align="center">{{ row.primerType }}</el-descriptions-item>
+            <el-descriptions-item label="引物位置" label-align="right" align="center">{{ row.primerPosition }}</el-descriptions-item>
+            <el-descriptions-item label="测序项目" label-align="right" align="center">{{ row.project }}</el-descriptions-item>
+            <el-descriptions-item label="抗生素类型" label-align="right" align="center">{{ row.antibioticType }}</el-descriptions-item>
+            <el-descriptions-item label="质粒长度" label-align="right" align="center">{{ row.plasmidLength }}</el-descriptions-item>
+            <el-descriptions-item label="片段大小" label-align="right" align="center">{{ row.fragmentSize }}</el-descriptions-item>
+            <el-descriptions-item label="原浓度" label-align="right" align="center">{{ row.originConcentration }}</el-descriptions-item>
+            <el-descriptions-item label="模板板号" label-align="right" align="center">{{ row.templatePlateNo }}</el-descriptions-item>
+            <el-descriptions-item label="模板孔号" label-align="right" align="center">{{ row.templateHoleNo }}</el-descriptions-item>
+            <el-descriptions-item label="流程名称" label-align="right" align="center">{{ row.flowName }}</el-descriptions-item>
+            <el-descriptions-item label="板号" label-align="right" align="center">{{ row.plateNo }}</el-descriptions-item>
+            <el-descriptions-item label="孔号" label-align="right" align="center">{{ row.holeNo }}</el-descriptions-item>
+            <el-descriptions-item label="所属公司" label-align="right" align="center">{{ row.belongCompany }}</el-descriptions-item>
+            <el-descriptions-item label="生产公司" label-align="right" align="center">{{ row.produceCompany }}</el-descriptions-item>
+            <el-descriptions-item label="孔号数量" label-align="right" align="center">{{ row.holeNumber }}</el-descriptions-item>
+            <el-descriptions-item label="排版方式" label-align="right" align="center">{{ row.layout }}</el-descriptions-item>
+            <el-descriptions-item label="创建人" label-align="right" align="center">{{ row.createUser }}</el-descriptions-item>
+            <el-descriptions-item label="完成时间" label-align="right" align="center">{{ row.createTime }}</el-descriptions-item>
+            <el-descriptions-item label="备注" label-align="right" align="center" :span="2">{{ row.remark }}</el-descriptions-item>
+            <el-descriptions-item label="序列" label-align="right" align="left" :span="2">
+              <div style="word-break: break-all; max-height: 80px; overflow-y: auto;">{{ row.seq }}</div>
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
+      </template>
+    </dynamic-table>
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
@@ -377,11 +372,97 @@
 
 <script setup name="Samples">
 import { listSamples, getSamples, addSamples, updateSamples, delSamples } from '@/api/sequencing/samples'
+import DynamicTable from '@/components/DynamicTable/index.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
 
 const dataList = ref([])
+const columns = ref([
+  { type: 'expand', slot: 'expand', width: 50, fixed: true, visible: true },
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
+  { key: 'orderHistory', label: '历史订单', width: 120, visible: true },
+  { key: 'sampleId', label: '样品编号', width: 120, fixed: true, visible: true },
+  { key: 'sampleType', label: '样品类型', width: 80, visible: true },
+  { key: 'samplePosition', label: '样品位置', width: 80, visible: true },
+  { key: 'primer', label: '测序引物', width: 100, visible: true },
+  { key: 'primerType', label: '引物类型', width: 80, visible: true },
+  { key: 'primerPosition', label: '引物位置', width: 80, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
+  { key: 'seq', label: '序列', width: 100, showOverflowTooltip: true, visible: true },
+  { key: 'project', label: '测序项目', width: 100, visible: true },
+  { key: 'carrierName', label: '载体名称', width: 100, visible: true },
+  { key: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
+  { key: 'plasmidLength', label: '质粒长度', width: 80, visible: true },
+  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
+  { key: 'testResult', label: '是否测通', width: 80, visible: true },
+  { key: 'originConcentration', label: '原浓度', width: 80, visible: true },
+  { key: 'templatePlateNo', label: '模板板号', width: 80, visible: true },
+  { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
+  { key: 'performance', label: '完成情况', width: 80, visible: true },
+  { key: 'returnState', label: '返回状态', width: 80, visible: true },
+  { key: 'flowName', label: '流程名称', width: 100, visible: true },
+  { key: 'plateNo', label: '板号', width: 80, visible: true },
+  { key: 'holeNo', label: '孔号', width: 80, visible: true },
+  { key: 'belongCompany', label: '所属公司', width: 120, visible: true },
+  { key: 'produceCompany', label: '生产公司', width: 120, visible: true },
+  { key: 'holeNumber', label: '孔号数量', width: 80, visible: true },
+  { key: 'layout', label: '排版方式', width: 80, visible: true },
+  { key: 'createUser', label: '创建人', width: 100, visible: true },
+  { key: 'createTime', label: '完成时间', width: 160, visible: true },
+  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
+])
+
+// 显隐列缓存加载
+const cacheKey = 'sequencing_samples_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) {
+        col.visible = cache[key]
+      }
+    })
+  } catch (e) {
+    console.warn('Failed to parse columns cache:', e)
+  }
+}
+
+// 监听显隐列变化并缓存
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => {
+    const key = col.key || col.prop || col.type
+    if (key) {
+      cache[key] = col.visible
+    }
+  })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
+// 检索条件字段配置
+const searchFields = ref([
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'sampleId', label: '样品编号', type: 'input' },
+  { 
+    prop: 'sampleType', 
+    label: '样品类型', 
+    type: 'select', 
+    options: [
+      { label: '菌液', value: '菌液' },
+      { label: '质粒', value: '质粒' },
+      { label: 'PCR产物', value: 'PCR产物' }
+    ] 
+  },
+  { prop: 'primer', label: '测序引物', type: 'input' },
+  { prop: 'primerType', label: '引物类型', type: 'input' },
+  { prop: 'project', label: '测序项目', type: 'input' },
+  { prop: 'plateNo', label: '板号', type: 'input' }
+])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -487,6 +568,11 @@ function handleAdd() {
   title.value = '添加测序样品'
 }
 
+// 暂位方法或者是事件定义
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
+
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
@@ -561,3 +647,14 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style scoped>
+:deep(.el-table--small .el-table__header-wrapper th) {
+  padding: 4px 0 !important;
+}
+:deep(.el-table--small .cell) {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+  font-size: 12px;
+}
+</style>

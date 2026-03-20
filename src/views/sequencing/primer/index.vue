@@ -1,5 +1,7 @@
 <template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -26,7 +28,7 @@
         <el-button
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,41 +65,15 @@
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
+    <dynamic-table
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
       v-loading="loading" 
       :data="dataList" 
+      :columns="columns"
+      :total="total"
       @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="primer_id" align="center" prop="id" width="100" fixed sortable />
-      <el-table-column label="引物名称" align="center" prop="name" width="120" fixed />
-      <el-table-column label="引物类别" align="center" prop="type" width="80" />
-      <el-table-column label="课题组id" align="center" prop="researchGroupId" width="80" />
-      <el-table-column label="课题组" align="center" prop="researchGroupName" width="100" show-overflow-tooltip />
-      <el-table-column label="客户id" align="center" prop="customerId" width="80" />
-      <el-table-column label="客户名" align="center" prop="customerName" width="100" show-overflow-tooltip />
-      <el-table-column label="板号" align="center" prop="plateNo" width="80" />
-      <el-table-column label="孔号" align="center" prop="wellNo" width="80" />
-      <el-table-column label="排版方式" align="center" prop="layoutType" width="100" />
-      <el-table-column label="状态" align="center" prop="status" width="80">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="添加时间" align="center" prop="createTime" width="160">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="添加人" align="center" prop="createBy" width="100" />
-      <el-table-column label="排版时间" align="center" prop="layoutTime" width="160" />
-      <el-table-column label="排版人" align="center" prop="layoutBy" width="100" />
-      <el-table-column label="清板时间" align="center" prop="clearTime" width="160" />
-      <el-table-column label="清板人" align="center" prop="clearBy" width="100" />
-    </el-table>
+    />
 
     <!-- 分页 -->
     <pagination
@@ -165,6 +141,53 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: 'primer_id', width: 100, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '引物名称', width: 120, fixed: true, visible: true },
+  { key: 'type', label: '引物类别', width: 80, visible: true },
+  { key: 'researchGroupId', label: '课题组id', width: 80, visible: false },
+  { key: 'researchGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'customerId', label: '客户id', width: 80, visible: false },
+  { key: 'customerName', label: '客户名', width: 100, showOverflowTooltip: true, visible: true },
+  { key: 'plateNo', label: '板号', width: 80, visible: true },
+  { key: 'wellNo', label: '孔号', width: 80, visible: true },
+  { key: 'layoutType', label: '排版方式', width: 100, visible: true },
+  { key: 'status', label: '状态', width: 80, visible: true },
+  { key: 'createTime', label: '添加时间', width: 160, visible: true },
+  { key: 'createBy', label: '添加人', width: 100, visible: true },
+  { key: 'layoutBy', label: '排版人', width: 100, visible: true },
+  { key: 'clearBy', label: '清板人', width: 100, visible: true }
+])
+
+const cacheKey = 'sequencing_primer_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
+// 检索配置
+const searchFields = ref([
+  { prop: 'name', label: '引物名称', type: 'input' },
+  { prop: 'customerName', label: '客户名', type: 'input' }
+])
+
+function toggleSearchPanel() {
+  proxy.$refs['searchRef']?.toggleCollapse()
+}
+
 
 const data = reactive({
   form: {},
