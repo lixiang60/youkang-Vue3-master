@@ -122,6 +122,7 @@ import { listLayoutTemplate } from '@/api/sequencing/schedule'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
 
@@ -186,7 +187,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

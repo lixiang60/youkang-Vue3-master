@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
-
-    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
-
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -39,7 +36,7 @@
         <el-button size="small"
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -148,6 +145,17 @@
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime) }}</span>
       </template>
+          <template #expand="{ row }">
+        <el-descriptions :column="3" border size="small" style="margin: 8px 30px;">
+          <el-descriptions-item label="客户地址">{{ row.customerAddress }}</el-descriptions-item>
+          <el-descriptions-item label="课题组ID">{{ row.groupId }}</el-descriptions-item>
+          <el-descriptions-item label="是否同步">{{ row.isAsync === 0 ? '同步康为' : '不同步' }}</el-descriptions-item>
+          <el-descriptions-item label="所属公司">{{ row.belongCompany }}</el-descriptions-item>
+          <el-descriptions-item label="生产公司">{{ row.produceCompany }}</el-descriptions-item>
+          <el-descriptions-item label="创建者">{{ row.createBy }}</el-descriptions-item>
+          <el-descriptions-item label="备注">{{ row.remark || '无' }}</el-descriptions-item>
+        </el-descriptions>
+      </template>
     </dynamic-table>
 
     <!-- 添加对话框 -->
@@ -212,6 +220,7 @@ import EditOrderDialog from './components/EditOrderDialog.vue'
 import { QuillEditor } from "@vueup/vue-quill"
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
 
@@ -236,6 +245,7 @@ const total = ref(0)
 const title = ref('')
 
 const columns = ref([
+  { type: 'expand', slot: 'expand', width: 50, fixed: true, visible: true },
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'orderId', label: '订单编号', width: 150, fixed: true, sortable: true, visible: true },
   { key: 'customerId', label: '客户ID', width: 80, visible: true },
@@ -289,19 +299,27 @@ const data = reactive({
     pageSize: 10,
     orderId: undefined,
     genNo: undefined,
-    createBy: undefined
+    createBy: undefined,
+    customerId: undefined
   }
 })
 
 // 检索条件字段配置
-const searchFields = ref([
+const searchFields = computed(() => [
   { prop: 'orderId', label: '订单编号', type: 'input' },
-  { prop: 'genNo', label: '基因编号', type: 'input' },
-  { prop: 'createBy', label: '创建人', type: 'input' }
+  { 
+    prop: 'customerId', 
+    label: '客户姓名', 
+    type: 'select', 
+    options: customerOptions.value.map(c => ({
+      label: c.customerName || c.name, 
+      value: c.id || c.customerId
+    }))
+  }
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

@@ -127,6 +127,7 @@ import { listProduceTemplate } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
@@ -191,7 +192,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

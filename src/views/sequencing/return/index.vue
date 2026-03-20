@@ -121,6 +121,7 @@
 <script setup name="Return">
 import { listReturn, getReturn, addReturn, updateReturn, delReturn } from '@/api/sequencing/return'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
@@ -176,7 +177,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

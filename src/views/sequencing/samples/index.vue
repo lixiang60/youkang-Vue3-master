@@ -375,6 +375,7 @@ import { listSamples, getSamples, addSamples, updateSamples, delSamples } from '
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
 
@@ -570,7 +571,7 @@ function handleAdd() {
 
 // 暂位方法或者是事件定义
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 /** 修改按钮操作 */

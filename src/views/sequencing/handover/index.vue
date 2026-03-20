@@ -50,7 +50,7 @@
         <el-button
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -123,6 +123,7 @@
 <script setup name="Handover">
 import { listHandover, getHandover, addHandover, updateHandover, delHandover } from '@/api/sequencing/handover'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
@@ -174,7 +175,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

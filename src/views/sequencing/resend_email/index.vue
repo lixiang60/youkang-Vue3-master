@@ -60,7 +60,7 @@
         <el-button
           plain
           icon="Search"
-          @click="handleQuery"
+          @click="toggleSearchPanel"
         >查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -141,6 +141,7 @@
 <script setup name="Resend_email">
 import { listResend_email, getResend_email, addResend_email, updateResend_email, delResend_email } from '@/api/sequencing/resend_email'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
@@ -185,7 +186,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

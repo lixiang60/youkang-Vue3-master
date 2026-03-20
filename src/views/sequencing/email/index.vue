@@ -95,6 +95,7 @@
 <script setup name="Email">
 import { listEmail, getEmail, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
 
@@ -155,7 +156,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

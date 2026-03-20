@@ -117,6 +117,7 @@
 <script setup name="Template">
 import { listTemplate, getTemplate, addTemplate, updateTemplate, delTemplate } from '@/api/sequencing/template'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
@@ -179,7 +180,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 

@@ -129,6 +129,7 @@
 <script setup name="Primer">
 import { listPrimer, getPrimer, addPrimer, updatePrimer, delPrimer } from '@/api/sequencing/primer'
 
+const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
@@ -185,7 +186,7 @@ const searchFields = ref([
 ])
 
 function toggleSearchPanel() {
-  proxy.$refs['searchRef']?.toggleCollapse()
+  searchRef.value?.toggleCollapse()
 }
 
 
