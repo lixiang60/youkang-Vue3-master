@@ -182,38 +182,7 @@
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
       @selection-change="handleSelectionChange"
-    >
-      <template #expand="{ row }">
-        <div style="padding: 12px 24px; background: #fafafa;">
-          <el-descriptions :column="4" border size="small" title="样品详情" direction="horizontal">
-            <el-descriptions-item label="历史订单" label-align="right" align="center">{{ row.orderHistory }}</el-descriptions-item>
-            <el-descriptions-item label="样品位置" label-align="right" align="center">{{ row.samplePosition }}</el-descriptions-item>
-            <el-descriptions-item label="引物类型" label-align="right" align="center">{{ row.primerType }}</el-descriptions-item>
-            <el-descriptions-item label="引物位置" label-align="right" align="center">{{ row.primerPosition }}</el-descriptions-item>
-            <el-descriptions-item label="测序项目" label-align="right" align="center">{{ row.project }}</el-descriptions-item>
-            <el-descriptions-item label="抗生素类型" label-align="right" align="center">{{ row.antibioticType }}</el-descriptions-item>
-            <el-descriptions-item label="质粒长度" label-align="right" align="center">{{ row.plasmidLength }}</el-descriptions-item>
-            <el-descriptions-item label="片段大小" label-align="right" align="center">{{ row.fragmentSize }}</el-descriptions-item>
-            <el-descriptions-item label="原浓度" label-align="right" align="center">{{ row.originConcentration }}</el-descriptions-item>
-            <el-descriptions-item label="模板板号" label-align="right" align="center">{{ row.templatePlateNo }}</el-descriptions-item>
-            <el-descriptions-item label="模板孔号" label-align="right" align="center">{{ row.templateHoleNo }}</el-descriptions-item>
-            <el-descriptions-item label="流程名称" label-align="right" align="center">{{ row.flowName }}</el-descriptions-item>
-            <el-descriptions-item label="板号" label-align="right" align="center">{{ row.plateNo }}</el-descriptions-item>
-            <el-descriptions-item label="孔号" label-align="right" align="center">{{ row.holeNo }}</el-descriptions-item>
-            <el-descriptions-item label="所属公司" label-align="right" align="center">{{ row.belongCompany }}</el-descriptions-item>
-            <el-descriptions-item label="生产公司" label-align="right" align="center">{{ row.produceCompany }}</el-descriptions-item>
-            <el-descriptions-item label="孔号数量" label-align="right" align="center">{{ row.holeNumber }}</el-descriptions-item>
-            <el-descriptions-item label="排版方式" label-align="right" align="center">{{ row.layout }}</el-descriptions-item>
-            <el-descriptions-item label="创建人" label-align="right" align="center">{{ row.createUser }}</el-descriptions-item>
-            <el-descriptions-item label="完成时间" label-align="right" align="center">{{ row.createTime }}</el-descriptions-item>
-            <el-descriptions-item label="备注" label-align="right" align="center" :span="2">{{ row.remark }}</el-descriptions-item>
-            <el-descriptions-item label="序列" label-align="right" align="left" :span="2">
-              <div style="word-break: break-all; max-height: 80px; overflow-y: auto;">{{ row.seq }}</div>
-            </el-descriptions-item>
-          </el-descriptions>
-        </div>
-      </template>
-    </dynamic-table>
+    />
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
@@ -381,7 +350,6 @@ const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', '
 
 const dataList = ref([])
 const columns = ref([
-  { type: 'expand', slot: 'expand', width: 50, fixed: true, visible: true },
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
   { key: 'orderHistory', label: '历史订单', width: 120, visible: true },

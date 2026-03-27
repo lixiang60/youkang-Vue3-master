@@ -145,18 +145,7 @@
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime) }}</span>
       </template>
-          <template #expand="{ row }">
-        <el-descriptions :column="3" border size="small" style="margin: 8px 30px;">
-          <el-descriptions-item label="客户地址">{{ row.customerAddress }}</el-descriptions-item>
-          <el-descriptions-item label="课题组ID">{{ row.groupId }}</el-descriptions-item>
-          <el-descriptions-item label="是否同步">{{ row.isAsync === 0 ? '同步康为' : '不同步' }}</el-descriptions-item>
-          <el-descriptions-item label="所属公司">{{ row.belongCompany }}</el-descriptions-item>
-          <el-descriptions-item label="生产公司">{{ row.produceCompany }}</el-descriptions-item>
-          <el-descriptions-item label="创建者">{{ row.createBy }}</el-descriptions-item>
-          <el-descriptions-item label="备注">{{ row.remark || '无' }}</el-descriptions-item>
-        </el-descriptions>
-      </template>
-    </dynamic-table>
+        </dynamic-table>
 
     <!-- 添加对话框 -->
     <order-dialog
@@ -245,7 +234,6 @@ const total = ref(0)
 const title = ref('')
 
 const columns = ref([
-  { type: 'expand', slot: 'expand', width: 50, fixed: true, visible: true },
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'orderId', label: '订单编号', width: 150, fixed: true, sortable: true, visible: true },
   { key: 'customerId', label: '客户ID', width: 80, visible: true },

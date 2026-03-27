@@ -66,6 +66,9 @@
 
     <!-- 数据表格 -->
     <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="getList"
       size="small"
       :header-cell-style="{ fontSize: '12px' }"
       v-loading="loading" 
@@ -75,14 +78,7 @@
       @selection-change="handleSelectionChange"
     />
 
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+    
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="600px" append-to-body>

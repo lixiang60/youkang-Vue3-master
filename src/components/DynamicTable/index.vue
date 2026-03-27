@@ -5,6 +5,7 @@
     :data="data"
     :border="border"
     :stripe="stripe"
+    :height="height"
     style="width: 100%"
     @selection-change="handleSelectionChange"
     @select="handleSelect"
@@ -76,6 +77,10 @@ const props = defineProps({
   limit: {
     type: Number,
     default: 10
+  },
+  height: {
+    type: [String, Number],
+    default: '600px'
   }
 })
 

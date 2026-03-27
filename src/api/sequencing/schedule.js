@@ -60,3 +60,29 @@ export function listLayoutTemplate(data) {
     data: data
   })
 }
+// 添加模板板号和孔号
+export function updateTemplateNo(data) {
+  return request({
+    url: '/order/sample/template/updateTemplateNo',
+    method: 'post',
+    data: data
+  })
+}
+
+// 排版忽略
+export function ignoreTemp(data) {
+  return request({
+    url: '/order/sample/template/ignoreTemp',
+    method: 'get',
+    data: data
+  })
+}
+
+// 模板BDT
+export function templateBDT(data) {
+  return request({
+    url: '/order/sample/template/templateBDT',
+    method: 'post',
+    data: data
+  })
+}
