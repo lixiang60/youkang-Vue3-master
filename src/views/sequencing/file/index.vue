@@ -5,39 +5,107 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Delete" @click="handleDelete" :disabled="multiple">删除</el-button>
+        <el-button
+          plain
+          icon="Search"
+          size="small"
+          @click="toggleSearchPanel"
+        >查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button
+          plain
+          icon="Refresh"
+          size="small"
+          @click="handleRefresh"
+        >刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button
+          type="success"
+          plain
+          icon="Plus"
+          size="small"
+          @click="handleAdd"
+          v-hasPermi="['sequencing:file:add']"
+        >新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="Message" @click="handleSendEmail" :disabled="multiple">邮件发送</el-button>
+        <el-button
+          type="primary"
+          plain
+          icon="Edit"
+          size="small"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['sequencing:file:edit']"
+        >修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="CircleClose" @click="handleIgnoreEmail" :disabled="multiple">邮件忽略</el-button>
+        <el-button
+          type="warning"
+          plain
+          icon="Download"
+          size="small"
+          @click="handleExport"
+          v-hasPermi="['sequencing:file:export']"
+        >导出</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Position" @click="handleTemplateReturn" :disabled="multiple">邮件模板回发</el-button>
+        <el-button
+          type="danger"
+          plain
+          icon="Delete"
+          size="small"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['sequencing:file:remove']"
+        >删除</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
+    <dynamic-table 
+      v-model:page="queryParams.pageNum" 
+      v-model:limit="queryParams.pageSize" 
+      @pagination="getList"
+      size="small" 
+      :header-cell-style="{ fontSize: '12px' }" 
+      v-loading="loading" 
+      :data="dataList" 
+      :columns="columns"
+      :total="total" 
+      @selection-change="handleSelectionChange" 
+    />
 
-    <!-- 邮件发送备注对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <!-- 添加或修改对话框 -->
+    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="well-form">
-        <div class="form-row border-top border-bottom">
-          <div class="form-label">操作备注：</div>
+        <div class="form-row border-top">
+          <div class="form-label">名称：</div>
+          <div class="form-content">
+            <el-form-item prop="name" label-width="0">
+              <el-input v-model="form.name" placeholder="请输入名称" />
+            </el-form-item>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">状态：</div>
+          <div class="form-content">
+            <el-form-item prop="status" label-width="0">
+              <el-radio-group v-model="form.status">
+                <el-radio label="0">正常</el-radio>
+                <el-radio label="1">停用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+        </div>
+        <div class="form-row border-bottom">
+          <div class="form-label">备注：</div>
           <div class="form-content">
             <el-form-item prop="remark" label-width="0">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入操作备注" />
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
             </el-form-item>
           </div>
         </div>
@@ -52,8 +120,8 @@
   </div>
 </template>
 
-<script setup name="Email">
-import { listEmail, getEmail, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
+<script setup name="File">
+import { listFile, getFile, addFile, updateFile, delFile } from '@/api/sequencing/file'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -70,17 +138,13 @@ const total = ref(0)
 const title = ref('')
 const searchRef = ref(null)
 
-// 列配置 (参考通用测序字段)
+// 列配置
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'email', label: '邮箱地址', width: 180, visible: true },
-  { key: 'sampleId', label: '样品编号', width: 120, visible: true },
-  { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'sendState', label: '发送状态', width: 100, visible: true },
-  { key: 'sendTime', label: '发送时间', width: 160, visible: true },
+  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '名称', visible: true },
+  { key: 'status', label: '状态', visible: true },
+  { key: 'createTime', label: '创建时间', width: 180, visible: true },
   { key: 'remark', label: '备注', showOverflowTooltip: true, visible: true }
 ])
 
@@ -91,7 +155,7 @@ const searchFields = ref([
 ])
 
 // 列可见性缓存
-const cacheKey = 'sequencing_email_columns_visible'
+const cacheKey = 'sequencing_file_columns_visible'
 const savedColumns = localStorage.getItem(cacheKey)
 if (savedColumns) {
   try {
@@ -128,7 +192,7 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listEmail(queryParams.value).then(response => {
+  listFile(queryParams.value).then(response => {
     dataList.value = response.rows
     total.value = response.total
     loading.value = false
@@ -181,17 +245,17 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加报告邮件'
+  title.value = '添加测序文件'
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
-  getEmail(id).then(response => {
+  getFile(id).then(response => {
     form.value = response.data
     open.value = true
-    title.value = '修改报告邮件'
+    title.value = '修改测序文件'
   })
 }
 
@@ -200,13 +264,13 @@ function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value.id !== undefined) {
-        updateEmail(form.value).then(response => {
+        updateFile(form.value).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addEmail(form.value).then(response => {
+        addFile(form.value).then(response => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -220,7 +284,7 @@ function submitForm() {
 function handleDelete(row) {
   const idList = row.id || ids.value
   proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delEmail(idList)
+    return delFile(idList)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -229,9 +293,9 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/email/export', {
+  proxy.download('sequencing/file/export', {
     ...queryParams.value
-  }, `email_${new Date().getTime()}.xlsx`)
+  }, `file_${new Date().getTime()}.xlsx`)
 }
 
 onMounted(() => {

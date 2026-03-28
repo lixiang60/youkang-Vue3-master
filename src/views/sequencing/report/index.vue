@@ -5,22 +5,28 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Delete" @click="handleDelete" :disabled="multiple">删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="Message" @click="handleSendEmail" :disabled="multiple">邮件发送</el-button>
+        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus">报告状态</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="CircleClose" @click="handleIgnoreEmail" :disabled="multiple">邮件忽略</el-button>
+        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleTestHole">测试孔号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Position" @click="handleTemplateReturn" :disabled="multiple">邮件模板回发</el-button>
+        <el-button size="small" type="info" plain icon="Document" @click="handleBdt">DBT</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="primary" plain icon="Plus" @click="handleCapillary">毛细管添加</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="info" plain icon="Monitor" @click="handleOrderMonitor">订单监控</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" plain icon="Picture" @click="handleImageSettings">图像设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
@@ -30,14 +36,14 @@
       size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
       :total="total" @selection-change="handleSelectionChange" />
 
-    <!-- 邮件发送备注对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <!-- 添加或修改对话框 -->
+    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="well-form">
         <div class="form-row border-top border-bottom">
-          <div class="form-label">操作备注：</div>
+          <div class="form-label">备注：</div>
           <div class="form-content">
             <el-form-item prop="remark" label-width="0">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入操作备注" />
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
             </el-form-item>
           </div>
         </div>
@@ -52,8 +58,8 @@
   </div>
 </template>
 
-<script setup name="Email">
-import { listEmail, getEmail, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
+<script setup name="Report">
+import { listReport, getReport, addReport, updateReport, delReport } from '@/api/sequencing/report'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -70,18 +76,31 @@ const total = ref(0)
 const title = ref('')
 const searchRef = ref(null)
 
-// 列配置 (参考通用测序字段)
+// 列配置
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, visible: true },
+  { key: 'produceId', label: '生产编号', width: 120, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
+  { key: 'orderType', label: '订单类型', width: 100, visible: true },
   { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'email', label: '邮箱地址', width: 180, visible: true },
+  { key: 'customerAddress', label: '客户地址', width: 180, showOverflowTooltip: true, visible: true },
+  { key: 'customerLevel', label: '客户等级', width: 100, visible: true },
+  { key: 'topic', label: '课题组', width: 120, visible: true },
+  { key: 'originHoleNo', label: '样品对应号', width: 100, visible: true },
   { key: 'sampleId', label: '样品编号', width: 120, visible: true },
   { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'sendState', label: '发送状态', width: 100, visible: true },
-  { key: 'sendTime', label: '发送时间', width: 160, visible: true },
-  { key: 'remark', label: '备注', showOverflowTooltip: true, visible: true }
+  { key: 'primerConcentration', label: '引物浓度', width: 100, visible: true },
+  { key: 'sampleType', label: '样品类型', width: 100, visible: true },
+  { key: 'carrierName', label: '载体名称', width: 120, visible: true },
+  { key: 'fragmentSize', label: '片段大小', width: 100, visible: true },
+  { key: 'isFullLength', label: '是否测透', width: 100, visible: true },
+  { key: 'originConcentration', label: '原浓度', width: 100, visible: true },
+  { key: 'completionStatus', label: '完成情况', width: 100, visible: true },
+  { key: 'returnState', label: '返回状态', width: 100, visible: true },
+  { key: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'flowName', label: '流程名称', width: 100, visible: true },
+  { key: 'plateNo', label: '板号', width: 100, visible: true },
+  { key: 'holeNo', label: '孔号', width: 80, visible: true }
 ])
 
 // 检索配置
@@ -91,7 +110,7 @@ const searchFields = ref([
 ])
 
 // 列可见性缓存
-const cacheKey = 'sequencing_email_columns_visible'
+const cacheKey = 'sequencing_report_columns_visible'
 const savedColumns = localStorage.getItem(cacheKey)
 if (savedColumns) {
   try {
@@ -128,7 +147,7 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listEmail(queryParams.value).then(response => {
+  listReport(queryParams.value).then(response => {
     dataList.value = response.rows
     total.value = response.total
     loading.value = false
@@ -181,17 +200,17 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加报告邮件'
+  title.value = '添加报告生产'
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
-  getEmail(id).then(response => {
+  getReport(id).then(response => {
     form.value = response.data
     open.value = true
-    title.value = '修改报告邮件'
+    title.value = '修改报告生产'
   })
 }
 
@@ -200,13 +219,13 @@ function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value.id !== undefined) {
-        updateEmail(form.value).then(response => {
+        updateReport(form.value).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addEmail(form.value).then(response => {
+        addReport(form.value).then(response => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -220,7 +239,7 @@ function submitForm() {
 function handleDelete(row) {
   const idList = row.id || ids.value
   proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delEmail(idList)
+    return delReport(idList)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -229,9 +248,9 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/email/export', {
+  proxy.download('sequencing/report/export', {
     ...queryParams.value
-  }, `email_${new Date().getTime()}.xlsx`)
+  }, `report_${new Date().getTime()}.xlsx`)
 }
 
 onMounted(() => {

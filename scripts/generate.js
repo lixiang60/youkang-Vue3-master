@@ -100,13 +100,32 @@ function getPageTemplate(moduleName, pageName, chineseName) {
   
   return `<template>
   <div class="app-container">
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
+
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="Search"
+          size="small"
+          @click="toggleSearchPanel"
+        >查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          plain
+          icon="Refresh"
+          size="small"
+          @click="handleRefresh"
+        >刷新</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
           plain
           icon="Plus"
+          size="small"
           @click="handleAdd"
           v-hasPermi="['${moduleName}:${pageName}:add']"
         >新增</el-button>
@@ -116,6 +135,7 @@ function getPageTemplate(moduleName, pageName, chineseName) {
           type="primary"
           plain
           icon="Edit"
+          size="small"
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['${moduleName}:${pageName}:edit']"
@@ -123,116 +143,72 @@ function getPageTemplate(moduleName, pageName, chineseName) {
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="warning"
+          plain
+          icon="Download"
+          size="small"
+          @click="handleExport"
+          v-hasPermi="['${moduleName}:${pageName}:export']"
+        >导出</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="danger"
           plain
           icon="Delete"
+          size="small"
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['${moduleName}:${pageName}:remove']"
         >删除</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Search"
-          @click="handleQuery"
-        >查询</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['${moduleName}:${pageName}:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
+    <dynamic-table 
+      v-model:page="queryParams.pageNum" 
+      v-model:limit="queryParams.pageSize" 
+      @pagination="getList"
+      size="small" 
+      :header-cell-style="{ fontSize: '12px' }" 
       v-loading="loading" 
       :data="dataList" 
-      @selection-change="handleSelectionChange"
-      border
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="ID" align="center" prop="id" width="80" fixed sortable />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="状态" align="center" prop="status">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['${moduleName}:${pageName}:edit']"
-          >修改</el-button>
-          <el-button
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['${moduleName}:${pageName}:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
+      :columns="columns"
+      :total="total" 
+      @selection-change="handleSelectionChange" 
     />
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" prop="name">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="well-form">
+        <div class="form-row border-top">
+          <div class="form-label">名称：</div>
+          <div class="form-content">
+            <el-form-item prop="name" label-width="0">
               <el-input v-model="form.name" placeholder="请输入名称" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态" prop="status">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">状态：</div>
+          <div class="form-content">
+            <el-form-item prop="status" label-width="0">
               <el-radio-group v-model="form.status">
                 <el-radio label="0">正常</el-radio>
                 <el-radio label="1">停用</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
+          </div>
+        </div>
+        <div class="form-row border-bottom">
+          <div class="form-label">备注：</div>
+          <div class="form-content">
+            <el-form-item prop="remark" label-width="0">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
             </el-form-item>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -246,9 +222,10 @@ function getPageTemplate(moduleName, pageName, chineseName) {
 
 <script setup name="${PageName}">
 import { list${PageName}, get${PageName}, add${PageName}, update${PageName}, del${PageName} } from '@/api/${moduleName}/${pageName}'
+import DynamicTable from '@/components/DynamicTable/index.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
 const dataList = ref([])
 const open = ref(false)
@@ -259,6 +236,41 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+const searchRef = ref(null)
+
+// 列配置
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '名称', visible: true },
+  { key: 'status', label: '状态', visible: true },
+  { key: 'createTime', label: '创建时间', width: 180, visible: true },
+  { key: 'remark', label: '备注', showOverflowTooltip: true, visible: true }
+])
+
+// 检索配置
+const searchFields = ref([
+  { prop: 'name', label: '名称', type: 'input' },
+  { prop: 'status', label: '状态', type: 'select', options: [{ label: '正常', value: '0' }, { label: '停用', value: '1' }] }
+])
+
+// 列可见性缓存
+const cacheKey = '${moduleName}_${pageName}_columns_visible'
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) { }
+}
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
 
 const data = reactive({
   form: {},
@@ -287,6 +299,10 @@ function getList() {
   }).catch(() => {
     loading.value = false
   })
+}
+
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
 }
 
 /** 取消按钮 */
@@ -386,6 +402,53 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+
+.well-form {
+  border: 1px solid #dcdfe6;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.form-label {
+  width: 120px;
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  font-size: 13px;
+  border-right: 1px solid #ebeef5;
+  background-color: #f8f9fa;
+}
+
+.form-content {
+  flex: 1;
+  padding: 10px 15px;
+}
+
+.border-top {
+  border-top: 1px solid #ebeef5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.well-form .el-form-item) {
+  margin-bottom: 0px;
+}
+</style>
 `
 }
 
@@ -567,24 +630,22 @@ async function generatePage(moduleName, pageName, chineseName) {
     const apiFile = path.join(apiDir, `${pageName}.js`)
     fs.writeFileSync(apiFile, getApiTemplate(moduleName, pageName, chineseName))
 
-    // 3. 创建路由配置说明文件
-    // const routeFile = path.join(viewDir, 'route-config.js')
-    // fs.writeFileSync(routeFile, getRouteTemplate(moduleName, pageName, chineseName))
-
+    // 3. 页面权限与路径说明
     console.log('\n✅ 页面生成成功!')
     console.log('')
     console.log('📁 创建的文件:')
     console.log(`   ✓ 页面: src/views/${moduleName}/${pageName}/index.vue`)
     console.log(`   ✓ API: src/api/${moduleName}/${pageName}.js`)
-    console.log(`   ✓ 路由配置: src/views/${moduleName}/${pageName}/route-config.js`)
     console.log('')
-    console.log('📝 下一步操作:')
-    console.log('   1. 打开 src/router/index.js')
-    console.log('   2. 将 route-config.js 中的路由配置添加到 dynamicRoutes 数组')
-    console.log('   3. 根据实际需求修改页面和API')
+    console.log('📝 后台菜单注册引导:')
+    console.log('   1. 进入 [系统管理] -> [菜单管理]')
+    console.log('   2. 新增菜单，填写以下关键信息:')
+    console.log(`      - 菜单名称: ${chineseName}`)
+    console.log(`      - 路由地址: ${pageName}`)
+    console.log(`      - 组件路径: ${moduleName}/${pageName}/index`)
+    console.log(`      - 权限标识: ${moduleName}:${pageName}:list`)
     console.log('')
-    console.log('💡 权限标识:')
-    console.log(`   - 查看: ${moduleName}:${pageName}:list`)
+    console.log('💡 更多权限标识:')
     console.log(`   - 新增: ${moduleName}:${pageName}:add`)
     console.log(`   - 修改: ${moduleName}:${pageName}:edit`)
     console.log(`   - 删除: ${moduleName}:${pageName}:remove`)
