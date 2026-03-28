@@ -73,7 +73,7 @@ export function updateTemplateNo(data) {
 export function ignoreTemp(data) {
   return request({
     url: '/order/sample/template/ignoreTemp',
-    method: 'get',
+    method: 'post',
     data: data
   })
 }

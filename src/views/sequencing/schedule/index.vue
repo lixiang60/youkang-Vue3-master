@@ -5,77 +5,39 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Search"
-          @click="toggleSearchPanel"
-        >查询</el-button>
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['sequencing:schedule:export']"
-        >导出</el-button>
+        <el-button size="small" type="success" plain icon="Download" @click="handleExport"
+          v-hasPermi="['sequencing:schedule:export']">导出</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="DocumentAdd"
-          @click="handleAddPlateNo"
-        >添加板号</el-button>
+        <el-button size="small" plain icon="DocumentAdd" @click="handleAddPlateNo">添加板号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          type="warning"
-          plain
-          icon="CirclePlus"
-          @click="handleAddWellNo"
-        >添加孔号</el-button>
+        <el-button size="small" type="warning" plain icon="CirclePlus" @click="handleAddWellNo">添加孔号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="Notebook"
-          @click="handleLayoutStrategy"
-        >排版忽略</el-button>
+        <el-button size="small" type="success" plain icon="Notebook" @click="handleLayoutStrategy">排版忽略</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          type="info"
-          plain
-          icon="Printer"
-          @click="handleTemplateBDT"
-        >模板BDT</el-button>
+        <el-button size="small" type="info" plain icon="Printer" @click="handleTemplateBDT">模板BDT</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="primary" plain icon="EditPen" @click="handleOriginConcentration">原浓度</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-      size="small"
-      :header-cell-style="{ fontSize: '12px' }"
-      v-loading="loading" 
-      :data="dataList" 
-      :columns="columns"
-      :total="total"
-      @selection-change="handleSelectionChange"
-    />
+    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
+      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
+      :total="total" @selection-change="handleSelectionChange" />
 
-    
+
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
@@ -114,24 +76,30 @@
     <!-- 步骤1：确认生产编号对话框 (仿制用户截图样式) -->
     <el-dialog title="模板版号设置-样品备注" v-model="openConfirmPlate" width="800px" append-to-body>
       <div style="border: 1px solid #dcdfe6; border-radius: 4px;">
-        <div style="background: #f5f7fa; padding: 10px; border-bottom: 1px solid #dcdfe6; font-weight: bold; font-size: 14px; display: flex; align-items: center;">
-          <el-icon style="margin-right: 5px; color: #409EFF;"><List /></el-icon> 数据列表
+        <div
+          style="background: #f5f7fa; padding: 10px; border-bottom: 1px solid #dcdfe6; font-weight: bold; font-size: 14px; display: flex; align-items: center;">
+          <el-icon style="margin-right: 5px; color: #409EFF;">
+            <List />
+          </el-icon> 数据列表
         </div>
         <el-table :data="selectedRows" stripe border size="small" style="width: 100%" height="400">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column prop="produceId" label="生产编号" header-align="center" align="left" />
-          <el-table-column prop="remark" label="备注" header-align="center" align="left" min-width="200" show-overflow-tooltip />
+          <el-table-column prop="remark" label="备注" header-align="center" align="left" min-width="200"
+            show-overflow-tooltip />
         </el-table>
-        <div style="background: #f5f7fa; padding: 5px 15px; border-top: 1px solid #dcdfe6; font-size: 12px; color: #606266; text-align: right;">
-          共 1 页 >> 100 <<  1 - {{ selectedRows.length }}  共 {{ selectedRows.length }} 条
+        <div
+          style="background: #f5f7fa; padding: 5px 15px; border-top: 1px solid #dcdfe6; font-size: 12px; color: #606266; text-align: right;">
+          共 1 页 >> 100 << 1 - {{ selectedRows.length }} 共 {{ selectedRows.length }} 条 </div>
         </div>
-      </div>
-      <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-          <el-button type="success" icon="Check" @click="proceedToPlateConfig" style="width: 100px; border-radius: 20px;"> 确 定 </el-button>
-          <el-button type="info" icon="Close" @click="openConfirmPlate = false" style="width: 100px; border-radius: 20px;"> 取 消 </el-button>
-        </div>
-      </template>
+        <template #footer>
+          <div style="display: flex; justify-content: center; gap: 20px;">
+            <el-button type="success" icon="Check" @click="proceedToPlateConfig"
+              style="width: 100px; border-radius: 20px;"> 确 定 </el-button>
+            <el-button type="info" icon="Close" @click="openConfirmPlate = false"
+              style="width: 100px; border-radius: 20px;"> 取 消 </el-button>
+          </div>
+        </template>
     </el-dialog>
 
     <!-- 步骤2：添加板号对话框 (采用与添加孔号一致的高级样式) -->
@@ -249,7 +217,8 @@
         <div class="form-row border-top">
           <div class="form-label">生产编号：</div>
           <div class="form-content">
-            <span style="color: #f56c6c; font-weight: bold;">选中数量：{{ selectedRows.length }}，选中标示：{{ selectedProduceIds.join(',') }}</span>
+            <span style="color: #f56c6c; font-weight: bold;">选中数量：{{ selectedRows.length }}，选中标示：{{
+              selectedProduceIds.join(',') }}</span>
           </div>
         </div>
         <div class="form-row border-bottom">
@@ -261,8 +230,10 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer" style="display: flex; justify-content: center; gap: 20px;">
-          <el-button type="success" icon="Check" @click="submitIgnoreForm" style="width: 100px; border-radius: 20px;"> 确 定 </el-button>
-          <el-button type="info" icon="Close" @click="openIgnore = false" style="width: 100px; border-radius: 20px;"> 取 消 </el-button>
+          <el-button type="success" icon="Check" @click="submitIgnoreForm" style="width: 100px; border-radius: 20px;"> 确
+            定 </el-button>
+          <el-button type="info" icon="Close" @click="openIgnore = false" style="width: 100px; border-radius: 20px;"> 取
+            消 </el-button>
         </div>
       </template>
     </el-dialog>
@@ -279,8 +250,98 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer" style="display: flex; justify-content: center; gap: 20px;">
-          <el-button type="success" icon="Check" @click="submitBDTForm" style="width: 100px; border-radius: 20px;"> 确 定 </el-button>
-          <el-button type="info" icon="Close" @click="openBDT = false" style="width: 100px; border-radius: 20px;"> 取 消 </el-button>
+          <el-button type="success" icon="Check" @click="submitBDTForm" style="width: 100px; border-radius: 20px;"> 确 定
+          </el-button>
+          <el-button type="info" icon="Close" @click="openBDT = false" style="width: 100px; border-radius: 20px;"> 取 消
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 设置原浓度对话框 (仿制截图样式) -->
+    <el-dialog title="设置原浓度" v-model="openConc" width="750px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center;">
+          <el-icon style="margin-right: 8px; color: #409EFF;">
+            <EditPen />
+          </el-icon>
+          <span>设置原浓度</span>
+        </div>
+      </template>
+      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="120px" class="well-form">
+        <!-- 生产编号展示 -->
+        <div class="form-row border-top">
+          <div class="form-label">生产编号：</div>
+          <div class="form-content">
+            <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">{{ selectedRows.length
+                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+          </div>
+        </div>
+        <!-- 原浓度输入 -->
+        <div class="form-row">
+          <div class="form-label">原浓度：</div>
+          <div class="form-content">
+            <el-form-item prop="originConcentration" label-width="0">
+              <el-select v-model="concForm.originConcentration" placeholder="请选择或输入原浓度" filterable allow-create
+                style="width: 250px">
+                <el-option label="0.3" value="0.3" />
+                <el-option label="0.5" value="0.5" />
+                <el-option label="0.7" value="0.7" />
+                <el-option label="1.0" value="1.0" />
+                <el-option label="1.5" value="1.5" />
+                <el-option label="2.0" value="2.0" />
+                <el-option label="3.0" value="3.0" />
+                <el-option label="5.0" value="5.0" />
+              </el-select>
+              <el-icon style="margin-left: 10px; color: #F56C6C; font-size: 18px; vertical-align: middle;">
+                <Warning />
+              </el-icon>
+            </el-form-item>
+          </div>
+        </div>
+        <!-- 机器类型 -->
+        <div class="form-row">
+          <div class="form-label">机器类型：</div>
+          <div class="form-content">
+            <el-radio-group v-model="concForm.machineType">
+              <el-radio label="192">192</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <!-- 排版方式 -->
+        <div class="form-row">
+          <div class="form-label">排版方式：</div>
+          <div class="form-content">
+            <el-radio-group v-model="concForm.templateStype">
+              <el-radio label="横排">横排</el-radio>
+              <el-radio label="竖排">竖排</el-radio>
+              <el-radio label="机器竖排">机器竖排</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <!-- 板号 -->
+        <div class="form-row">
+          <div class="form-label">板号：</div>
+          <div class="form-content">
+            <el-form-item prop="templatePlateNo" label-width="0">
+              <el-input v-model="concForm.templatePlateNo" placeholder="请输入板号" style="width: 250px" />
+            </el-form-item>
+          </div>
+        </div>
+        <!-- 备注 -->
+        <div class="form-row border-bottom" style="height: 150px;">
+          <div class="form-label" style="height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px;">
+            <el-input v-model="concForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" style="height: 100%;" />
+          </div>
+        </div>
+      </el-form>
+      <template #footer>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+          <el-button type="success" icon="Check" @click="submitConcForm" style="width: 100px; border-radius: 20px;"> 确 定
+          </el-button>
+          <el-button type="danger" icon="Close" @click="openConc = false" style="width: 100px; border-radius: 20px;"> 取
+            消 </el-button>
         </div>
       </template>
     </el-dialog>
@@ -289,6 +350,7 @@
 
 <script setup name="Schedule">
 import { listLayoutTemplate } from '@/api/sequencing/schedule'
+import { updateProduceOriginConcentration } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -311,7 +373,15 @@ const openPlate = ref(false)
 const openWell = ref(false)
 const openIgnore = ref(false)
 const openBDT = ref(false)
+const openConc = ref(false)
 const selectedRows = ref([])
+const concForm = reactive({
+  originConcentration: '',
+  machineType: '192',
+  templateStype: '横排',
+  templatePlateNo: '',
+  remark: ''
+})
 const plateForm = reactive({
   templatePlateNo: '',
   templateHoleNo: 'A1',
@@ -349,6 +419,10 @@ const wellRules = {
   templateHoleNo: [{ required: true, message: '请输入孔号', trigger: 'blur' }]
 }
 
+const concRules = {
+  originConcentration: [{ required: true, message: '请输入或选择原浓度', trigger: 'change' }]
+}
+
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'produceId', label: '生产编号', width: 100, fixed: true, sortable: true, visible: true },
@@ -383,7 +457,7 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) {}
+  } catch (e) { }
 }
 watch(columns, (newVal) => {
   const cache = {}
@@ -514,12 +588,12 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
     return delSchedule(idList)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 /** 导出按钮操作 */
@@ -558,7 +632,7 @@ function submitPlateForm() {
         templateInfo: selectedRows.value.map(item => ({
           orderId: item.orderId,
           sampleId: item.sampleId,
-          id: item.id
+          produceId: item.produceId
         })),
         templateStype: plateForm.templateStype,
         templatePlateNo: plateForm.templatePlateNo,
@@ -597,7 +671,7 @@ function submitWellForm() {
         templateInfo: selectedRows.value.map(item => ({
           orderId: item.orderId,
           sampleId: item.sampleId,
-          id: item.id
+          produceId: item.produceId
         })),
         templateStype: wellForm.templateStype,
         templatePlateNo: wellForm.templatePlateNo,
@@ -628,7 +702,7 @@ function submitIgnoreForm() {
     templateInfo: selectedRows.value.map(item => ({
       orderId: item.orderId,
       sampleId: item.sampleId,
-      id: item.id
+      produceId: item.produceId
     })),
     remark: ignoreForm.remark
   }
@@ -657,13 +731,46 @@ function submitBDTForm() {
   })
 }
 
+/** 原浓度按钮操作 */
+function handleOriginConcentration() {
+  if (multiple.value) {
+    proxy.$modal.msgWarning('请先勾选需要操作的样品')
+    return
+  }
+  concForm.originConcentration = ''
+  concForm.machineType = '192'
+  concForm.templateStype = '横排'
+  concForm.templatePlateNo = ''
+  concForm.remark = ''
+  openConc.value = true
+}
+
+/** 提交原浓度表单 */
+function submitConcForm() {
+  proxy.$refs['concFormRef'].validate(valid => {
+    if (valid) {
+      const data = {
+        produceIdList: selectedProduceIds.value,
+        originConcentration: concForm.originConcentration,
+        templateStype: concForm.templateStype,
+        plateNo: concForm.templatePlateNo,
+        remark: concForm.remark
+      }
+      updateProduceOriginConcentration(data).then(response => {
+        proxy.$modal.msgSuccess('设置成功')
+        openConc.value = false
+        getList()
+      })
+    }
+  })
+}
+
 onMounted(() => {
   getList()
 })
 </script>
 
 <style scoped>
-
 :deep(.el-table .el-table__header-wrapper th) {
   font-size: 12px !important;
   color: #606266 !important;
@@ -681,12 +788,12 @@ onMounted(() => {
 
 .form-label {
   width: 120px;
-  background-color: #f5f7fa;
+  /* background-color: #f5f7fa; */
   padding: 10px;
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   font-weight: bold;
   font-size: 13px;
   border-right: 1px solid #ebeef5;
@@ -708,5 +815,4 @@ onMounted(() => {
 :deep(.well-form .el-form-item) {
   margin-bottom: 0px;
 }
-
 </style>
