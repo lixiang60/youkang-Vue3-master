@@ -20,53 +20,54 @@
       </el-col>
       <el-col :span="1.5">
         <el-button size="small"
-          type="success"
-          plain
-          icon="Upload"
-          @click="handleImport"
-          v-hasPermi="['sequencing:production:import']"
-        >导入</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['sequencing:production:export']"
-        >导出</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Setting"
-          @click="handleSetDefault"
-        >设为默认</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Money"
-          @click="handleSetPrice"
-        >设置价格</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
           type="primary"
           plain
-          icon="Edit"
-          @click="handleBatchEdit"
-        >批量编辑</el-button>
+          icon="EditPen"
+          @click="handleOriginConcentration"
+          :disabled="multiple"
+        >原浓度</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small"
+          type="success"
+          plain
+          icon="Finished"
+          @click="handleTemplateStatus"
+          :disabled="multiple"
+        >模板状态</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small"
+          type="danger"
+          plain
+          icon="RefreshLeft"
+          @click="handleSendBack"
+          :disabled="multiple"
+        >退回</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small"
           type="info"
           plain
-          icon="InfoFilled"
-          @click="handleSampleInfo"
-        >样品信息</el-button>
+          icon="Histogram"
+          @click="handlePcrGelCut"
+        >PCR切胶</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <el-col :span="1.5">
+        <el-button size="small"
+          plain
+          icon="List"
+          @click="handleResampleList"
+        >重抽操作表</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small"
+          plain
+          icon="Camera"
+          @click="showSearch = !showSearch"
+        >图像设置</el-button>
+      </el-col>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
@@ -115,11 +116,76 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 设置模板状态对话框 -->
+    <el-dialog title="设置模板状态" v-model="statusOpen" width="450px" append-to-body>
+      <el-form :model="statusForm" label-width="80px">
+        <el-form-item label="返回状态">
+          <el-select v-model="statusForm.returnState" placeholder="请选择" style="width: 100%">
+            <el-option label="模板成功" value="模板成功" />
+            <el-option label="模板失败" value="模板失败" />
+            <el-option label="模板重抽" value="模板重抽" />
+            <el-option label="模板重切" value="模板重切" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="statusForm.remark" type="textarea" placeholder="请输入备注" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitStatus">确 定</el-button>
+          <el-button @click="statusOpen = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 设置原浓度对话框 -->
+    <el-dialog title="设置原浓度" v-model="concOpen" width="500px" append-to-body>
+      <el-form :model="concForm" label-width="100px">
+        <el-form-item label="原浓度">
+          <el-input v-model="concForm.originConcentration" placeholder="请输入原浓度" />
+        </el-form-item>
+        <el-form-item label="排版方式">
+          <el-radio-group v-model="concForm.templateStype">
+            <el-radio label="横排">横排</el-radio>
+            <el-radio label="竖排">竖排</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="板号">
+          <el-input v-model="concForm.plateNo" placeholder="请输入板号 (有值则流转到反应生产)" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="concForm.remark" type="textarea" placeholder="请输入备注" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitConc">确 定</el-button>
+          <el-button @click="concOpen = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 退回备注对话框 -->
+    <el-dialog title="模板生产退回" v-model="sendBackOpen" width="450px" append-to-body>
+      <el-form :model="sendBackForm" label-width="80px">
+        <el-form-item label="备注">
+          <el-input v-model="sendBackForm.remark" type="textarea" placeholder="请输入退回原因" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitSendBack">确 定</el-button>
+          <el-button @click="sendBackOpen = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Production">
-import { listProduceTemplate } from '@/api/sequencing/production'
+import { listProduceTemplate, updateProduceTempStatus, updateProduceOriginConcentration, sendBackProduce } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -139,10 +205,13 @@ const title = ref('')
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', width: 100, fixed: true, sortable: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { key: 'produceId', label: '生产编号', width: 120, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
+  { key: 'customerName', label: '客户姓名', width: 100, fixed: true, visible: true },
   { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'customerLevel', label: '客户等级', width: 80, visible: true },
+  { key: 'groupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'samplePosition', label: '样品对应号', width: 100, visible: true },
   { key: 'sampleId', label: '样品编号', width: 120, visible: true },
   { key: 'primer', label: '测序引物', width: 100, visible: true },
   { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
@@ -153,13 +222,7 @@ const columns = ref([
   { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
   { key: 'returnState', label: '返回状态', width: 80, visible: true },
   { key: 'originHoleNo', label: '原孔号', width: 80, visible: true },
-  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
-  { key: 'testResult', label: '是否测通', width: 80, visible: true },
-  { key: 'originConcentration', label: '原浓度', width: 80, visible: true },
-  { key: 'performance', label: '完成情况', width: 80, visible: true },
-  { key: 'flowName', label: '流程名称', width: 100, visible: true },
-  { key: 'createUser', label: '创建人', width: 100, visible: true },
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
+  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
 const cacheKey = 'sequencing_production_columns_visible'
@@ -256,7 +319,7 @@ function handleRefresh() {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
+  ids.value = selection.map(item => item.produceId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
@@ -318,12 +381,76 @@ function handleExport() {
   }, `production_${new Date().getTime()}.xlsx`)
 }
 
-// 占位方法
-function handleImport() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSetDefault() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSetPrice() { proxy.$modal.msgInfo('功能开发中...') }
-function handleBatchEdit() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSampleInfo() { proxy.$modal.msgInfo('功能开发中...') }
+// 业务逻辑方法
+function handleOriginConcentration() {
+  if (ids.value.length === 0) return
+  concForm.value = {
+    produceIdList: ids.value,
+    originConcentration: undefined,
+    templateStype: '横排',
+    plateNo: undefined,
+    remark: undefined
+  }
+  concOpen.value = true
+}
+
+function submitConc() {
+  updateProduceOriginConcentration(concForm.value).then(() => {
+    proxy.$modal.msgSuccess('设置成功')
+    concOpen.value = false
+    getList()
+  })
+}
+
+function handleTemplateStatus() {
+  if (ids.value.length === 0) return
+  statusForm.value = {
+    produceIdList: ids.value,
+    returnState: '模板成功',
+    remark: undefined
+  }
+  statusOpen.value = true
+}
+
+function submitStatus() {
+  updateProduceTempStatus(statusForm.value).then(() => {
+    proxy.$modal.msgSuccess('设置成功')
+    statusOpen.value = false
+    getList()
+  })
+}
+
+function handleSendBack() {
+  if (ids.value.length === 0) return
+  sendBackForm.value = {
+    produceIdList: ids.value,
+    remark: undefined
+  }
+  sendBackOpen.value = true
+}
+
+function submitSendBack() {
+  sendBackProduce(sendBackForm.value).then(() => {
+    proxy.$modal.msgSuccess('退回成功')
+    sendBackOpen.value = false
+    getList()
+  })
+}
+
+function handlePcrGelCut() {
+  proxy.$modal.msgInfo('功能开发中...')
+}
+
+function handleResampleList() {
+  proxy.$modal.msgInfo('功能开发中...')
+}
+
+const statusOpen = ref(false)
+const statusForm = ref({})
+const concOpen = ref(false)
+const concForm = ref({})
+const sendBackOpen = ref(false)
+const sendBackForm = ref({})
 
 onMounted(() => {
   getList()

@@ -10,9 +10,9 @@ export function listSamples(data) {
 }
 
 // 获取样品详情
-export function getSamples(sampleId) {
+export function getSamples(produceId) {
   return request({
-    url: '/order/sample/' + sampleId,
+    url: '/order/sample/' + produceId,
     method: 'get'
   })
 }
@@ -36,9 +36,9 @@ export function updateSamples(data) {
 }
 
 // 批量删除样品
-export function delSamples(sampleIds) {
+export function delSamples(produceIds) {
   return request({
-    url: '/order/sample/' + sampleIds.toString(),
+    url: '/order/sample/' + produceIds.toString(),
     method: 'delete'
   })
 }

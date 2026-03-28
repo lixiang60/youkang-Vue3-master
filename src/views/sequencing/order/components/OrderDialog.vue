@@ -119,6 +119,28 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row :gutter="20" v-if="form.sampleInfoList && form.sampleInfoList.length > 0">
+        <el-col :span="24">
+          <el-form-item label="样品列表：">
+            <div style="margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between;">
+              <span class="text-info">共解析出 {{ form.sampleInfoList.length }} 条样品数据</span>
+              <el-button type="danger" link @click="form.sampleInfoList = []">清空列表</el-button>
+            </div>
+            <el-table :data="form.sampleInfoList" border size="small" style="width: 100%" max-height="300">
+               <el-table-column prop="sampleId" label="样品编号" width="150" show-overflow-tooltip />
+               <el-table-column prop="sampleType" label="样品类型" width="100" />
+               <el-table-column prop="primer" label="引物" width="150" show-overflow-tooltip />
+               <el-table-column prop="project" label="项目" width="150" show-overflow-tooltip />
+               <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+               <el-table-column label="操作" width="80" fixed="right">
+                 <template #default="scope">
+                   <el-button type="danger" link icon="Delete" @click="form.sampleInfoList.splice(scope.$index, 1)"></el-button>
+                 </template>
+               </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="测序模板附件：" prop="sequencingTemplateAttachment">
@@ -292,7 +314,7 @@ watch(() => form.value.templateContent, (v) => {
   }
   if (parseTimer.value) clearTimeout(parseTimer.value)
   parseTimer.value = setTimeout(() => {
-    // autoParseTemplate() 
+     autoParseTemplate() 
   }, 500)
 }, { immediate: true })
 
@@ -378,7 +400,7 @@ function autoParseTemplate(rawContent) {
       '是否返还': 'returnState', '退回状态': 'returnState',
       '返还类型': 'returnType', '样品备注': 'remark', '备注': 'remark',
       '样品位置': 'samplePosition', '引物位置': 'primerPosition',
-      '序列': 'seq', '项目号': 'project', '测序项目': 'project', '质粒长度': 'plasmidLength',
+      '序列': 'seq', '项目号': 'project', '测序项目': 'project', '项目': 'project', '质粒长度': 'plasmidLength',
       '原浓度': 'originConcentration', '模板板号': 'templatePlateNo', 
       '模板孔号': 'templateHoleNo', '完成状态': 'performance', '完成情况': 'performance',
       '流程名称': 'flowName', '板号': 'plateNo',
@@ -409,6 +431,32 @@ function autoParseTemplate(rawContent) {
          })
          if (hasData) data.push(item)
        }
+    } else {
+      // Plain text / TSV fallback
+      const text = div.innerText.trim()
+      const rows = text.split('\n').map(r => r.trim()).filter(r => r)
+      if (rows.length < 1) return
+      
+      const firstRowParts = rows[0].split('\t').map(h => h.trim())
+      const getKey = (header) => headerMap[header] || header
+      let validKeys = firstRowParts.map(getKey)
+
+      const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
+      
+      let startRow = 1
+      if (knownKeysCount === 0) {
+         validKeys = defaultKeys
+         startRow = 0
+      }
+
+      for (let i = startRow; i < rows.length; i++) {
+         const cells = rows[i].split('\t')
+         const item = {}
+         validKeys.forEach((key, index) => {
+            if (key && index < cells.length) item[key] = cells[index]?.trim()
+         })
+         data.push(item)
+      }
     }
     if (data.length > 0) {
        form.value.sampleInfoList = data

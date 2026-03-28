@@ -1,19 +1,22 @@
 ---
 trigger: always_on
-glob: "**/*.{js,vue}"
 description: 后端接口文档与源码路径规则
 ---
 
 # 📖 后端接口研发指南
 
 ## 1. 接口文档目录
+
 本项目后端接口文档通过软连接关联在当前前端项目目录：
-- **静态路径**：`doc/AI-doc`
-- **实际指向**：`/root/www/youkang/youkang-backend/docs/AI-doc`
+
+- **静态路径**：`doc/API-订单管理接口文档.md`
+- **实际指向**：`/root/www/youkang/youkang-backend/docs/API-订单管理接口文档.md`
 - **使用建议**：在开发新功能或对接口存在疑问时，优先查阅此目录。
 
 ## 2. 后端源码参考 (Java)
+
 当接口文档描述不明确、缺失或需追查底层逻辑时，可直接参考后端源码：
+
 - **仓库根路径**：`/root/www/youkang/youkang-backend`
 - **模块主路径**：`/root/www/youkang/youkang-backend/youkang-admin/src/main/java/com/youkang`
 - **检索贴士**：

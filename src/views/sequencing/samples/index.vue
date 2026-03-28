@@ -5,184 +5,83 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small"
-          type="primary"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['sequencing:samples:edit']"
-        >编辑</el-button>
+        <el-button size="small" type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['sequencing:samples:remove']"
-        >删除</el-button>
+        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple"
+          @click="handleDelete">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Search"
-          @click="toggleSearchPanel"
-        >查询</el-button>
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="EditPen"
-          @click="handleOriginalConcentration"
-        >原浓度</el-button>
+        <el-button size="small" type="primary" plain icon="EditPen" @click="handleOriginalConcentration">原浓度</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="CircleClose"
-          @click="handleClearWellNo"
-        >清除孔号</el-button>
+        <el-button size="small" type="primary" plain icon="DocumentCopy" @click="handleBatchEdit">批量编辑</el-button>
       </el-col>
+
+      <!-- 批量清理下拉 -->
       <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="Delete"
-          @click="handleClearConcentration"
-        >清空浓度</el-button>
+        <el-dropdown trigger="click">
+          <el-button size="small" type="danger" plain icon="Brush">数据清理<el-icon
+              class="el-icon--right"><arrow-down /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item icon="CircleClose" @click="handleClearWellNo">清除孔号</el-dropdown-item>
+              <el-dropdown-item icon="Delete" @click="handleClearConcentration">清空浓度</el-dropdown-item>
+              <el-dropdown-item icon="DeleteFilled" @click="handleClearTemplate">清空模板</el-dropdown-item>
+              <el-dropdown-item icon="DocumentDelete" @click="handleClearReport">清空报告</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-col>
+
+      <!-- 流程操作下拉 -->
       <el-col :span="1.5">
-        <el-button size="small"
-          type="warning"
-          plain
-          icon="DeleteFilled"
-          @click="handleClearTemplate"
-        >清空模板</el-button>
+        <el-dropdown trigger="click">
+          <el-button size="small" type="success" plain icon="Operation">流程操作<el-icon
+              class="el-icon--right"><arrow-down /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item icon="Promotion" @click="handleArrangeReturn">安排返还</el-dropdown-item>
+              <el-dropdown-item icon="ShoppingBag" @click="handleSelfProvidedPrimer">自备引物</el-dropdown-item>
+              <el-dropdown-item icon="Link" @click="handleLinkPrimer">关联引物</el-dropdown-item>
+              <el-dropdown-item icon="Key" @click="handleAddTest">加测</el-dropdown-item>
+              <el-dropdown-item icon="CopyDocument" @click="handleAddTestTemplate">加测模板</el-dropdown-item>
+              <el-dropdown-item icon="PriceTag" @click="handleSupplementLabel">补样标签</el-dropdown-item>
+              <el-dropdown-item icon="CircleCheck" @click="handleReEnable">重新启用</el-dropdown-item>
+              <el-dropdown-item icon="Plus" @click="handleAddPrimer">添加引物</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-col>
+
+      <!-- 报表/监控下拉 -->
       <el-col :span="1.5">
-        <el-button size="small"
-          type="danger"
-          plain
-          icon="DocumentDelete"
-          @click="handleClearReport"
-        >清空报告</el-button>
+        <el-dropdown trigger="click">
+          <el-button size="small" type="info" plain icon="Monitor">统计/监控<el-icon
+              class="el-icon--right"><arrow-down /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item icon="DataLine" @click="handleWeeklyReport">周报</el-dropdown-item>
+              <el-dropdown-item icon="Box" @click="handleTemplateVolumeMonitor">模板量监控</el-dropdown-item>
+              <el-dropdown-item icon="Tickets" @click="handleSampleInfo">样品信息</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="DataLine"
-          @click="handleWeeklyReport"
-        >周报</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="Promotion"
-          @click="handleArrangeReturn"
-        >安排返还</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="ShoppingBag"
-          @click="handleSelfProvidedPrimer"
-        >自备引物</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="Box"
-          @click="handleTemplateVolumeMonitor"
-        >模板量监控</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="DocumentCopy"
-          @click="handleBatchEdit"
-        >批量编辑</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="warning"
-          plain
-          icon="Key"
-          @click="handleAddTest"
-        >加测</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="Link"
-          @click="handleLinkPrimer"
-        >关联引物</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="warning"
-          plain
-          icon="Files"
-          @click="handleAddTestTemplate"
-        >加测模板</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="Timer"
-          @click="handleSupplementLabel"
-        >补样标签</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="success"
-          plain
-          icon="CircleCheck"
-          @click="handleReEnable"
-        >重新启用</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          type="info"
-          plain
-          icon="Camera"
-          @click="handleAddPrimer"
-        >添加引物</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small"
-          plain
-          icon="List"
-          @click="handleSampleInfo"
-        >样品信息</el-button>
-      </el-col>
+
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table
-      size="small"
-      :header-cell-style="{ fontSize: '12px' }"
-      v-loading="loading"
-      :data="dataList"
-      :columns="columns"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-      @selection-change="handleSelectionChange"
-    />
+    <dynamic-table size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList"
+      :columns="columns" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
+      @pagination="getList" @selection-change="handleSelectionChange" />
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
@@ -194,60 +93,54 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="客户ID：" prop="customerId">
-              <el-input v-model="form.customerId" placeholder="请输入客户ID" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
             <el-form-item label="客户姓名：" prop="customerName">
               <el-input v-model="form.customerName" placeholder="请输入客户姓名" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="客户地址：" prop="customerAddress">
               <el-input v-model="form.customerAddress" placeholder="请输入客户地址" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="客户等级：" prop="customerLevel">
               <el-input v-model="form.customerLevel" placeholder="请输入客户等级" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="试测：" prop="trial">
               <el-input v-model="form.trial" placeholder="请输入" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="加急：" prop="urgent">
               <el-input v-model="form.urgent" placeholder="请输入" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
+
           <el-col :span="12">
             <el-form-item label="样品编号：" prop="sampleId">
               <el-input v-model="form.sampleId" placeholder="请输入样品编号" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="测序引物：" prop="primer">
               <el-input v-model="form.primer" placeholder="请输入测序引物" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="引物浓度：" prop="primerConcentration">
               <el-input v-model="form.primerConcentration" placeholder="请输入引物浓度" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="样品类型：" prop="sampleType">
               <el-select v-model="form.sampleType" placeholder="请选择" style="width: 100%">
@@ -257,6 +150,8 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="抗生素类型：" prop="antibioticType">
               <el-select v-model="form.antibioticType" placeholder="请选择" style="width: 100%">
@@ -265,16 +160,21 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="载体名称：" prop="carrierName">
               <el-input v-model="form.carrierName" placeholder="请输入载体名称" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="片段大小：" prop="fragmentSize">
               <el-input v-model="form.fragmentSize" placeholder="请输入片段大小" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="样品位置：" prop="samplePosition">
+              <el-input v-model="form.samplePosition" placeholder="请输入样品位置" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -297,24 +197,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="样品位置：" prop="samplePosition">
-              <el-input v-model="form.samplePosition" placeholder="请输入样品位置" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
             <el-form-item label="序列：" prop="seq">
               <el-input v-model="form.seq" placeholder="请输入序列" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="测序项目：" prop="project">
               <el-input v-model="form.project" placeholder="请输入测序项目" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="质粒长度：" prop="plasmidLength">
               <el-input v-model="form.plasmidLength" placeholder="请输入质粒长度" />
@@ -381,6 +274,7 @@ const columns = ref([
   { key: 'layout', label: '排版方式', width: 80, visible: true },
   { key: 'createUser', label: '创建人', width: 100, visible: true },
   { key: 'createTime', label: '完成时间', width: 160, visible: true },
+  { key: 'produceId', label: '生产编号', width: 120, visible: false },
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
@@ -417,15 +311,15 @@ watch(columns, (newVal) => {
 const searchFields = ref([
   { prop: 'orderId', label: '订单号', type: 'input' },
   { prop: 'sampleId', label: '样品编号', type: 'input' },
-  { 
-    prop: 'sampleType', 
-    label: '样品类型', 
-    type: 'select', 
+  {
+    prop: 'sampleType',
+    label: '样品类型',
+    type: 'select',
     options: [
       { label: '菌液', value: '菌液' },
       { label: '质粒', value: '质粒' },
       { label: 'PCR产物', value: 'PCR产物' }
-    ] 
+    ]
   },
   { prop: 'primer', label: '测序引物', type: 'input' },
   { prop: 'primerType', label: '引物类型', type: 'input' },
@@ -484,6 +378,7 @@ function cancel() {
 /** 表单重置 */
 function reset() {
   form.value = {
+    produceId: undefined,
     id: undefined,
     orderId: undefined,
     customerId: undefined,
@@ -525,7 +420,7 @@ function handleRefresh() {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.sampleId)
+  ids.value = selection.map(item => item.produceId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
@@ -545,8 +440,8 @@ function toggleSearchPanel() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
-  const sampleId = row.sampleId || ids.value
-  getSamples(sampleId).then(response => {
+  const produceId = row.produceId || ids.value
+  getSamples(produceId).then(response => {
     form.value = response.data
     form.value._isEdit = true
     open.value = true
@@ -577,13 +472,13 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const idList = row.sampleId || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
+  const idList = row.produceId || ids.value
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
     return delSamples(idList)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 /** 导出按钮操作 */
@@ -621,6 +516,7 @@ onMounted(() => {
 :deep(.el-table--small .el-table__header-wrapper th) {
   padding: 4px 0 !important;
 }
+
 :deep(.el-table--small .cell) {
   padding-left: 6px !important;
   padding-right: 6px !important;

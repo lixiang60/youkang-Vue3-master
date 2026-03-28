@@ -60,3 +60,48 @@ export function listProduceTemplate(data) {
     data: data
   })
 }
+
+// 设置模板状态
+export function updateProduceTempStatus(data) {
+  return request({
+    url: '/order/sample/template/produce/tempStatus',
+    method: 'post',
+    data: data
+  })
+}
+
+// 设置原浓度
+export function updateProduceOriginConcentration(data) {
+  return request({
+    url: '/order/sample/template/produce/originConcentration',
+    method: 'post',
+    data: data
+  })
+}
+
+// 模板生产退回
+export function sendBackProduce(data) {
+  return request({
+    url: '/order/sample/template/produce/sendBack',
+    method: 'post',
+    data: data
+  })
+}
+
+// PCR切胶查询
+export function getPcrGelCutList(data) {
+  return request({
+    url: '/order/sample/template/produce/pcrGelCut',
+    method: 'post',
+    data: data
+  })
+}
+
+// 查询重抽样品列表
+export function getResampleList(data) {
+  return request({
+    url: '/order/sample/template/produce/resampleList',
+    method: 'post',
+    data: data
+  })
+}
