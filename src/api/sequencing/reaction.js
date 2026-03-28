@@ -36,7 +36,7 @@ export function updateReactionHoleNo(data) {
   })
 }
 
-// 测序BDT查询
+// 测序BDT
 export function getSequencingBDT(data) {
   return request({
     url: '/order/sample/reactionProduce/sequencingBDT',
@@ -63,10 +63,28 @@ export function sampleInsufficient(data) {
   })
 }
 
-// 反应预做 / 反应重做
+// 重新做反应
 export function reactionPre(data) {
   return request({
     url: '/order/sample/reactionPre',
+    method: 'post',
+    data: data
+  })
+}
+
+// 反应预做退回
+export function reactionPreSendBack(data) {
+  return request({
+    url: '/order/sample/reactionPreSendBack',
+    method: 'post',
+    data: data
+  })
+}
+
+// 设置报告状态
+export function updateReactionReportStatus(data) {
+  return request({
+    url: '/order/sample/reactionProduce/status',
     method: 'post',
     data: data
   })
