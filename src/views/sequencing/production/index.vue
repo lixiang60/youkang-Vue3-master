@@ -254,17 +254,18 @@
         <div class="form-row border-top">
           <div class="form-label">起始订单：</div>
           <div class="form-content">
-            <el-input v-model="pcrForm.startOrder" placeholder="请输入起始订单" style="width: 200px" />
+            <el-input v-model="pcrForm.startOrderNo" placeholder="请输入起始订单" style="width: 200px" />
           </div>
           <div class="form-label" style="border-left: 1px solid #ebeef5;">结束订单：</div>
           <div class="form-content">
-            <el-input v-model="pcrForm.endOrder" placeholder="请输入结束订单" style="width: 200px" />
+            <el-input v-model="pcrForm.endOrderNo" placeholder="请输入结束订单" style="width: 200px" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-label">所属公司：</div>
           <div class="form-content">
-            <el-select v-model="pcrForm.branch" placeholder="请选择" style="width: 200px">
+            <el-select v-model="pcrForm.belongCompany" placeholder="请选择" style="width: 200px">
+              <el-option label="有康科技" value="有康科技" />
               <el-option label="上海实验室" value="上海实验室" />
               <el-option label="北京实验室" value="北京实验室" />
               <el-option label="广州实验室" value="广州实验室" />
@@ -331,14 +332,14 @@
         <div class="form-row border-top">
           <div class="form-label">模板板号：</div>
           <div class="form-content">
-            <el-input v-model="resampleForm.plateNo" placeholder="请输入模板板号" style="width: 300px" />
+            <el-input v-model="resampleForm.templatePlateNos" placeholder="请输入模板板号" style="width: 300px" />
             <span style="margin-left: 10px; color: #909399; font-size: 12px;">多个板号之间用逗号隔开</span>
           </div>
         </div>
         <div class="form-row">
           <div class="form-label">所属实验室：</div>
           <div class="form-content">
-            <el-select v-model="resampleForm.lab" placeholder="请选择" style="width: 200px">
+            <el-select v-model="resampleForm.belongLab" placeholder="请选择" style="width: 200px">
               <el-option label="厦门实验室" value="厦门实验室" />
               <el-option label="上海实验室" value="上海实验室" />
               <el-option label="北京实验室" value="北京实验室" />
@@ -413,7 +414,14 @@
 </template>
 
 <script setup name="Production">
-import { listProduceTemplate, updateProduceTempStatus, updateProduceOriginConcentration, sendBackProduce } from '@/api/sequencing/production'
+import { 
+  listProduceTemplate, 
+  updateProduceTempStatus, 
+  updateProduceOriginConcentration, 
+  sendBackProduce, 
+  getPcrGelCutList, 
+  getResampleList 
+} from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -686,79 +694,39 @@ function submitSendBack() {
 
 function handlePcrGelCut() {
   pcrForm.value = {
-    startOrder: '20190310215422282',
-    endOrder: '20190413215422282',
-    branch: '上海实验室'
+    startOrderNo: undefined,
+    endOrderNo: undefined,
+    belongCompany: '上海实验室'
   }
   pcrOpen.value = true
 }
 
-const pcrMockData = ref([
-  { customerName: '陈亚璇', produceId: '708192', sampleId: '2A-300-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708193', sampleId: '2A-301-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708194', sampleId: '2A-302-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708195', sampleId: '2A-303-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708196', sampleId: '2A-304-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708197', sampleId: '2A-305-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708198', sampleId: '2A-306-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708199', sampleId: '2A-307-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708200', sampleId: '2A-308-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708201', sampleId: '2A-309-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708202', sampleId: '2A-310-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708203', sampleId: '2A-311-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708204', sampleId: '2A-312-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708205', sampleId: '2A-313-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708206', sampleId: '2A-314-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708207', sampleId: '2A-315-mArnt1', fragmentSize: '300' },
-  // Column 2
-  { customerName: '陈亚璇', produceId: '708231', sampleId: '2A-339-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708232', sampleId: '2A-340-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708233', sampleId: '2A-341-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708234', sampleId: '2A-342-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708235', sampleId: '2A-343-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708236', sampleId: '2A-344-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708237', sampleId: '2A-345-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708238', sampleId: '2A-346-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708239', sampleId: '2A-347-mArnt1', fragmentSize: '300' },
-  { customerName: '陈亚璇', produceId: '708240', sampleId: '4-V-KO-240-R4', fragmentSize: '500' },
-  { customerName: '陈亚璇', produceId: '708241', sampleId: '4-V-KO-241-R4', fragmentSize: '500' },
-  { customerName: '陈亚璇', produceId: '708242', sampleId: '4-V-KO-242-R4', fragmentSize: '500' },
-  { customerName: '陈亚璇', produceId: '708243', sampleId: '4-V-KO-243-R4', fragmentSize: '500' },
-  { customerName: '陈亚璇', produceId: '708244', sampleId: '4-V-KO-244-R4', fragmentSize: '500' },
-  { customerName: '陈亚璇', produceId: '708245', sampleId: '4-V-KO-245-R4', fragmentSize: '500' }
-])
+const pcrMockData = ref([])
 
 function handlePrintPcr() {
-  pcrReportOpen.value = true
+  getPcrGelCutList(pcrForm.value).then(response => {
+    pcrMockData.value = response.data || []
+    pcrReportOpen.value = true
+  })
 }
 
 function handleResampleList() {
   resampleForm.value = {
-    plateNo: 'Z111',
-    lab: '厦门实验室',
+    templatePlateNos: undefined,
+    belongLab: '厦门实验室',
     reportType: '重抽操作表'
   }
   resampleOpen.value = true
 }
 
 function submitResample() {
-  resampleReportOpen.value = true
+  getResampleList(resampleForm.value).then(response => {
+    resampleMockData.value = response.data || []
+    resampleReportOpen.value = true
+  })
 }
 
-const resampleMockData = ref([
-  { 
-    isTrace: '', 
-    originHoleNo: '2397_206', 
-    customerName: '赵亚林', 
-    returnState: '模板重抽', 
-    sampleType: '菌皮', 
-    sampleId: '1', 
-    carrierName: 'PUC', 
-    antibioticType: '', 
-    samplePosition: 'Z111A1', 
-    remark: '第一次抽提未成功，已重新抽提' 
-  }
-])
+const resampleMockData = ref([])
 
 const statusConfirmOpen = ref(false)
 const statusOpen = ref(false)
