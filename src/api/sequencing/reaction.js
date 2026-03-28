@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询反应生产列表
 export function listReactionProduce(data) {
   return request({
-    url: '/order/sample/reactionProduce/list',
+    url: '/order/sample/template/produce/list',
     method: 'post',
     data: data
   })

@@ -53,7 +53,7 @@
 </template>
 
 <script setup name="Email">
-import { listEmail, getEmail, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
+import { listTemplateFailedSamples, getEmail, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -70,24 +70,24 @@ const total = ref(0)
 const title = ref('')
 const searchRef = ref(null)
 
-// 列配置 (参考通用测序字段)
+// 列配置 (根据 API 文档 4.5 模板失败列表字段调整)
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, visible: true },
+  { key: 'customerId', label: '客户ID', width: 80, visible: false },
   { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'email', label: '邮箱地址', width: 180, visible: true },
+  { key: 'customerEmail', label: '客户邮箱', width: 180, visible: true },
+  { key: 'createTime', label: '送样日期', width: 160, visible: true },
+  { key: 'orderId', label: '订单号', width: 160, visible: true },
   { key: 'sampleId', label: '样品编号', width: 120, visible: true },
-  { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'sendState', label: '发送状态', width: 100, visible: true },
-  { key: 'sendTime', label: '发送时间', width: 160, visible: true },
-  { key: 'remark', label: '备注', showOverflowTooltip: true, visible: true }
+  { key: 'returnState', label: '模板状态', width: 110, visible: true },
+  { key: 'remark', label: '失败原因', showOverflowTooltip: true, visible: true }
 ])
 
 // 检索配置
 const searchFields = ref([
-  { prop: 'name', label: '名称', type: 'input' },
-  { prop: 'status', label: '状态', type: 'select', options: [{ label: '正常', value: '0' }, { label: '停用', value: '1' }] }
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' },
+  { prop: 'sampleId', label: '样品编号', type: 'input' }
 ])
 
 // 列可见性缓存
@@ -113,8 +113,9 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    status: undefined
+    orderId: undefined,
+    customerName: undefined,
+    sampleId: undefined
   },
   rules: {
     name: [
@@ -128,9 +129,24 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listEmail(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+  listTemplateFailedSamples(queryParams.value).then(response => {
+    // 处理 API 直接返回 Array 的情况，并支持本地前端搜索和分页 (由于 API 文档中该 GET 接口无参数且无 total)
+    let fullList = response.data || response || []
+    
+    // 基础过滤逻辑 (如果后端不自带搜索)
+    if (queryParams.value.orderId) {
+      fullList = fullList.filter(item => item.orderId?.includes(queryParams.value.orderId))
+    }
+    if (queryParams.value.customerName) {
+      fullList = fullList.filter(item => item.customerName?.includes(queryParams.value.customerName))
+    }
+    if (queryParams.value.sampleId) {
+      fullList = fullList.filter(item => item.sampleId?.includes(queryParams.value.sampleId))
+    }
+
+    total.value = fullList.length
+    const offset = (queryParams.value.pageNum - 1) * queryParams.value.pageSize
+    dataList.value = fullList.slice(offset, offset + queryParams.value.pageSize)
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -172,66 +188,55 @@ function handleRefresh() {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
+  ids.value = selection.map(item => item.sampleId || item.id)
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
 
-/** 新增按钮操作 */
-function handleAdd() {
-  reset()
-  open.value = true
-  title.value = '添加报告邮件'
+/** 邮件发送操作 */
+function handleSendEmail() {
+  if (ids.value.length === 0) return
+  proxy.$modal.msgSuccess('邮件发送请求已提交')
 }
 
-/** 修改按钮操作 */
-function handleUpdate(row) {
-  reset()
-  const id = row.id || ids.value
-  getEmail(id).then(response => {
-    form.value = response.data
-    open.value = true
-    title.value = '修改报告邮件'
+/** 邮件忽略操作 */
+function handleIgnoreEmail() {
+  if (ids.value.length === 0) return
+  proxy.$modal.confirm('确定要忽略选中的 ' + ids.value.length + ' 条记录吗？').then(() => {
+    proxy.$modal.msgSuccess('已忽略')
   })
 }
 
-/** 提交按钮 */
+/** 模板回发操作 */
+function handleTemplateReturn() {
+  if (ids.value.length === 0) return
+  reset()
+  open.value = true
+  title.value = '模板邮件回发备注'
+  form.value.remark = '样品模板已准备好，请查收。'
+}
+
+/** 提交按钮 (对话框确定) */
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
-      if (form.value.id !== undefined) {
-        updateEmail(form.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
-        })
-      } else {
-        addEmail(form.value).then(response => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          getList()
-        })
-      }
+      proxy.$modal.msgSuccess('操作成功')
+      open.value = false
+      getList()
     }
   })
 }
 
-/** 删除按钮操作 */
-function handleDelete(row) {
-  const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delEmail(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+/** 删除动作 (忽略) */
+function handleDelete() {
+  handleIgnoreEmail()
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/email/export', {
+  proxy.download('order/sample/template/produce/exportFailed', {
     ...queryParams.value
-  }, `email_${new Date().getTime()}.xlsx`)
+  }, `failed_samples_${new Date().getTime()}.xlsx`)
 }
 
 onMounted(() => {

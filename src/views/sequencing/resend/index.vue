@@ -282,9 +282,9 @@ function handleExport() {
 }
 
 // 占位方法
-function handleAudit() { proxy.$modal.msgInfo('功能开发中...') }
-function handleAddPlateNo() { proxy.$modal.msgInfo('功能开发中...') }
-function handleReactionStop() { proxy.$modal.msgInfo('功能开发中...') }
+function handleAudit() { proxy.$modal.msg('功能开发中...') }
+function handleAddPlateNo() { proxy.$modal.msg('功能开发中...') }
+function handleReactionStop() { proxy.$modal.msg('功能开发中...') }
 
 onMounted(() => {
   // TODO: 等后端接口实现后再启用

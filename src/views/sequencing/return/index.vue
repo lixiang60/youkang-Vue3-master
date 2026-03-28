@@ -300,9 +300,9 @@ function handleExport() {
 }
 
 // 占位方法
-function handleDeliveryDetails() { proxy.$modal.msgInfo('功能开发中...') }
-function handleArrangeReturn() { proxy.$modal.msgInfo('功能开发中...') }
-function handleReturnLabel() { proxy.$modal.msgInfo('功能开发中...') }
+function handleDeliveryDetails() { proxy.$modal.msg('功能开发中...') }
+function handleArrangeReturn() { proxy.$modal.msg('功能开发中...') }
+function handleReturnLabel() { proxy.$modal.msg('功能开发中...') }
 
 onMounted(() => {
   // TODO: 等后端接口实现后再启用

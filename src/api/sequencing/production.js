@@ -105,3 +105,11 @@ export function getResampleList(data) {
     data: data
   })
 }
+// 根据板号获取已使用的孔号
+export function getUserTemplateHole(data) {
+  return request({
+    url: '/order/sample/template/produce/getUserTemplateHole',
+    method: 'post',
+    data: data
+  })
+}

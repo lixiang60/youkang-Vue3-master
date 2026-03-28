@@ -5,7 +5,8 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="EditPen" @click="handleUpdate" :disabled="single">编辑</el-button>
+        <el-button size="small" type="primary" plain icon="EditPen" @click="handleUpdate"
+          :disabled="single">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
@@ -14,25 +15,31 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain @click="handleOriginConcentration"
-          :disabled="multiple">
-          <template #icon><el-icon><EditPen /></el-icon></template>
+        <el-button size="small" type="primary" plain @click="handleOriginConcentration" :disabled="multiple">
+          <template #icon><el-icon>
+              <EditPen />
+            </el-icon></template>
           原浓度
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain @click="handleBatchPlate" :disabled="multiple">
-          <template #icon><el-icon><Calendar /></el-icon></template>
-          活跃板号
+        <el-button size="small" type="success" plain @click="handleAddPlate" :disabled="multiple">
+          <template #icon><el-icon>
+              <Calendar />
+            </el-icon></template>
+          添加板号
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus" :disabled="multiple">报告状态</el-button>
+        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus"
+          :disabled="multiple">报告状态</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain @click="handleActiveHole" :disabled="single">
-          <template #icon><el-icon><List /></el-icon></template>
-          活跃孔号
+        <el-button size="small" type="success" plain @click="handleAddHole" :disabled="single">
+          <template #icon><el-icon>
+              <List />
+            </el-icon></template>
+          添加孔号
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -42,19 +49,21 @@
         <el-button size="small" type="info" plain icon="Grid" @click="handleNotImplemented">上机表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="CircleClose" @click="handleStop" :disabled="multiple">反应停止</el-button>
+        <el-button size="small" type="danger" plain icon="CircleClose" @click="handleStop"
+          :disabled="multiple">反应停止</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" plain icon="Histogram" @click="handleNotImplemented">新上基表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Warning" @click="handleInsufficient" :disabled="multiple">样品不足</el-button>
+        <el-button size="small" type="warning" plain icon="Warning" @click="handleInsufficient"
+          :disabled="multiple">样品不足</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="info" plain icon="Compass" @click="handleNotImplemented">机器分装</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Files" @click="handleNotImplemented">批量重备</el-button>
+        <el-button size="small" type="info" plain icon="Files" @click="handleNotImplemented">批量编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Odometer" @click="handleNotImplemented">稀释</el-button>
@@ -63,7 +72,8 @@
         <el-button size="small" type="warning" plain icon="List" @click="handleNotImplemented">调整和加料明细</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="RefreshRight" @click="handleRedo" :disabled="multiple">反应重做</el-button>
+        <el-button size="small" type="success" plain icon="RefreshRight" @click="handlePreReaction"
+          :disabled="multiple">反应预做</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Camera" @click="showSearch = !showSearch">图像设置</el-button>
@@ -123,31 +133,32 @@
     </el-dialog>
 
     <!-- 设置原浓度对话框 (仿制截图样式) -->
-    <el-dialog title="设置原浓度" v-model="concOpen" width="750px" append-to-body>
+    <el-dialog v-model="concOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center;">
-          <el-icon style="margin-right: 8px; color: #409EFF;">
-            <EditPen />
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+            <Edit />
           </el-icon>
-          <span>设置原浓度</span>
+          <span style="font-weight: bold; font-size: 16px;">设置原浓度</span>
         </div>
       </template>
-      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="120px" class="well-form">
+      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form">
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
-          <div class="form-label">生产编号：</div>
+          <div class="form-label" style="width: 140px;">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">{{ selectedRows.length
-            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+            <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
+              :
+              '未选择' }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
         <div class="form-row">
-          <div class="form-label">原浓度：</div>
+          <div class="form-label" style="width: 140px;">原浓度：</div>
           <div class="form-content">
-            <el-form-item prop="originConcentration" label-width="0">
+            <el-form-item prop="originConcentration" label-width="0" style="margin-bottom: 0;">
               <el-select v-model="concForm.originConcentration" placeholder="请选择或输入原浓度" filterable allow-create
-                style="width: 250px">
+                style="width: 280px">
                 <el-option label="0.3" value="0.3" />
                 <el-option label="0.5" value="0.5" />
                 <el-option label="0.7" value="0.7" />
@@ -159,33 +170,49 @@
                 <el-option label="高" value="高" />
                 <el-option label="低" value="低" />
                 <el-option label="加测" value="加测" />
+                <template #prefix>
+                  <el-icon style="color: #E6A23C;">
+                    <WarningFilled />
+                  </el-icon>
+                </template>
               </el-select>
-              <el-icon style="margin-left: 10px; color: #F56C6C; font-size: 18px; vertical-align: middle;">
-                <Warning />
-              </el-icon>
             </el-form-item>
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="height: 100%;">备注：</div>
+        <div class="form-row border-bottom" style="height: 180px;">
+          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px;">
-            <el-input v-model="concForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" style="height: 100%;" />
+            <el-input v-model="concForm.remark" type="textarea" :rows="6" placeholder="请输入备注内容" style="height: 100%;" />
           </div>
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-          <el-button type="success" icon="Check" @click="submitConc" style="width: 100px; border-radius: 20px;"> 确 定
+        <div style="display: flex; justify-content: center; gap: 30px; padding: 10px 0;">
+          <el-button @click="submitConc"
+            style="height: 40px; width: 120px; border-radius: 20px; font-weight: bold; background-color: #f2f6fc; border-color: #dcdfe6; color: #333;">
+            <template #icon>
+              <el-icon style="color: #67C23A; font-size: 20px; margin-right: 5px;">
+                <SuccessFilled />
+              </el-icon>
+            </template>
+            确 定
           </el-button>
-          <el-button type="info" icon="Close" @click="concOpen = false" style="width: 100px; border-radius: 20px;"> 取 消
+          <el-button @click="concOpen = false"
+            style="height: 40px; width: 120px; border-radius: 20px; font-weight: bold; background-color: #f2f6fc; border-color: #dcdfe6; color: #333;">
+            <template #icon>
+              <el-icon style="color: #F56C6C; font-size: 20px; margin-right: 5px;">
+                <CircleCloseFilled />
+              </el-icon>
+            </template>
+            取 消
           </el-button>
         </div>
       </template>
     </el-dialog>
 
-    <!-- 活跃板号对话框 -->
-    <el-dialog title="活跃板号" v-model="plateOpen" width="750px" append-to-body>
+    <!-- 添加板号对话框 -->
+    <el-dialog title="添加板号" v-model="plateOpen" width="750px" append-to-body>
       <el-form ref="plateFormRef" :model="plateForm" label-width="120px" class="well-form">
         <div class="form-row border-top">
           <div class="form-label">板号：</div>
@@ -217,8 +244,8 @@
       </template>
     </el-dialog>
 
-    <!-- 活跃孔号对话框 -->
-    <el-dialog title="活跃孔号" v-model="holeOpen" width="500px" append-to-body>
+    <!-- 添加孔号对话框 -->
+    <el-dialog title="添加孔号" v-model="holeOpen" width="500px" append-to-body>
       <el-form :model="holeForm" label-width="120px" class="well-form">
         <div class="form-row border-top">
           <div class="form-label">生产编号：</div>
@@ -255,7 +282,7 @@
           <el-button type="primary" icon="Search" @click="handlePrintBdt">查询</el-button>
         </el-form-item>
       </el-form>
-      
+
       <div v-if="bdtList.length > 0" class="report-container">
         <table class="report-table">
           <thead>
@@ -288,7 +315,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" icon="Printer" :disabled="bdtList.length === 0" @click="bdtOpen = false">打 印</el-button>
+          <el-button type="primary" icon="Printer" :disabled="bdtList.length === 0" @click="bdtOpen = false">打
+            印</el-button>
           <el-button @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
@@ -297,11 +325,11 @@
 </template>
 
 <script setup name="Reaction">
-import { 
-  listReactionProduce, 
-  updateReactionOriginConcentration, 
-  updateReactionPlate, 
-  updateReactionHoleNo, 
+import {
+  listReactionProduce,
+  updateReactionOriginConcentration,
+  updateReactionPlate,
+  updateReactionHoleNo,
   getSequencingBDT,
   reactionStop,
   sampleInsufficient,
@@ -336,8 +364,8 @@ const columns = ref([
   { key: 'samplePosition', label: '样品位置', width: 100, visible: true },
   { key: 'primer', label: '测序引物', width: 100, visible: true },
   { key: 'originConcentration', label: '原浓度', width: 80, visible: true },
-  { key: 'plateNo', label: '板号', width: 100, visible: true },
-  { key: 'holeNo', label: '孔号', width: 80, visible: true },
+  { key: 'templatePlateNo', label: '板号', width: 100, visible: true },
+  { key: 'templateHoleNo', label: '孔号', width: 80, visible: true },
   { key: 'returnState', label: '状态', width: 100, visible: true },
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
@@ -362,7 +390,7 @@ watch(columns, (newVal) => {
 
 // 检索配置
 const searchFields = ref([
-  { prop: 'plateNo', label: '板号', type: 'input' },
+  { prop: 'templateNo', label: '板号', type: 'input' },
   { prop: 'orderId', label: '订单号', type: 'input' },
   { prop: 'customerName', label: '客户姓名', type: 'input' },
   { prop: 'sampleId', label: '样品编号', type: 'input' }
@@ -377,10 +405,11 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    plateNo: undefined,
+    templateNo: undefined,
     orderId: undefined,
     customerName: undefined,
-    sampleId: undefined
+    sampleId: undefined,
+    flowName: '反应生产'
   },
   rules: {}
 })
@@ -391,8 +420,9 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listReactionProduce(queryParams.value).then(response => {
-    dataList.value = response.rows || []
-    total.value = response.total || 0
+    const res = response.data || response // 兼容不同包装格式
+    dataList.value = res.rows || []
+    total.value = res.total || 0
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -484,7 +514,7 @@ function submitConc() {
 
 const plateOpen = ref(false)
 const plateForm = ref({})
-function handleBatchPlate() {
+function handleAddPlate() {
   plateForm.value = {
     produceIdList: ids.value,
     plateNo: undefined,
@@ -504,12 +534,12 @@ function submitPlate() {
 
 const holeOpen = ref(false)
 const holeForm = ref({})
-function handleActiveHole() {
+function handleAddHole() {
   const row = selectedRows.value[0]
   holeForm.value = {
     produceId: row.produceId,
-    plateNo: row.plateNo,
-    holeNo: row.holeNo
+    plateNo: row.templatePlateNo,
+    holeNo: row.templateHoleNo
   }
   holeOpen.value = true
 }
@@ -523,7 +553,7 @@ function submitHole() {
 }
 
 function handleReportStatus() {
-  proxy.$modal.msgInfo('报告状态功能暂无对应API')
+  proxy.$modal.msg('报告状态功能暂无对应API')
 }
 
 const bdtOpen = ref(false)
@@ -548,7 +578,7 @@ function handleStop() {
   }).then(() => {
     proxy.$modal.msgSuccess('操作成功')
     getList()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 function handleInsufficient() {
@@ -557,20 +587,20 @@ function handleInsufficient() {
   }).then(() => {
     proxy.$modal.msgSuccess('操作成功')
     getList()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
-function handleRedo() {
-  proxy.$modal.confirm('是否确认对选中样品进行反应重做？').then(() => {
+function handlePreReaction() {
+  proxy.$modal.confirm('是否确认对选中样品进行反应预做？').then(() => {
     return reactionPre({ produceIdList: ids.value })
   }).then(() => {
     proxy.$modal.msgSuccess('操作成功')
     getList()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 function handleNotImplemented() {
-  proxy.$modal.msgInfo('功能开发中...')
+  proxy.$modal.msg('功能开发中...')
 }
 
 onMounted(() => {
@@ -630,7 +660,8 @@ onMounted(() => {
   font-size: 13px;
 }
 
-.report-table th, .report-table td {
+.report-table th,
+.report-table td {
   border: 1px solid #dfe6ec;
   padding: 8px;
   text-align: center;

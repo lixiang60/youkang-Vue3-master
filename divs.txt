@@ -1,0 +1,70 @@
+2:  <div class="app-container">
+68:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+87:      <div style="border: 1px solid #dcdfe6; border-radius: 4px;">
+88:        <div style="background: #f5f7fa; padding: 10px; border-bottom: 1px solid #dcdfe6; font-weight: bold; font-size: 14px; display: flex; align-items: center;">
+96:        <div style="background: #f5f7fa; padding: 5px 15px; border-top: 1px solid #dcdfe6; font-size: 12px; color: #606266; text-align: right;">
+101:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+122:        <div class="form-row border-top">
+123:          <div class="form-label" style="width: 140px;">生产编号：</div>
+124:          <div class="form-content">
+129:        <div class="form-row">
+130:          <div class="form-label" style="width: 140px;">模板状态：</div>
+131:          <div class="form-content">
+144:        <div class="form-row border-bottom" style="height: 150px;">
+145:          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
+146:          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+152:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+172:        <div style="display: flex; align-items: center;">
+181:        <div class="form-row border-top">
+182:          <div class="form-label" style="width: 140px;">生产编号：</div>
+183:          <div class="form-content">
+189:        <div class="form-row">
+190:          <div class="form-label" style="width: 140px;">原浓度：</div>
+191:          <div class="form-content">
+214:        <div class="form-row">
+215:          <div class="form-label" style="width: 140px;">机器类型：</div>
+216:          <div class="form-content">
+223:        <div class="form-row">
+224:          <div class="form-label" style="width: 140px;">排版方式：</div>
+225:          <div class="form-content">
+234:        <div class="form-row">
+235:          <div class="form-label" style="width: 140px;">板号：</div>
+236:          <div class="form-content">
+243:        <div class="form-row border-bottom" style="height: 150px;">
+244:          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
+245:          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+251:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+273:        <div style="display: flex; align-items: center;">
+279:        <div class="form-row border-top">
+280:          <div class="form-label">起始订单：</div>
+281:          <div class="form-content">
+284:          <div class="form-label" style="border-left: 1px solid #ebeef5;">结束订单：</div>
+285:          <div class="form-content">
+289:        <div class="form-row">
+290:          <div class="form-label">所属公司：</div>
+291:          <div class="form-content">
+299:          <div class="form-label" style="border-left: 1px solid #ebeef5;"></div>
+300:          <div class="form-content"></div>
+302:        <div class="form-row border-bottom" style="justify-content: center; height: 60px;">
+307:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+326:      <div class="pcr-report-container">
+351:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+371:        <div style="display: flex; align-items: center;">
+377:        <div class="form-row border-top">
+378:          <div class="form-label">模板板号：</div>
+379:          <div class="form-content">
+384:        <div class="form-row">
+385:          <div class="form-label">所属实验室：</div>
+386:          <div class="form-content">
+393:          <div class="form-label" style="border-left: 1px solid #ebeef5;">报表类型：</div>
+394:          <div class="form-content">
+403:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+422:      <div class="pcr-report-container">
+423:        <div style="text-align: center; margin-bottom: 20px;">
+425:          <div style="font-size: 14px; margin-top: 5px; font-weight: bold;">模板重抽接菌记录</div>
+426:          <div style="text-align: right; color: #f56c6c; font-size: 14px; margin-top: -20px;">锐浪报表工具6</div>
+461:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+482:      <div style="border: 1px solid #dcdfe6; border-radius: 4px;">
+483:        <div style="background: #f5f7fa; padding: 10px; border-bottom: 1px solid #dcdfe6; font-weight: bold; font-size: 14px; display: flex; align-items: center;">
+492:        <div style="background: #fff4f4; padding: 10px; border-top: 1px solid #fcc; color: #f56c6c; font-size: 13px; text-align: center;">
+498:        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">

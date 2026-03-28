@@ -1,0 +1,69 @@
+81:        </div>
+90:        </div>
+98:        </div>
+99:      </div>
+114:        </div>
+123:          <div class="form-label" style="width: 140px;">生产编号：</div>
+126:          </div>
+127:        </div>
+130:          <div class="form-label" style="width: 140px;">模板状态：</div>
+141:          </div>
+142:        </div>
+145:          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
+148:          </div>
+149:        </div>
+165:        </div>
+177:        </div>
+182:          <div class="form-label" style="width: 140px;">生产编号：</div>
+186:          </div>
+187:        </div>
+190:          <div class="form-label" style="width: 140px;">原浓度：</div>
+211:          </div>
+212:        </div>
+215:          <div class="form-label" style="width: 140px;">机器类型：</div>
+220:          </div>
+221:        </div>
+224:          <div class="form-label" style="width: 140px;">排版方式：</div>
+231:          </div>
+232:        </div>
+235:          <div class="form-label" style="width: 140px;">板号：</div>
+240:          </div>
+241:        </div>
+244:          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
+247:          </div>
+248:        </div>
+264:        </div>
+276:        </div>
+280:          <div class="form-label">起始订单：</div>
+283:          </div>
+284:          <div class="form-label" style="border-left: 1px solid #ebeef5;">结束订单：</div>
+287:          </div>
+288:        </div>
+290:          <div class="form-label">所属公司：</div>
+298:          </div>
+299:          <div class="form-label" style="border-left: 1px solid #ebeef5;"></div>
+300:          <div class="form-content"></div>
+301:        </div>
+304:        </div>
+320:        </div>
+349:      </div>
+364:        </div>
+374:        </div>
+378:          <div class="form-label">模板板号：</div>
+382:          </div>
+383:        </div>
+385:          <div class="form-label">所属实验室：</div>
+392:          </div>
+393:          <div class="form-label" style="border-left: 1px solid #ebeef5;">报表类型：</div>
+399:          </div>
+400:        </div>
+416:        </div>
+425:          <div style="font-size: 14px; margin-top: 5px; font-weight: bold;">模板重抽接菌记录</div>
+426:          <div style="text-align: right; color: #f56c6c; font-size: 14px; margin-top: -20px;">锐浪报表工具6</div>
+427:        </div>
+474:        </div>
+485:        </div>
+495:        </div>
+496:      </div>
+511:        </div>
+514:  </div>

@@ -8,10 +8,6 @@
         <el-button size="small" type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple"
-          @click="handleDelete">删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -22,6 +18,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" plain icon="DocumentCopy" @click="handleBatchEdit">批量编辑</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple"
+          @click="handleDelete">删除</el-button>
       </el-col>
 
       <!-- 批量清理下拉 -->
@@ -223,9 +223,90 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer" style="text-align: center">
-          <el-button type="success" @click="submitForm">确 定</el-button>
-          <el-button type="danger" @click="cancel">取 消</el-button>
+        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+          <el-button @click="submitForm" class="premium-btn premium-btn-confirm">
+            <template #icon>
+              <el-icon><SuccessFilled /></el-icon>
+            </template>
+            确 定
+          </el-button>
+          <el-button @click="cancel" class="premium-btn premium-btn-cancel">
+            <template #icon>
+              <el-icon><CircleCloseFilled /></el-icon>
+            </template>
+            取 消
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 设置原浓度对话框 (仿制截图样式) -->
+    <el-dialog v-model="concOpen" width="750px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+            <Edit />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">设置原浓度</span>
+        </div>
+      </template>
+      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form">
+        <!-- 生产编号展示 -->
+        <div class="form-row border-top">
+          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-content">
+            <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
+              :
+              '未选择'
+              }}</span>
+          </div>
+        </div>
+        <!-- 原浓度输入 -->
+        <div class="form-row">
+          <div class="form-label" style="width: 140px;">原浓度：</div>
+          <div class="form-content">
+            <el-form-item prop="originConcentration" label-width="0" style="margin-bottom: 0;">
+              <el-select v-model="concForm.originConcentration" placeholder="请选择或输入原浓度" filterable allow-create
+                style="width: 280px">
+                <el-option label="0.3" value="0.3" />
+                <el-option label="0.5" value="0.5" />
+                <el-option label="0.7" value="0.7" />
+                <el-option label="1.0" value="1.0" />
+                <el-option label="1.5" value="1.5" />
+                <el-option label="2.0" value="2.0" />
+                <el-option label="3.0" value="3.0" />
+                <el-option label="5.0" value="5.0" />
+                <template #prefix>
+                  <el-icon style="color: #E6A23C;">
+                    <WarningFilled />
+                  </el-icon>
+                </template>
+              </el-select>
+            </el-form-item>
+          </div>
+        </div>
+        <!-- 备注 -->
+        <div class="form-row border-bottom" style="height: 180px;">
+          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+            <el-input v-model="concForm.remark" type="textarea" :rows="6" placeholder="请输入备注内容" />
+          </div>
+        </div>
+      </el-form>
+      <template #footer>
+        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+          <el-button @click="submitConcForm" class="premium-btn premium-btn-confirm">
+            <template #icon>
+              <el-icon><SuccessFilled /></el-icon>
+            </template>
+            确 定
+          </el-button>
+          <el-button @click="concOpen = false" class="premium-btn premium-btn-cancel">
+            <template #icon>
+              <el-icon><CircleCloseFilled /></el-icon>
+            </template>
+            取 消
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -234,6 +315,7 @@
 
 <script setup name="Samples">
 import { listSamples, getSamples, addSamples, updateSamples, delSamples } from '@/api/sequencing/samples'
+import { updateProduceOriginConcentration } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -326,6 +408,17 @@ const searchFields = ref([
   { prop: 'project', label: '测序项目', type: 'input' },
   { prop: 'plateNo', label: '板号', type: 'input' }
 ])
+const selectedRows = ref([])
+const concOpen = ref(false)
+const concForm = reactive({
+  originConcentration: '',
+  remark: ''
+})
+const concRules = {
+  originConcentration: [{ required: true, message: '请选择或输入原浓度', trigger: 'change' }]
+}
+const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId).filter(id => id))
+
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -420,6 +513,7 @@ function handleRefresh() {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
+  selectedRows.value = selection
   ids.value = selection.map(item => item.produceId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
@@ -489,30 +583,64 @@ function handleExport() {
 }
 
 // 占位方法
-function handleOriginalConcentration() { proxy.$modal.msgInfo('功能开发中...') }
-function handleClearWellNo() { proxy.$modal.msgInfo('功能开发中...') }
-function handleClearConcentration() { proxy.$modal.msgInfo('功能开发中...') }
-function handleClearTemplate() { proxy.$modal.msgInfo('功能开发中...') }
-function handleClearReport() { proxy.$modal.msgInfo('功能开发中...') }
-function handleWeeklyReport() { proxy.$modal.msgInfo('功能开发中...') }
-function handleArrangeReturn() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSelfProvidedPrimer() { proxy.$modal.msgInfo('功能开发中...') }
-function handleTemplateVolumeMonitor() { proxy.$modal.msgInfo('功能开发中...') }
-function handleBatchEdit() { proxy.$modal.msgInfo('功能开发中...') }
-function handleAddTest() { proxy.$modal.msgInfo('功能开发中...') }
-function handleLinkPrimer() { proxy.$modal.msgInfo('功能开发中...') }
-function handleAddTestTemplate() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSupplementLabel() { proxy.$modal.msgInfo('功能开发中...') }
-function handleReEnable() { proxy.$modal.msgInfo('功能开发中...') }
-function handleAddPrimer() { proxy.$modal.msgInfo('功能开发中...') }
-function handleSampleInfo() { proxy.$modal.msgInfo('功能开发中...') }
+/** 原浓度按钮操作 */
+function handleOriginalConcentration() {
+  if (multiple.value) {
+    proxy.$modal.msgWarning('请先勾选需要操作的样品')
+    return
+  }
+  concForm.originConcentration = ''
+  concForm.remark = ''
+  concOpen.value = true
+}
 
+/** 提交原浓度表单 */
+function submitConcForm() {
+  proxy.$refs['concFormRef'].validate(valid => {
+    if (valid) {
+      const data = {
+        produceIdList: selectedProduceIds.value,
+        originConcentration: concForm.originConcentration,
+        remark: concForm.remark
+      }
+      updateProduceOriginConcentration(data).then(response => {
+        proxy.$modal.msgSuccess('设置成功')
+        concOpen.value = false
+        getList()
+      })
+    }
+  })
+}
+function handleClearWellNo() { proxy.$modal.msg('功能开发中...') }
+function handleClearConcentration() { proxy.$modal.msg('功能开发中...') }
+function handleClearTemplate() { proxy.$modal.msg('功能开发中...') }
+function handleClearReport() { proxy.$modal.msg('功能开发中...') }
+function handleWeeklyReport() { proxy.$modal.msg('功能开发中...') }
+function handleArrangeReturn() { proxy.$modal.msg('功能开发中...') }
+function handleSelfProvidedPrimer() { proxy.$modal.msg('功能开发中...') }
+function handleTemplateVolumeMonitor() { proxy.$modal.msg('功能开发中...') }
+function handleBatchEdit() { proxy.$modal.msg('功能开发中...') }
+function handleAddTest() { proxy.$modal.msg('功能开发中...') }
+function handleLinkPrimer() { proxy.$modal.msg('功能开发中...') }
+function handleAddTestTemplate() { proxy.$modal.msg('功能开发中...') }
+function handleSupplementLabel() { proxy.$modal.msg('功能开发中...') }
+function handleReEnable() { proxy.$modal.msg('功能开发中...') }
+function handleAddPrimer() { proxy.$modal.msg('功能开发中...') }
+function handleSampleInfo() { proxy.$modal.msg('功能开发中...') }
 onMounted(() => {
   getList()
 })
 </script>
 
 <style scoped>
+:deep(.well-form .el-form-item) {
+  margin-bottom: 0px;
+}
+
+:deep(.well-form .el-form-item) {
+  margin-bottom: 0px;
+}
+
 :deep(.el-table--small .el-table__header-wrapper th) {
   padding: 4px 0 !important;
 }
@@ -521,5 +649,41 @@ onMounted(() => {
   padding-left: 6px !important;
   padding-right: 6px !important;
   font-size: 12px;
+}
+
+.well-form {
+  border: 1px solid #dcdfe6;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.form-label {
+  width: 140px;
+  background-color: #f8f9fa;
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  font-size: 13px;
+  border-right: 1px solid #ebeef5;
+}
+
+.form-content {
+  flex: 1;
+  padding: 10px 15px;
+}
+
+.border-top {
+  border-top: 1px solid #ebeef5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #ebeef5;
 }
 </style>

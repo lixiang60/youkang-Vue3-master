@@ -15,7 +15,7 @@ description: 后端接口文档与源码路径规则
 
 ## 2. 后端源码参考 (Java)
 
-只有当需要进行接口对接时，才扫描此部分内容。当接口文档描述不明确、缺失或需追查底层逻辑时，可直接参考后端源码：
+只有当明确接口对接时 且 当接口文档描述不明确、缺失或需追查底层逻辑时，才扫描后端源码：
 
 - **仓库根路径**：`/root/www/youkang/youkang-backend`
 - **模块主路径**：`/root/www/youkang/youkang-backend/youkang-admin/src/main/java/com/youkang`

@@ -310,10 +310,10 @@ function handleExport() {
 }
 
 // 占位方法
-function handleImport() { proxy.$modal.msgInfo('功能开发中...') }
-function handlePrimerTubeLabel() { proxy.$modal.msgInfo('功能开发中...') }
-function handleImageSettings() { proxy.$modal.msgInfo('功能开发中...') }
-function handleEditPlateWell() { proxy.$modal.msgInfo('功能开发中...') }
+function handleImport() { proxy.$modal.msg('功能开发中...') }
+function handlePrimerTubeLabel() { proxy.$modal.msg('功能开发中...') }
+function handleImageSettings() { proxy.$modal.msg('功能开发中...') }
+function handleEditPlateWell() { proxy.$modal.msg('功能开发中...') }
 
 onMounted(() => {
   // TODO: 等后端接口实现后再启用

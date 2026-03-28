@@ -43,6 +43,14 @@ export function delEmail(id) {
   })
 }
 
+// 查询模板失败样品列表
+export function listTemplateFailedSamples() {
+  return request({
+    url: '/order/sample/template/produce/templateFailedList',
+    method: 'get'
+  })
+}
+
 // 导出报告邮件
 export function exportEmail(query) {
   return request({

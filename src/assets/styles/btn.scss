@@ -97,3 +97,30 @@
   font-size: 14px;
   border-radius: 4px;
 }
+
+/* Premium 按钮统一样式 */
+.premium-btn {
+  background-color: #f2f6fc !important;
+  border-color: #dcdfe6 !important;
+  color: #333 !important;
+  padding: 8px 20px !important;
+  border-radius: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.premium-btn .el-icon {
+  font-size: 18px !important;
+  vertical-align: middle !important;
+  margin-right: 5px !important;
+}
+
+.premium-btn-confirm .el-icon {
+  color: #67C23A !important;
+}
+
+.premium-btn-cancel .el-icon {
+  color: #F56C6C !important;
+}
+

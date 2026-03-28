@@ -1,11 +1,6 @@
 <template>
-  <el-dialog
-    title="添加测序样品"
-    :model-value="modelValue"
-    width="900px"
-    @update:model-value="handleUpdateVisible"
-    append-to-body
-  >
+  <el-dialog title="添加测序样品" :model-value="modelValue" width="900px" @update:model-value="handleUpdateVisible"
+    append-to-body>
     <!-- Order Info Section -->
     <el-form :model="orderInfo" label-width="100px" class="order-info-form">
       <el-row>
@@ -16,31 +11,35 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="客户ID：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerId : orderInfo.customerId" readonly />
+            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerId : orderInfo.customerId"
+              readonly />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="客户姓名：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerName : orderInfo.customerName" readonly />
+            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerName : orderInfo.customerName"
+              readonly />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="客户地址：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.address : orderInfo.customerAddress" readonly />
+            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.address : orderInfo.customerAddress"
+              readonly />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="客户等级：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerLevel : orderInfo.customerLevel" readonly />
+            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerLevel : orderInfo.customerLevel"
+              readonly />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="试测：">
-             <!-- Assuming it's a boolean or string in orderInfo -->
+            <!-- Assuming it's a boolean or string in orderInfo -->
             <el-input :value="orderInfo.trial === 1 ? '是' : '否'" readonly />
           </el-form-item>
         </el-col>
@@ -53,7 +52,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="引物浓度：">
-            <el-input v-model="orderInfo.primerConcentration" readonly />
+            <el-input v-model="orderInfo.primerConcentration" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -65,17 +64,17 @@
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="sample-form">
       <el-form-item label="样品编号：" prop="sampleId">
         <el-input v-model="form.sampleId" placeholder="多个数据请用,分割">
-           <template #suffix>
-             <span class="input-hint">多个数据请用,分割</span>
-           </template>
+          <template #suffix>
+            <span class="input-hint">多个数据请用,分割</span>
+          </template>
         </el-input>
       </el-form-item>
 
       <el-form-item label="测序引物：" prop="primer">
         <el-input v-model="form.primer" placeholder="多个数据请用,分割">
-           <template #suffix>
-             <span class="input-hint">多个数据请用,分割</span>
-           </template>
+          <template #suffix>
+            <span class="input-hint">多个数据请用,分割</span>
+          </template>
         </el-input>
       </el-form-item>
 
@@ -86,8 +85,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-           <el-form-item label="抗生素类型：" prop="antibioticType">
-             <AntibioticTypeSelect v-model="form.antibioticType" />
+          <el-form-item label="抗生素类型：" prop="antibioticType">
+            <AntibioticTypeSelect v-model="form.antibioticType" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -104,7 +103,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
+
       <el-form-item label="是否测通：" prop="testResult">
         <el-radio-group v-model="form.testResult">
           <el-radio :label="1">是</el-radio>
@@ -113,7 +112,7 @@
       </el-form-item>
 
       <el-form-item label="备注：" prop="remark">
-         <el-input v-model="form.remark" type="textarea" :rows="4" />
+        <el-input v-model="form.remark" type="textarea" :rows="4" />
       </el-form-item>
     </el-form>
 
@@ -184,9 +183,9 @@ watch(() => props.modelValue, (val) => {
 
 function loadOrderInfo() {
   if (props.orderRow && Object.keys(props.orderRow).length > 0) {
-      console.log('Using passed orderRow:', props.orderRow)
-      orderInfo.value = { ...props.orderRow }
-      // Do not return, fetch full details to ensure all fields (like primerConcentration) are present
+    console.log('Using passed orderRow:', props.orderRow)
+    orderInfo.value = { ...props.orderRow }
+    // Do not return, fetch full details to ensure all fields (like primerConcentration) are present
   }
 }
 
