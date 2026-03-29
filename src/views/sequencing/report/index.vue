@@ -11,22 +11,24 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus">报告状态</el-button>
+        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus" :disabled="multiple"
+          v-hasPermi="['order:sample:reportStatus']">报告状态</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleTestHole">测试孔号</el-button>
+        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleNotImplemented">测试孔号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Document" @click="handleBdt">DBT</el-button>
+        <el-button size="small" type="info" plain icon="Document" @click="handleBdtQuery">BDT</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Plus" @click="handleCapillary">毛细管添加</el-button>
+        <el-button size="small" type="primary" plain icon="Plus" @click="handleCapillary"
+          v-hasPermi="['order:sample:capillaryAdd']">毛细管添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Monitor" @click="handleOrderMonitor">订单监控</el-button>
+        <el-button size="small" type="info" plain icon="Monitor" @click="handleNotImplemented">订单监控</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Picture" @click="handleImageSettings">图像设置</el-button>
+        <el-button size="small" plain icon="Picture" @click="handleNotImplemented">图像设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
@@ -36,22 +38,135 @@
       size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
       :total="total" @selection-change="handleSelectionChange" />
 
-    <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="well-form">
-        <div class="form-row border-top border-bottom">
-          <div class="form-label">备注：</div>
+    <!-- 报告状态对话框 -->
+    <el-dialog v-model="statusOpen" width="750px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+            <Message />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">设置报告状态</span>
+        </div>
+      </template>
+      <el-form :model="statusForm" label-width="0" class="well-form">
+        <!-- 基础信息 -->
+        <div class="form-row border-top">
+          <div class="form-label">生产编号：</div>
           <div class="form-content">
-            <el-form-item prop="remark" label-width="0">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-            </el-form-item>
+            <span style="font-size: 13px; color: #F56C6C;">
+              选中个数：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
+                selectedProduceIds.join(',') }}
+            </span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">报告状态：</div>
+          <div class="form-content">
+            <el-select v-model="statusForm.reportStatus" placeholder="请选择报告状态" style="width: 250px">
+              <el-option label="报告成功" value="报告成功" />
+              <el-option label="报告取消" value="报告取消" />
+              <el-option label="报告重做" value="报告重做" />
+              <el-option label="报告重抽" value="报告重抽" />
+            </el-select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">原浓度：</div>
+          <div class="form-content">
+             <el-input v-model="statusForm.originConcentration" placeholder="请输入原浓度" style="width: 250px" />
+          </div>
+        </div>
+        <!-- 异常原因 -->
+        <div class="form-row" style="height: 100px;">
+          <div class="form-label" style="height: 100%;">异常原因：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+            <el-input v-model="statusForm.reportErrorReason" type="textarea" :rows="3" placeholder="请输入报告异常原因" />
+          </div>
+        </div>
+        <!-- 备注 -->
+        <div class="form-row border-bottom" style="height: 100px;">
+          <div class="form-label" style="height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+            <el-input v-model="statusForm.remark" type="textarea" :rows="3" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button @click="submitStatus" class="premium-btn premium-btn-confirm">
+            <el-icon><SuccessFilled /></el-icon>确 定
+          </el-button>
+          <el-button @click="statusOpen = false" class="premium-btn premium-btn-cancel">
+            <el-icon><CircleCloseFilled /></el-icon>取 消
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 毛细管添加对话框 -->
+    <el-dialog v-model="capillaryOpen" width="500px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+            <Plus />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">毛细管添加</span>
+        </div>
+      </template>
+      <el-form :model="capillaryForm" label-width="0" class="well-form">
+        <div class="form-row border-top border-bottom">
+          <div class="form-label">板号：</div>
+          <div class="form-content">
+            <el-input v-model="capillaryForm.plateNo" placeholder="请输入板号" style="width: 250px" />
+          </div>
+        </div>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="submitCapillary" class="premium-btn premium-btn-confirm">
+            <el-icon><SuccessFilled /></el-icon>开始流转
+          </el-button>
+          <el-button @click="capillaryOpen = false" class="premium-btn premium-btn-cancel">
+            <el-icon><CircleCloseFilled /></el-icon>取 消
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- BDT查询对话框 -->
+    <el-dialog title="测序BDT表" v-model="bdtOpen" width="1000px" append-to-body>
+      <el-form :inline="true" label-width="68px" @submit.prevent>
+        <el-form-item label="板号">
+          <el-input v-model="bdtQueryPlateNo" placeholder="请输入板号" clearable @keyup.enter="handlePrintBdt" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="Search" @click="handlePrintBdt">查询</el-button>
+        </el-form-item>
+      </el-form>
+      <div v-if="bdtList.length > 0" class="report-container" id="printReportBDT">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>生产编号</th><th>订单号</th><th>样品编号</th><th>板号</th><th>孔号</th><th>引物</th><th>报告状态</th><th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in bdtList" :key="item.produceId">
+              <td>{{ item.produceId }}</td><td>{{ item.orderId }}</td><td>{{ item.sampleId }}</td><td>{{ item.plateNo }}</td>
+              <td>{{ item.holeNo }}</td><td>{{ item.primer }}</td><td>{{ item.reportStatus }}</td><td>{{ item.remark }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <el-empty v-else description="请输入板号查询数据" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button :disabled="bdtList.length === 0" v-print="'#printReportBDT'" class="premium-btn premium-btn-confirm">
+            <el-icon><SuccessFilled /></el-icon>打 印
+          </el-button>
+          <el-button @click="bdtOpen = false" class="premium-btn premium-btn-cancel">
+            <el-icon><CircleCloseFilled /></el-icon>关 闭
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -59,198 +174,163 @@
 </template>
 
 <script setup name="Report">
-import { listReport, getReport, addReport, updateReport, delReport } from '@/api/sequencing/report'
+import { 
+  listReport, 
+  updateReportStatus, 
+  addCapillary 
+} from '@/api/sequencing/report'
+import { getSequencingBDT } from '@/api/sequencing/reaction'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
 const { proxy } = getCurrentInstance()
 
 const dataList = ref([])
-const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
 const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
-const title = ref('')
 const searchRef = ref(null)
+const selectedRows = ref([])
+const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
 
 // 列配置
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'produceId', label: '生产编号', width: 120, fixed: true, sortable: true, visible: true },
   { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { key: 'orderType', label: '订单类型', width: 100, visible: true },
   { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'customerAddress', label: '客户地址', width: 180, showOverflowTooltip: true, visible: true },
-  { key: 'customerLevel', label: '客户等级', width: 100, visible: true },
-  { key: 'topic', label: '课题组', width: 120, visible: true },
-  { key: 'originHoleNo', label: '样品对应号', width: 100, visible: true },
   { key: 'sampleId', label: '样品编号', width: 120, visible: true },
   { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'primerConcentration', label: '引物浓度', width: 100, visible: true },
-  { key: 'sampleType', label: '样品类型', width: 100, visible: true },
-  { key: 'carrierName', label: '载体名称', width: 120, visible: true },
-  { key: 'fragmentSize', label: '片段大小', width: 100, visible: true },
-  { key: 'isFullLength', label: '是否测透', width: 100, visible: true },
   { key: 'originConcentration', label: '原浓度', width: 100, visible: true },
-  { key: 'completionStatus', label: '完成情况', width: 100, visible: true },
-  { key: 'returnState', label: '返回状态', width: 100, visible: true },
-  { key: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'flowName', label: '流程名称', width: 100, visible: true },
-  { key: 'plateNo', label: '板号', width: 100, visible: true },
-  { key: 'holeNo', label: '孔号', width: 80, visible: true }
+  { key: 'reportStatus', label: '报告状态', width: 100, visible: true },
+  { key: 'returnState', label: '状态', width: 100, visible: true },
+  { key: 'templatePlateNo', label: '模板板号', width: 120, visible: true },
+  { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
+  { key: 'plateNo', label: '反应板号', width: 120, visible: true },
+  { key: 'holeNo', label: '反应孔号', width: 80, visible: true },
+  { key: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true }
 ])
 
 // 检索配置
 const searchFields = ref([
-  { prop: 'name', label: '名称', type: 'input' },
-  { prop: 'status', label: '状态', type: 'select', options: [{ label: '正常', value: '0' }, { label: '停用', value: '1' }] }
+  { prop: 'plateNo', label: '板号', type: 'input' },
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' },
+  { prop: 'sampleId', label: '样品编号', type: 'input' }
 ])
 
-// 列可见性缓存
-const cacheKey = 'sequencing_report_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) { }
-}
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
-const data = reactive({
-  form: {},
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    name: undefined,
-    status: undefined
-  },
-  rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
-  }
-})
-
-const { queryParams, form, rules } = toRefs(data)
-
-/** 查询列表 */
+// 统一 getList 处理
 function getList() {
   loading.value = true
   listReport(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+    const res = response.data || response
+    dataList.value = res.rows || []
+    total.value = res.total || 0
     loading.value = false
   }).catch(() => {
     loading.value = false
   })
 }
 
+const data = reactive({
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    plateNo: undefined,
+    orderId: undefined,
+    customerName: undefined,
+    sampleId: undefined
+  }
+})
+
+const { queryParams } = toRefs(data)
+
 function toggleSearchPanel() {
   searchRef.value?.toggleCollapse()
 }
 
-/** 取消按钮 */
-function cancel() {
-  open.value = false
-  reset()
-}
-
-/** 表单重置 */
-function reset() {
-  form.value = {
-    id: undefined,
-    name: undefined,
-    status: '0',
-    remark: undefined
-  }
-  proxy.resetForm('formRef')
-}
-
-/** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1
   getList()
 }
 
-/** 刷新按钮操作 */
 function handleRefresh() {
   getList()
   proxy.$modal.msgSuccess('刷新成功')
 }
 
-/** 多选框选中数据 */
 function handleSelectionChange(selection) {
+  selectedRows.value = selection
   ids.value = selection.map(item => item.id)
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
 
-/** 新增按钮操作 */
-function handleAdd() {
-  reset()
-  open.value = true
-  title.value = '添加报告生产'
+// 业务逻辑
+const statusOpen = ref(false)
+const statusForm = ref({})
+function handleReportStatus() {
+  if (multiple.value) {
+    proxy.$modal.msgWarning('请选择需要设置状态的样品')
+    return
+  }
+  const savedStatus = localStorage.getItem('report_status_memory')
+  statusForm.value = {
+    produceIdList: selectedProduceIds.value,
+    reportStatus: savedStatus || '报告成功',
+    originConcentration: undefined,
+    reportErrorReason: undefined,
+    remark: undefined
+  }
+  statusOpen.value = true
 }
 
-/** 修改按钮操作 */
-function handleUpdate(row) {
-  reset()
-  const id = row.id || ids.value
-  getReport(id).then(response => {
-    form.value = response.data
-    open.value = true
-    title.value = '修改报告生产'
-  })
-}
-
-/** 提交按钮 */
-function submitForm() {
-  proxy.$refs['formRef'].validate(valid => {
-    if (valid) {
-      if (form.value.id !== undefined) {
-        updateReport(form.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
-        })
-      } else {
-        addReport(form.value).then(response => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          getList()
-        })
-      }
-    }
-  })
-}
-
-/** 删除按钮操作 */
-function handleDelete(row) {
-  const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delReport(idList)
-  }).then(() => {
+function submitStatus() {
+  updateReportStatus(statusForm.value).then(() => {
+    localStorage.setItem('report_status_memory', statusForm.value.reportStatus)
+    proxy.$modal.msgSuccess('设置成功')
+    statusOpen.value = false
     getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  })
 }
 
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download('sequencing/report/export', {
-    ...queryParams.value
-  }, `report_${new Date().getTime()}.xlsx`)
+const capillaryOpen = ref(false)
+const capillaryForm = ref({})
+function handleCapillary() {
+  capillaryForm.value = { plateNo: undefined }
+  capillaryOpen.value = true
+}
+
+function submitCapillary() {
+  if (!capillaryForm.value.plateNo) return proxy.$modal.msgError('请输入板号')
+  addCapillary(capillaryForm.value).then(() => {
+    proxy.$modal.msgSuccess('阶段流转成功')
+    capillaryOpen.value = false
+    getList()
+  })
+}
+
+const bdtOpen = ref(false)
+const bdtQueryPlateNo = ref('')
+const bdtList = ref([])
+function handleBdtQuery() {
+  bdtQueryPlateNo.value = ''
+  bdtList.value = []
+  bdtOpen.value = true
+}
+
+function handlePrintBdt() {
+  if (!bdtQueryPlateNo.value) return proxy.$modal.msgError('请输入板号')
+  getSequencingBDT({ plateNo: bdtQueryPlateNo.value }).then(response => {
+    bdtList.value = response.data || []
+  })
+}
+
+function handleNotImplemented() {
+  proxy.$modal.msg('功能开发中...')
 }
 
 onMounted(() => {
@@ -275,7 +355,7 @@ onMounted(() => {
 }
 
 .form-label {
-  width: 120px;
+  width: 140px;
   padding: 10px;
   height: 100%;
   display: flex;

@@ -15,25 +15,28 @@
           v-hasPermi="['sequencing:prereaction:export']">导出</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain @click="handleBatchPlate" :disabled="multiple">
-          <template #icon><el-icon><Calendar /></el-icon></template>
+        <el-button size="small" type="success" plain @click="handleBatchPlate" :disabled="multiple"
+          v-hasPermi="['order:sample:reactionProduce']">
           添加板号
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain @click="handleActiveHole" :disabled="single">
-          <template #icon><el-icon><List /></el-icon></template>
+        <el-button size="small" type="success" plain @click="handleActiveHole" :disabled="single"
+          v-hasPermi="['order:sample:reactionProduce']">
           添加孔号
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Document" @click="handleBdtQuery">测序BDT表</el-button>
+        <el-button size="small" type="info" plain icon="Document" @click="handleBdtQuery"
+          v-hasPermi="['order:sample:reactionProduce']">测序BDT表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Warning" @click="handleInsufficient" :disabled="multiple">样品不足</el-button>
+        <el-button size="small" type="warning" plain icon="Warning" @click="handleInsufficient" :disabled="multiple"
+          v-hasPermi="['order:sample:sampleInsufficient']">样品不足</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Back" @click="handleSendBack" :disabled="multiple">退回</el-button>
+        <el-button size="small" type="danger" plain icon="Back" @click="handleSendBack" :disabled="multiple"
+          v-hasPermi="['order:sample:reactionPreSendBack']">退回</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
@@ -153,22 +156,43 @@
       </template>
     </el-dialog>
 
-    <!-- 退回理由对话框 -->
-    <el-dialog title="反应预做退回" v-model="sendBackOpen" width="500px" append-to-body>
-      <el-form :model="sendBackForm" label-width="100px" class="well-form">
-        <div class="form-row border-top border-bottom">
-          <div class="form-label">退回理由：</div>
+    <!-- 退回理由对话框 (仿制截图样式) -->
+    <el-dialog v-model="sendBackOpen" width="750px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #F56C6C; font-size: 20px;">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">反应预做退回设置</span>
+        </div>
+      </template>
+      <el-form :model="sendBackForm" label-width="0" class="well-form">
+        <!-- 生产编号 -->
+        <div class="form-row border-top">
+          <div class="form-label" style="width: 140px;">生产编号：</div>
           <div class="form-content">
-            <el-form-item label-width="0">
-              <el-input v-model="sendBackForm.remark" type="textarea" placeholder="请输入退回理由" />
-            </el-form-item>
+            <span style="font-size: 13px; color: #F56C6C;">
+              选中个数：<span style="font-weight: bold;">{{ ids.length }}</span>，选中生产编号：{{
+                ids.join(',') }}
+            </span>
+          </div>
+        </div>
+        <!-- 退回理由 -->
+        <div class="form-row border-bottom" style="height: 150px;">
+          <div class="form-label" style="width: 140px; height: 100%;">退回理由：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+            <el-input v-model="sendBackForm.remark" type="textarea" :rows="5" placeholder="请输入退回原因" />
           </div>
         </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitSendBack">确 定</el-button>
-          <el-button @click="sendBackOpen = false">取 消</el-button>
+          <el-button @click="submitSendBack" class="premium-btn premium-btn-confirm">
+            <el-icon><SuccessFilled /></el-icon>确 定
+          </el-button>
+          <el-button @click="sendBackOpen = false" class="premium-btn premium-btn-cancel">
+            <el-icon><CircleCloseFilled /></el-icon>取 消
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -270,8 +294,9 @@ const { queryParams } = toRefs(data)
 function getList() {
   loading.value = true
   listPrereaction(queryParams.value).then(response => {
-    dataList.value = response.rows || []
-    total.value = response.total || 0
+    const res = response.data || response // 兼容不同包装格式
+    dataList.value = res.rows || []
+    total.value = res.total || 0
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -391,11 +416,13 @@ function handleSendBack() {
 }
 
 function submitSendBack() {
-  reactionPreSendBack(sendBackForm.value).then(() => {
+  proxy.$modal.confirm('是否确认退回选中的样品？').then(() => {
+    return reactionPreSendBack(sendBackForm.value)
+  }).then(() => {
     proxy.$modal.msgSuccess('退回成功')
     sendBackOpen.value = false
     getList()
-  })
+  }).catch(() => { })
 }
 
 onMounted(() => {
@@ -420,7 +447,7 @@ onMounted(() => {
 }
 
 .form-label {
-  width: 120px;
+  width: 140px;
   padding: 10px;
   height: 100%;
   display: flex;
@@ -447,18 +474,6 @@ onMounted(() => {
 
 :deep(.well-form .el-form-item) {
   margin-bottom: 0px;
-}
-
-.report-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.report-table th, .report-table td {
-  border: 1px solid #dfe6ec;
-  padding: 8px;
-  text-align: center;
 }
 
 .report-table th {
