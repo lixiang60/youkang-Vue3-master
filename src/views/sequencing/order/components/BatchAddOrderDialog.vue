@@ -1,26 +1,12 @@
 <template>
-  <el-dialog
-    title="基因测序订单批量添加"
-    :model-value="modelValue"
-    width="800px"
-    @update:model-value="handleUpdateVisible"
-    append-to-body
-  >
+  <el-dialog title="基因测序订单批量添加" :model-value="modelValue" width="800px" @update:model-value="handleUpdateVisible"
+    append-to-body>
     <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" class="batch-add-form">
       <el-form-item label="客户选择：" prop="customerId">
-        <el-select
-          v-model="form.customerId"
-          placeholder="请选择"
-          filterable
-          clearable
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item in customerOptions"
-            :key="item.customerId"
+        <el-select v-model="form.customerId" placeholder="请选择" filterable clearable style="width: 100%">
+          <el-option v-for="item in customerOptions" :key="item.customerId"
             :label="`${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
-            :value="item.customerId"
-          />
+            :value="item.customerId" />
         </el-select>
       </el-form-item>
 
@@ -47,32 +33,17 @@
 
       <el-form-item label="附件：" prop="attachment">
         <div class="upload-wrapper">
-           <el-input v-model="fileName" readonly placeholder="请选择文件" style="flex: 1; margin-right: 10px;" />
-           <el-upload
-             ref="uploadRef"
-             action="#"
-             :show-file-list="false"
-             :auto-upload="false"
-             :on-change="handleFileChange"
-             accept=".xls,.xlsx"
-           >
-             <el-button>选择文件</el-button>
-           </el-upload>
+          <el-input v-model="fileName" readonly placeholder="请选择文件" style="flex: 1; margin-right: 10px;" />
+          <el-upload ref="uploadRef" action="#" :show-file-list="false" :auto-upload="false"
+            :on-change="handleFileChange" accept=".xls,.xlsx">
+            <el-button>选择文件</el-button>
+          </el-upload>
         </div>
       </el-form-item>
 
       <el-form-item label="备注：" prop="remark">
-        <el-input
-          v-model="form.remark"
-          type="textarea"
-          :rows="6"
-          placeholder=""
-        />
+        <el-input v-model="form.remark" type="textarea" :rows="6" placeholder="" />
       </el-form-item>
-
-      <div class="form-footer-action">
-        <el-button type="default" @click="handleSubmit">添加</el-button>
-      </div>
     </el-form>
 
     <template #footer>
@@ -156,7 +127,7 @@ function handleSubmit() {
         ElMessage.error('请选择附件')
         return
       }
-      
+
       const formData = new FormData()
       formData.append('customerId', form.customerId)
       formData.append('urgent', form.urgent)

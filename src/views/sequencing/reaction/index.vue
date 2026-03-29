@@ -125,19 +125,9 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer" style="display: flex; justify-content: center; gap: 20px;">
-          <el-button @click="submitForm" class="premium-btn premium-btn-confirm">
-            <template #icon><el-icon>
-                <SuccessFilled />
-              </el-icon></template>
-            确 定
-          </el-button>
-          <el-button @click="cancel" class="premium-btn premium-btn-cancel">
-            <template #icon><el-icon>
-                <CircleCloseFilled />
-              </el-icon></template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="handleSubmit">确 定</el-button>
+          <el-button type="danger" @click="handleCancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -198,23 +188,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 30px; padding: 10px 0;">
-          <el-button @click="submitConc" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="concOpen = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitConc">确 定</el-button>
+          <el-button type="danger" @click="concOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -275,23 +251,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 30px; padding: 10px 0;">
-          <el-button @click="submitPlate" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="plateOpen = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitPlate">确 定</el-button>
+          <el-button type="danger" @click="plateOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -348,29 +310,14 @@
         <div class="form-row border-bottom" style="height: 150px;">
           <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px;">
-            <el-input v-model="holeForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容"
-              style="height: 100%;" />
+            <el-input v-model="holeForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" style="height: 100%;" />
           </div>
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 30px; padding: 10px 0;">
-          <el-button @click="submitHole" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="holeOpen = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitHole">确 定</el-button>
+          <el-button type="danger" @click="holeOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -425,23 +372,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
-          <el-button @click="submitStatus" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="statusOpen = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitStatus">确 定</el-button>
+          <el-button type="danger" @click="statusOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -476,23 +409,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
-          <el-button @click="submitStop" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="stopOpen = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitStop">确 定</el-button>
+          <el-button type="danger" @click="stopOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -528,12 +447,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="submitPreReaction" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>确 定
-          </el-button>
-          <el-button @click="preOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>取 消
-          </el-button>
+          <el-button type="success" @click="submitPreReaction">确 定</el-button>
+          <el-button type="danger" @click="preOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -569,12 +484,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="submitInsufficient" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>确 定
-          </el-button>
-          <el-button @click="insufficientOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>取 消
-          </el-button>
+          <el-button type="success" @click="submitInsufficient">确 定</el-button>
+          <el-button type="danger" @click="insufficientOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -604,7 +515,9 @@
       </el-form>
 
       <div v-if="bdtList.length > 0" class="report-container" id="printBDT">
-        <div class="print-header" style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 18px; display: none;">测序BDT表</div>
+        <div class="print-header"
+          style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 18px; display: none;">测序BDT表
+        </div>
         <table class="report-table">
           <thead>
             <tr>
@@ -636,12 +549,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button :disabled="bdtList.length === 0" v-print="'#printBDT'" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>打 印
-          </el-button>
-          <el-button @click="bdtOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>关 闭
-          </el-button>
+          <el-button type="success" :disabled="bdtList.length === 0" v-print="'#printBDT'">打 印</el-button>
+          <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -653,8 +562,9 @@
           <div class="form-label" style="width: 120px;">板号：</div>
           <div class="form-content" style="display: flex; align-items: center; justify-content: space-between;">
             <el-input v-model="dispenseQuery.plateNo" placeholder="请输入板号" style="width: 250px" />
-            <el-button type="info" icon="Printer" class="premium-btn" style="background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%); color: #333; border: 1px solid #ccc;"
-                       @click="handlePrintDispense">机器分装表打印</el-button>
+            <el-button type="info" icon="Printer" class="premium-btn"
+              style="background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%); color: #333; border: 1px solid #ccc;"
+              @click="handlePrintDispense">机器分装表打印</el-button>
           </div>
         </div>
       </el-form>
@@ -702,12 +612,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button :disabled="dispenseList.length === 0" v-print="'#printDispense'" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>打 印
-          </el-button>
-          <el-button @click="dispenseOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>取 消
-          </el-button>
+          <el-button type="success" :disabled="dispenseList.length === 0" v-print="'#printDispense'">打 印</el-button>
+          <el-button type="danger" @click="dispenseOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -848,7 +754,7 @@ function handleUpdate() {
   })
 }
 
-function submitForm() {
+function handleSubmit() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       updateProduction(form.value).then(() => {
@@ -860,7 +766,7 @@ function submitForm() {
   })
 }
 
-function cancel() {
+function handleCancel() {
   open.value = false
   reset()
 }

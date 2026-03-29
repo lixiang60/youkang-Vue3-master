@@ -93,12 +93,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="submitStatus" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>确 定
-          </el-button>
-          <el-button @click="statusOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>取 消
-          </el-button>
+          <el-button type="success" @click="submitStatus">确 定</el-button>
+          <el-button type="danger" @click="statusOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -123,12 +119,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="submitCapillary" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>开始流转
-          </el-button>
-          <el-button @click="capillaryOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>取 消
-          </el-button>
+          <el-button type="success" @click="submitCapillary">开始流转</el-button>
+          <el-button type="danger" @click="capillaryOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -161,12 +153,8 @@
       <el-empty v-else description="请输入板号查询数据" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button :disabled="bdtList.length === 0" v-print="'#printReportBDT'" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>打 印
-          </el-button>
-          <el-button @click="bdtOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>关 闭
-          </el-button>
+          <el-button type="success" :disabled="bdtList.length === 0" v-print="'#printReportBDT'">打 印</el-button>
+          <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>

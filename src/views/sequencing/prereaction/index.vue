@@ -73,8 +73,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitPlate">确 定</el-button>
-          <el-button @click="plateOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitPlate">确 定</el-button>
+          <el-button type="danger" @click="plateOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -101,8 +101,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitHole">确 定</el-button>
-          <el-button @click="holeOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitHole">确 定</el-button>
+          <el-button type="danger" @click="holeOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -150,8 +150,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" icon="Printer" :disabled="bdtList.length === 0" @click="bdtOpen = false">打 印</el-button>
-          <el-button @click="bdtOpen = false">关 闭</el-button>
+          <el-button type="success" :disabled="bdtList.length === 0" v-print="'#printPrereactionBDT'">打 印</el-button>
+          <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -187,12 +187,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="submitSendBack" class="premium-btn premium-btn-confirm">
-            <el-icon><SuccessFilled /></el-icon>确 定
-          </el-button>
-          <el-button @click="sendBackOpen = false" class="premium-btn premium-btn-cancel">
-            <el-icon><CircleCloseFilled /></el-icon>取 消
-          </el-button>
+          <el-button type="success" @click="submitSendBack">确 定</el-button>
+          <el-button type="danger" @click="sendBackOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
