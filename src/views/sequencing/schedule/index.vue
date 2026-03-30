@@ -102,7 +102,7 @@
         </el-table>
         <div
           style="background: #f5f7fa; padding: 5px 15px; border-top: 1px solid #dcdfe6; font-size: 12px; color: #606266; text-align: right;">
-          共 1 页 >> 100 << 1 - {{ selectedRows.length }} 共 {{ selectedRows.length }} 条 </div>
+          共 1 页 &gt;&gt; 100 &lt;&lt; 1 - {{ selectedRows.length }} 共 {{ selectedRows.length }} 条 </div>
         </div>
         <template #footer>
           <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">

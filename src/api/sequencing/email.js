@@ -59,3 +59,15 @@ export function exportEmail(query) {
     params: query
   })
 }
+
+// 查询模板邮件列表 (对接模板生产接口)
+export function listEmailProduce(data) {
+  return request({
+    url: '/order/sample/template/produce/list',
+    method: 'post',
+    data: {
+      ...data,
+      flowName: '模板邮件'
+    }
+  })
+}

@@ -61,6 +61,18 @@ export function listProduceTemplate(data) {
   })
 }
 
+// 查询模板生产列表 (带 flowName)
+export function listProduceList(data) {
+  return request({
+    url: '/order/sample/template/produce/list',
+    method: 'post',
+    data: {
+      ...data,
+      flowName: '模板生产'
+    }
+  })
+}
+
 // 设置模板状态
 export function updateProduceTempStatus(data) {
   return request({

@@ -81,11 +81,3 @@ export function reactionPreSendBack(data) {
   })
 }
 
-// 设置报告状态
-export function updateReactionReportStatus(data) {
-  return request({
-    url: '/order/sample/reactionProduce/status',
-    method: 'post',
-    data: data
-  })
-}

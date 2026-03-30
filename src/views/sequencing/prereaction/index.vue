@@ -47,12 +47,37 @@
       :total="total" @selection-change="handleSelectionChange" />
 
     <!-- 活跃板号对话框 -->
-    <el-dialog title="添加板号" v-model="plateOpen" width="750px" append-to-body>
-      <el-form ref="plateFormRef" :model="plateForm" label-width="120px" class="well-form">
+    <el-dialog v-model="plateOpen" width="750px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+            <Edit />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">设置模板板号</span>
+        </div>
+      </template>
+      <el-form ref="plateFormRef" :model="plateForm" :rules="plateRules" label-width="0" class="well-form">
         <div class="form-row border-top">
+          <div class="form-label">生产编号：</div>
+          <div class="form-content">
+            <span style="font-size: 13px;">选中数量：<span style="color: #F56C6C; font-weight: bold;">{{ ids.length
+                }}</span>，选中生产编号：{{ ids.join(', ') }}</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">机器类型：</div>
+          <div class="form-content">
+            <el-radio-group v-model="plateForm.machineType">
+              <el-radio label="192">192</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="form-row">
           <div class="form-label">板号：</div>
           <div class="form-content">
-            <el-input v-model="plateForm.plateNo" placeholder="请输入板号" style="width: 250px" />
+            <el-form-item prop="plateNo" label-width="0">
+              <el-input v-model="plateForm.plateNo" placeholder="请输入板号" style="width: 250px" />
+            </el-form-item>
           </div>
         </div>
         <div class="form-row">
@@ -64,10 +89,10 @@
             </el-radio-group>
           </div>
         </div>
-        <div class="form-row border-bottom">
-          <div class="form-label">备注：</div>
-          <div class="form-content">
-            <el-input v-model="plateForm.remark" type="textarea" placeholder="请输入备注内容" />
+        <div class="form-row border-bottom" style="height: 150px;">
+          <div class="form-label" style="height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+            <el-input v-model="plateForm.remark" type="textarea" :rows="5" placeholder="添加备注信息..." />
           </div>
         </div>
       </el-form>
@@ -80,22 +105,55 @@
     </el-dialog>
 
     <!-- 活跃孔号对话框 -->
-    <el-dialog title="添加孔号" v-model="holeOpen" width="500px" append-to-body>
-      <el-form :model="holeForm" label-width="120px" class="well-form">
+    <el-dialog v-model="holeOpen" width="750px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+            <Setting />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">手工直接添加模板孔号</span>
+        </div>
+      </template>
+      <el-form ref="holeFormRef" :model="holeForm" :rules="holeRules" label-width="0" class="well-form">
         <div class="form-row border-top">
           <div class="form-label">生产编号：</div>
-          <div class="form-content">{{ holeForm.produceId }}</div>
-        </div>
-        <div class="form-row">
-          <div class="form-label">板号：</div>
           <div class="form-content">
-            <el-input v-model="holeForm.plateNo" placeholder="请输入板号" />
+            <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">1</span>，选中生产编号：{{ holeForm.produceId }}</span>
           </div>
         </div>
-        <div class="form-row border-bottom">
-          <div class="form-label">孔号：</div>
+        <div class="form-row">
+          <div class="form-label">机器类型：</div>
           <div class="form-content">
-            <el-input v-model="holeForm.holeNo" placeholder="请输入孔号 ( e.g. A01 )" />
+            <el-radio-group v-model="holeForm.machineType">
+              <el-radio label="192">192</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">排版方式：</div>
+          <div class="form-content">
+            <el-radio-group v-model="holeForm.layout">
+              <el-radio label="横排">横排</el-radio>
+              <el-radio label="竖排">竖排</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">板号/孔号：</div>
+          <div class="form-content" style="display: flex; align-items: center; gap: 10px;">
+            <el-form-item prop="plateNo" label-width="0" style="margin-bottom: 0;">
+              <el-input v-model="holeForm.plateNo" placeholder="板号" style="width: 150px" />
+            </el-form-item>
+            <span style="color: #dcdfe6;">/</span>
+            <el-form-item prop="holeNo" label-width="0" style="margin-bottom: 0;">
+              <el-input v-model="holeForm.holeNo" placeholder="孔号" style="width: 150px" />
+            </el-form-item>
+          </div>
+        </div>
+        <div class="form-row border-bottom" style="height: 150px;">
+          <div class="form-label" style="height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+            <el-input v-model="holeForm.remark" type="textarea" :rows="5" placeholder="添加备注信息..." />
           </div>
         </div>
       </el-form>
@@ -229,23 +287,34 @@ const columns = ref([
   { key: 'primerName', label: '引物', width: 100, visible: true },
   { key: 'primerPosition', label: '引物位置', width: 100, visible: true },
   { key: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'originConcentration', label: '原浓', width: 80, visible: true },
-  { key: 'plateNo', label: '排板板号', width: 120, visible: true },
-  { key: 'holeNo', label: '排版', width: 80, visible: true },
+  { key: 'originConcentration', label: '原浓度', width: 100, visible: true },
+  { key: 'plateNo', label: '模板板号', width: 120, visible: true },
+  { key: 'holeNo', label: '模板孔号', width: 100, visible: true },
   { key: 'carrierName', label: '载体名称', width: 120, visible: true },
   { key: 'produceId', label: '生产编号', width: 120, sortable: true, visible: true },
   { key: 'orderId', label: '订单号', width: 160, visible: true },
-  { key: 'sampleType', label: '样品', width: 100, visible: true },
-  { key: 'fragmentSize', label: '片段', width: 80, visible: true },
+  { key: 'sampleType', label: '样品类型', width: 100, visible: true },
+  { key: 'fragmentSize', label: '片段大小', width: 100, visible: true },
+  { key: 'completionStatus', label: '是否测通', width: 100, visible: true },
   { key: 'prevPlateNo', label: '上一版号', width: 120, visible: true },
   { key: 'customerName', label: '客户姓名', width: 100, visible: true },
   { key: 'customerAddress', label: '客户地址', width: 200, showOverflowTooltip: true, visible: true },
   { key: 'topic', label: '课题组', width: 120, visible: true },
   { key: 'priority', label: '加急', width: 80, visible: true },
-  { key: 'completionStatus', label: '完成情况', width: 100, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', width: 100, visible: true },
   { key: 'returnState', label: '返回状态', width: 100, visible: true },
   { key: 'createBy', label: '添加人', width: 100, visible: true }
 ])
+
+const plateRules = {
+  plateNo: [{ required: true, message: '请输入板号', trigger: 'blur' }],
+  layout: [{ required: true, message: '请选择排版方式', trigger: 'change' }]
+}
+
+const holeRules = {
+  plateNo: [{ required: true, message: '请输入板号', trigger: 'blur' }],
+  holeNo: [{ required: true, message: '请输入孔号', trigger: 'blur' }]
+}
 
 // 检索配置
 const searchFields = ref([
@@ -338,6 +407,7 @@ function handleBatchPlate() {
   plateForm.value = {
     produceIdList: ids.value,
     plateNo: undefined,
+    machineType: '192',
     layout: '横排',
     remark: undefined
   }
@@ -345,10 +415,14 @@ function handleBatchPlate() {
 }
 
 function submitPlate() {
-  updateReactionPlate(plateForm.value).then(() => {
-    proxy.$modal.msgSuccess('添加板号成功')
-    plateOpen.value = false
-    getList()
+  proxy.$refs['plateFormRef'].validate(valid => {
+    if (valid) {
+      updateReactionPlate(plateForm.value).then(() => {
+        proxy.$modal.msgSuccess('添加板号成功')
+        plateOpen.value = false
+        getList()
+      })
+    }
   })
 }
 
@@ -359,16 +433,23 @@ function handleActiveHole() {
   holeForm.value = {
     produceId: row.produceId,
     plateNo: row.plateNo,
-    holeNo: row.holeNo
+    holeNo: row.holeNo,
+    machineType: '192',
+    layout: '横排',
+    remark: ''
   }
   holeOpen.value = true
 }
 
 function submitHole() {
-  updateReactionHoleNo(holeForm.value).then(() => {
-    proxy.$modal.msgSuccess('添加孔号成功')
-    holeOpen.value = false
-    getList()
+  proxy.$refs['holeFormRef'].validate(valid => {
+    if (valid) {
+      updateReactionHoleNo(holeForm.value).then(() => {
+        proxy.$modal.msgSuccess('添加孔号成功')
+        holeOpen.value = false
+        getList()
+      })
+    }
   })
 }
 

@@ -15,17 +15,17 @@
           v-hasPermi="['order:sample:reportStatus']">报告状态</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleNotImplemented">测试孔号</el-button>
+        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleNotImplemented">清除孔号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Document" @click="handleBdtQuery">BDT</el-button>
+        <el-button size="small" type="info" plain icon="Document" @click="handleDbtQuery">DBT</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" plain icon="Plus" @click="handleCapillary"
           v-hasPermi="['order:sample:capillaryAdd']">毛细管添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Monitor" @click="handleNotImplemented">订单监控</el-button>
+        <el-button size="small" type="info" plain icon="Monitor" @click="handleNotImplemented">订单量监控</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Picture" @click="handleNotImplemented">图像设置</el-button>
@@ -100,42 +100,59 @@
     </el-dialog>
 
     <!-- 毛细管添加对话框 -->
-    <el-dialog v-model="capillaryOpen" width="500px" append-to-body>
+    <el-dialog v-model="capillaryOpen" width="800px" append-to-body>
       <template #header>
         <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
-            <Plus />
+          <el-icon style="margin-right: 8px; color: #67C23A; font-size: 20px;">
+            <CirclePlus />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">毛细管添加</span>
+          <span style="font-weight: bold; font-size: 16px;">添加毛细管</span>
         </div>
       </template>
       <el-form :model="capillaryForm" label-width="0" class="well-form">
-        <div class="form-row border-top border-bottom">
-          <div class="form-label">板号：</div>
+        <!-- 第一行：板号和机器号 -->
+        <div class="form-row border-top">
+          <div class="form-label" style="width: 100px;">板号：</div>
           <div class="form-content">
-            <el-input v-model="capillaryForm.plateNo" placeholder="请输入板号" style="width: 250px" />
+            <el-input v-model="capillaryForm.plateNo" placeholder="请输入板号" />
+          </div>
+          <div class="form-label" style="width: 100px; border-left: 1px solid #ebeef5;">机器号：</div>
+          <div class="form-content">
+            <el-select v-model="capillaryForm.machineNo" placeholder="请选择机器" style="width: 100%">
+              <el-option label="3730-1" value="3730-1" />
+              <el-option label="3730-2" value="3730-2" />
+              <el-option label="3730-3" value="3730-3" />
+            </el-select>
+          </div>
+        </div>
+        <!-- 第二行：备注 -->
+        <div class="form-row border-bottom" style="height: 150px;">
+          <div class="form-label" style="width: 100px; height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px;">
+            <el-input v-model="capillaryForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容"
+              style="height: 100%;" />
           </div>
         </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitCapillary">开始流转</el-button>
+          <el-button type="success" @click="submitCapillary">确 定</el-button>
           <el-button type="danger" @click="capillaryOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
 
-    <!-- BDT查询对话框 -->
-    <el-dialog title="测序BDT表" v-model="bdtOpen" width="1000px" append-to-body>
+    <!-- DBT查询对话框 -->
+    <el-dialog title="测序DBT表" v-model="dbtOpen" width="1000px" append-to-body>
       <el-form :inline="true" label-width="68px" @submit.prevent>
         <el-form-item label="板号">
-          <el-input v-model="bdtQueryPlateNo" placeholder="请输入板号" clearable @keyup.enter="handlePrintBdt" />
+          <el-input v-model="dbtQueryPlateNo" placeholder="请输入板号" clearable @keyup.enter="handlePrintDbt" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handlePrintBdt">查询</el-button>
+          <el-button type="primary" icon="Search" @click="handlePrintDbt">查询</el-button>
         </el-form-item>
       </el-form>
-      <div v-if="bdtList.length > 0" class="report-container" id="printReportBDT">
+      <div v-if="dbtList.length > 0" class="report-container" id="printReportDBT">
         <table class="report-table">
           <thead>
             <tr>
@@ -143,7 +160,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in bdtList" :key="item.produceId">
+            <tr v-for="item in dbtList" :key="item.produceId">
               <td>{{ item.produceId }}</td><td>{{ item.orderId }}</td><td>{{ item.sampleId }}</td><td>{{ item.plateNo }}</td>
               <td>{{ item.holeNo }}</td><td>{{ item.primer }}</td><td>{{ item.reportStatus }}</td><td>{{ item.remark }}</td>
             </tr>
@@ -153,8 +170,8 @@
       <el-empty v-else description="请输入板号查询数据" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" :disabled="bdtList.length === 0" v-print="'#printReportBDT'">打 印</el-button>
-          <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
+          <el-button type="success" :disabled="dbtList.length === 0" v-print="'#printReportDBT'">打 印</el-button>
+          <el-button type="danger" @click="dbtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -288,32 +305,37 @@ function submitStatus() {
 const capillaryOpen = ref(false)
 const capillaryForm = ref({})
 function handleCapillary() {
-  capillaryForm.value = { plateNo: undefined }
+  capillaryForm.value = {
+    plateNo: undefined,
+    machineNo: undefined,
+    remark: undefined
+  }
   capillaryOpen.value = true
 }
 
 function submitCapillary() {
   if (!capillaryForm.value.plateNo) return proxy.$modal.msgError('请输入板号')
+  if (!capillaryForm.value.machineNo) return proxy.$modal.msgError('请选择机器号')
   addCapillary(capillaryForm.value).then(() => {
-    proxy.$modal.msgSuccess('阶段流转成功')
+    proxy.$modal.msgSuccess('操作成功')
     capillaryOpen.value = false
     getList()
   })
 }
 
-const bdtOpen = ref(false)
-const bdtQueryPlateNo = ref('')
-const bdtList = ref([])
-function handleBdtQuery() {
-  bdtQueryPlateNo.value = ''
-  bdtList.value = []
-  bdtOpen.value = true
+const dbtOpen = ref(false)
+const dbtQueryPlateNo = ref('')
+const dbtList = ref([])
+function handleDbtQuery() {
+  dbtQueryPlateNo.value = ''
+  dbtList.value = []
+  dbtOpen.value = true
 }
 
-function handlePrintBdt() {
-  if (!bdtQueryPlateNo.value) return proxy.$modal.msgError('请输入板号')
-  getSequencingBDT({ plateNo: bdtQueryPlateNo.value }).then(response => {
-    bdtList.value = response.data || []
+function handlePrintDbt() {
+  if (!dbtQueryPlateNo.value) return proxy.$modal.msgError('请输入板号')
+  getSequencingBDT({ plateNo: dbtQueryPlateNo.value }).then(response => {
+    dbtList.value = response.data || []
   })
 }
 

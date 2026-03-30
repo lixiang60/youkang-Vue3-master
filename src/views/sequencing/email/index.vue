@@ -5,9 +5,6 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Delete" @click="handleDelete" :disabled="multiple">删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -19,11 +16,13 @@
       <el-col :span="1.5">
         <el-button size="small" type="warning" plain icon="CircleClose" @click="handleIgnoreEmail" :disabled="multiple">邮件忽略</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Position" @click="handleTemplateReturn" :disabled="multiple">邮件模板回发</el-button>
-      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
+
+    <!-- 数据列表页眉 -->
+    <div class="table-header-bar">
+      <el-icon style="margin-right: 5px; color: #409EFF;"><List /></el-icon> 数据列表
+    </div>
 
     <!-- 数据表格 -->
     <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
@@ -53,7 +52,12 @@
 </template>
 
 <script setup name="Email">
-import { listTemplateFailedSamples, getEmail, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
+import { 
+  listEmailProduce,
+  addEmail, 
+  updateEmail, 
+  delEmail
+} from '@/api/sequencing/email'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -70,17 +74,29 @@ const total = ref(0)
 const title = ref('')
 const searchRef = ref(null)
 
-// 列配置 (根据 API 文档 4.5 模板失败列表字段调整)
+// 列配置 (根据截图及标准生产字段调整)
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'customerId', label: '客户ID', width: 80, visible: false },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'customerEmail', label: '客户邮箱', width: 180, visible: true },
-  { key: 'createTime', label: '送样日期', width: 160, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, visible: true },
-  { key: 'sampleId', label: '样品编号', width: 120, visible: true },
-  { key: 'returnState', label: '模板状态', width: 110, visible: true },
-  { key: 'remark', label: '失败原因', showOverflowTooltip: true, visible: true }
+  { prop: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
+  { prop: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
+  { prop: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { prop: 'customerAddress', label: '客户地址', width: 150, visible: true },
+  { prop: 'orderType', label: '订单类型', width: 100, visible: true },
+  { prop: 'customerLevel', label: '客户等级', width: 80, visible: true },
+  { prop: 'reagent', label: '试剂', width: 100, visible: true },
+  { prop: 'urgent', label: '加急', width: 80, visible: true },
+  { prop: 'sampleId', label: '样品编号', width: 120, visible: true },
+  { prop: 'primer', label: '测序引物', width: 100, visible: true },
+  { prop: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
+  { prop: 'sampleType', label: '样品类型', width: 80, visible: true },
+  { prop: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
+  { prop: 'isAsync', label: '是否测试', width: 80, visible: true },
+  { prop: 'originConcentration', label: '原浓度', width: 100, visible: true },
+  { prop: 'produceStatus', label: '完成情况', width: 100, visible: true },
+  { prop: 'returnState', label: '退回状态', width: 100, visible: true },
+  { prop: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
+  { prop: 'flowId', label: '流程ID', width: 100, visible: true },
+  { prop: 'flowName', label: '流程名称', width: 100, visible: true }
 ])
 
 // 检索配置
@@ -129,24 +145,11 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listTemplateFailedSamples(queryParams.value).then(response => {
-    // 处理 API 直接返回 Array 的情况，并支持本地前端搜索和分页 (由于 API 文档中该 GET 接口无参数且无 total)
-    let fullList = response.data || response || []
-    
-    // 基础过滤逻辑 (如果后端不自带搜索)
-    if (queryParams.value.orderId) {
-      fullList = fullList.filter(item => item.orderId?.includes(queryParams.value.orderId))
-    }
-    if (queryParams.value.customerName) {
-      fullList = fullList.filter(item => item.customerName?.includes(queryParams.value.customerName))
-    }
-    if (queryParams.value.sampleId) {
-      fullList = fullList.filter(item => item.sampleId?.includes(queryParams.value.sampleId))
-    }
-
-    total.value = fullList.length
-    const offset = (queryParams.value.pageNum - 1) * queryParams.value.pageSize
-    dataList.value = fullList.slice(offset, offset + queryParams.value.pageSize)
+  listEmailProduce(queryParams.value).then(response => {
+    const res = response.data || response
+    const finalData = (res.data && res.data.rows) ? res.data : res
+    dataList.value = finalData.rows || []
+    total.value = finalData.total || 0
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -288,5 +291,22 @@ onMounted(() => {
 
 :deep(.well-form .el-form-item) {
   margin-bottom: 0px;
+}
+
+.table-header-bar {
+  background: #f5f7fa;
+  padding: 10px;
+  border: 1px solid #dcdfe6;
+  border-bottom: none;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  color: #333;
+}
+
+:deep(.el-table) {
+  border: 1px solid #dcdfe6;
 }
 </style>

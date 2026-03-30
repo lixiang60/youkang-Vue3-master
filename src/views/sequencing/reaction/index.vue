@@ -629,9 +629,9 @@ import {
   getSequencingBDT,
   reactionStop,
   sampleInsufficient,
-  reactionPre,
-  updateReactionReportStatus
+  reactionPre
 } from '@/api/sequencing/reaction'
+import { updateReportStatus } from '@/api/sequencing/report'
 import { getProduction, updateProduction } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
@@ -879,6 +879,8 @@ function handleReportStatus() {
   statusForm.value = {
     produceIdList: ids.value,
     reportStatus: savedStatus || undefined,
+    originConcentration: undefined,
+    reportErrorReason: undefined,
     remark: undefined
   }
   statusOpen.value = true
@@ -890,7 +892,7 @@ function submitStatus() {
     proxy.$modal.msgError('请选择报告状态')
     return
   }
-  updateReactionReportStatus(statusForm.value).then(() => {
+  updateReportStatus(statusForm.value).then(() => {
     localStorage.setItem('reaction_report_status', statusForm.value.reportStatus)
     proxy.$modal.msgSuccess('设置成功')
     statusOpen.value = false
