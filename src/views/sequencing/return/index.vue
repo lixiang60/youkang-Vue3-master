@@ -5,109 +5,80 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['sequencing:return:remove']"
-        >删除</el-button>
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Search"
-          @click="toggleSearchPanel"
-        >查询</el-button>
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
+        <el-button size="small" type="success" plain icon="Download" @click="handleExport"
+          v-hasPermi="['sequencing:return:export']">导出</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['sequencing:return:export']"
-        >导出</el-button>
+        <el-button size="small" type="danger" plain icon="Delete" @click="handleDelete" :disabled="multiple"
+          v-hasPermi="['sequencing:return:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="ShoppingCart"
-          @click="handleDeliveryDetails"
-        >发货明细</el-button>
+        <el-button size="small" type="primary" plain icon="ShoppingCart" @click="handleDeliveryDetails">发货明细</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Promotion"
-          @click="handleArrangeReturn"
-        >安排返还</el-button>
+        <el-button size="small" type="success" plain icon="Promotion" @click="handleArrangeReturn">安排返还</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="CollectionTag"
-          @click="handleReturnLabel"
-        >返还标签</el-button>
+        <el-button size="small" type="warning" plain icon="CollectionTag" @click="handleReturnLabel">返还标签</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
-    <!-- 数据表格 -->
-    <dynamic-table
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-      size="small"
-      :header-cell-style="{ fontSize: '12px' }"
-      v-loading="loading" 
-      :data="dataList" 
-      :columns="columns"
-      :total="total"
-      @selection-change="handleSelectionChange"
-    />
+    <!-- 数据列表页眉 -->
+    <div class="table-header-bar">
+      <el-icon style="margin-right: 5px; color: #409EFF;">
+        <List />
+      </el-icon> 数据列表
+    </div>
 
-    
+    <!-- 数据表格 -->
+    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
+      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
+      :total="total" @selection-change="handleSelectionChange" />
+
+
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" prop="name">
+    <el-dialog :title="title" v-model="open" width="600px" append-to-body>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="0" class="well-form">
+        <div class="form-row border-top">
+          <div class="form-label">名称：</div>
+          <div class="form-content">
+            <el-form-item prop="name" label-width="0">
               <el-input v-model="form.name" placeholder="请输入名称" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态" prop="status">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">状态：</div>
+          <div class="form-content">
+            <el-form-item prop="status" label-width="0">
               <el-radio-group v-model="form.status">
                 <el-radio label="0">正常</el-radio>
                 <el-radio label="1">停用</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          </div>
+        </div>
+        <div class="form-row border-bottom" style="height: 120px;">
+          <div class="form-label" style="height: 100%;">备注：</div>
+          <div class="form-content" style="height: 100%;">
+            <el-form-item prop="remark" label-width="0" style="height: 100%;">
+              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入内容" />
             </el-form-item>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="success" @click="submitForm">确 定</el-button>
+          <el-button type="danger" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -115,7 +86,10 @@
 </template>
 
 <script setup name="Return">
-import { listReturn, getReturn, addReturn, updateReturn, delReturn } from '@/api/sequencing/return'
+import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
+import DynamicTable from '@/components/DynamicTable/index.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import { listReturn, getReturn, confirmReturn, delReturn } from '@/api/sequencing/return'
 
 const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
@@ -132,39 +106,23 @@ const total = ref(0)
 const title = ref('')
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'id', width: 80, fixed: true, sortable: true, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'orderNo', label: '订单号', width: 160, visible: true },
-  { key: 'arrangeTime', label: '安排时间', width: 160, visible: true },
-  { key: 'arrangeBy', label: '安排人', width: 100, visible: true },
-  { key: 'returnType', label: '返还类型', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'returnQuantity', label: '返还数量', width: 80, visible: true },
-  { key: 'productionNoRange', label: '生产编号范围', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'productionNoSet', label: '生产编号集', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'status', label: '状态', width: 100, visible: true },
-  { key: 'returnTime', label: '返还时间', width: 160, visible: true },
-  { key: 'returnBy', label: '返还人', width: 100, visible: true },
-  { key: 'belongCompany', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'productionCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: true }
+  { type: 'selection', key: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'id', prop: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'customerName', prop: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { key: 'orderNo', prop: 'orderNo', label: '订单号', width: 160, visible: true },
+  { key: 'arrangeTime', prop: 'arrangeTime', label: '安排时间', width: 160, visible: true },
+  { key: 'arrangeBy', prop: 'arrangeBy', label: '安排人', width: 100, visible: true },
+  { key: 'returnType', prop: 'returnType', label: '返还类型', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'returnQuantity', prop: 'returnQuantity', label: '返还数量', width: 80, visible: true },
+  { key: 'productionNoRange', prop: 'productionNoRange', label: '生产编号范围', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'productionNoSet', prop: 'productionNoSet', label: '生产编号集', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'status', prop: 'status', label: '状态', width: 100, visible: true },
+  { key: 'returnTime', prop: 'returnTime', label: '返还时间', width: 160, visible: true },
+  { key: 'returnBy', prop: 'returnBy', label: '返还人', width: 100, visible: true },
+  { key: 'belongCompany', prop: 'belongCompany', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'productionCompany', prop: 'productionCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: true }
 ])
 
-const cacheKey = 'sequencing_return_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) {}
-}
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
 
 // 检索配置
 const searchFields = ref([
@@ -198,8 +156,15 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listReturn(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
+    // 兼容多种返回结构
+    const res = response.data || response
+    if (res.rows) {
+      dataList.value = res.rows
+      total.value = res.total
+    } else if (res.data && res.data.rows) {
+      dataList.value = res.data.rows
+      total.value = res.data.total
+    }
     loading.value = false
   }).catch(() => {
     loading.value = false
@@ -236,7 +201,9 @@ function handleRefresh() {
 }
 
 /** 多选框选中数据 */
+const selectedRows = ref([])
 function handleSelectionChange(selection) {
+  selectedRows.value = selection
   ids.value = selection.map(item => item.id)
   single.value = selection.length !== 1
   multiple.value = !selection.length
@@ -283,34 +250,110 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delReturn(idList)
+  const idList = row.id ? [row.id] : ids.value
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
+    const req = {
+      reimburseConfirmReqs: idList.map(id => ({ id }))
+    }
+    return delReturn(req)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/return/export', {
+  proxy.download('/order/reimburse/export', {
     ...queryParams.value
   }, `return_${new Date().getTime()}.xlsx`)
 }
 
 // 占位方法
-function handleDeliveryDetails() { proxy.$modal.msg('功能开发中...') }
-function handleArrangeReturn() { proxy.$modal.msg('功能开发中...') }
-function handleReturnLabel() { proxy.$modal.msg('功能开发中...') }
+// 功能实现
+function handleDeliveryDetails() { proxy.$modal.msg('发货明细查询开发中...') }
+
+function handleArrangeReturn(row) {
+  const rows = row.id ? [row] : selectedRows.value
+  if (rows.length === 0) return
+
+  proxy.$modal.confirm('是否确认对选中的 ' + rows.length + ' 条记录进行安排返还？').then(function () {
+    const req = {
+      reimburseConfirmReqs: rows.map(item => ({
+        id: item.id,
+        produceIds: item.produceIds,
+        reimburseType: '安排返还'
+      }))
+    }
+    return confirmReturn(req)
+  }).then(() => {
+    getList()
+    proxy.$modal.msgSuccess('安排成功')
+  })
+}
+
+function handleReturnLabel() { proxy.$modal.msg('返还标签生成开发中...') }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
 })
 </script>
+
+<style scoped>
+.table-header-bar {
+  background: #f5f7fa;
+  padding: 10px;
+  border: 1px solid #dcdfe6;
+  border-bottom: none;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  color: #333;
+}
+
+:deep(.el-table) {
+  border: 1px solid #dcdfe6;
+}
+
+.well-form {
+  border: 1px solid #dcdfe6;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.form-label {
+  width: 120px;
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  font-size: 13px;
+  border-right: 1px solid #ebeef5;
+  background-color: #f8f9fa;
+}
+
+.form-content {
+  flex: 1;
+  padding: 10px 15px;
+}
+
+.border-top {
+  border-top: 1px solid #ebeef5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.well-form .el-form-item) {
+  margin-bottom: 0px;
+}
+</style>

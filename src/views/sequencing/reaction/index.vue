@@ -621,6 +621,7 @@
 </template>
 
 <script setup name="Reaction">
+import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import {
   listReactionProduce,
   updateReactionOriginConcentration,

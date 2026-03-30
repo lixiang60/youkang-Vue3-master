@@ -47,7 +47,7 @@
               class="el-icon--right"><arrow-down /></el-icon></el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item icon="Promotion" @click="handleArrangeReturn">安排返还</el-dropdown-item>
+              <el-dropdown-item icon="Promotion" @click.stop="handleShowReturnDialog">安排返还</el-dropdown-item>
               <el-dropdown-item icon="ShoppingBag" @click="handleSelfProvidedPrimer">自备引物</el-dropdown-item>
               <el-dropdown-item icon="Link" @click="handleLinkPrimer">关联引物</el-dropdown-item>
               <el-dropdown-item icon="Key" @click="handleAddTest">加测</el-dropdown-item>
@@ -84,7 +84,7 @@
       @pagination="getList" @selection-change="handleSelectionChange" />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
+    <el-dialog :title="title" v-model="open" width="1000px" append-to-body top="10vh">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -223,25 +223,15 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
-          <el-button @click="submitForm" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon><SuccessFilled /></el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="cancel" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon><CircleCloseFilled /></el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitForm">确 定</el-button>
+          <el-button type="danger" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
 
     <!-- 设置原浓度对话框 (仿制截图样式) -->
-    <el-dialog v-model="concOpen" width="750px" append-to-body>
+    <el-dialog v-model="concOpen" width="750px" append-to-body top="10vh">
       <template #header>
         <div style="display: flex; align-items: center; padding: 10px 0;">
           <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
@@ -250,7 +240,7 @@
           <span style="font-weight: bold; font-size: 16px;">设置原浓度</span>
         </div>
       </template>
-      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form">
+      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form" style="min-height: 350px;">
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
           <div class="form-label" style="width: 140px;">生产编号：</div>
@@ -294,19 +284,75 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
-          <el-button @click="submitConcForm" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon><SuccessFilled /></el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="concOpen = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon><CircleCloseFilled /></el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitConcForm">确 定</el-button>
+          <el-button type="danger" @click="concOpen = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 安排样品返还对话框 (Doc 7.3 对接) -->
+    <el-dialog v-model="returnOpen" width="700px" append-to-body top="10vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0;">
+          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px;">安排样品返还</span>
+        </div>
+      </template>
+      <el-form ref="returnFormRef" :model="returnForm" :rules="returnRules" label-width="0" class="well-form" style="min-height: 350px;">
+        <!-- 生产编号 -->
+        <div class="form-row border-top">
+          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-content">
+            <span style="font-size: 13px; color: #F56C6C;">
+              选中数量：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
+                selectedProduceIds.join(',') }}
+            </span>
+          </div>
+        </div>
+        <!-- 订单号 -->
+        <div class="form-row">
+          <div class="form-label" style="width: 140px;">订单号：</div>
+          <div class="form-content">
+            <span style="font-size: 13px; color: #F56C6C;">{{ returnForm.orderId }}</span>
+          </div>
+        </div>
+        <!-- 返回类型 -->
+        <div class="form-row border-bottom">
+          <div class="form-label" style="width: 140px;">返回类型：</div>
+          <div class="form-content">
+            <el-form-item prop="reimburseType" label-width="0" style="margin-bottom: 0;">
+              <el-select v-model="returnForm.reimburseType" placeholder="请选择" style="width: 250px">
+                <el-option label="安排返质粒" value="安排返质粒" />
+                <el-option label="安排返菌液" value="安排返菌液" />
+                <el-option label="安排返质粒和菌液" value="安排返质粒和菌液" />
+                <el-option label="安排返平板和质粒" value="安排返平板和质粒" />
+                <el-option label="安排返平板和菌液" value="安排返平板和菌液" />
+                <el-option label="安排返平板" value="安排返平板" />
+                <el-option label="安排返平板和菌液和质粒" value="安排返平板和菌液和质粒" />
+                <el-option label="安排返部分质粒" value="安排返部分质粒" />
+                <el-option label="安排返引物" value="安排返引物" />
+                <el-option label="安排返样品" value="安排返样品" />
+                <el-option label="安排返已纯化产物" value="安排返已纯化产物" />
+                <el-option label="安排返还部分菌液" value="安排返还部分菌液" />
+                <el-option label="安排返还硅胶垫" value="安排返还硅胶垫" />
+                <el-option label="安排返质粒菌液引物" value="安排返质粒菌液引物" />
+                <template #prefix>
+                  <el-icon style="color: #F56C6C;">
+                    <WarningFilled />
+                  </el-icon>
+                </template>
+              </el-select>
+            </el-form-item>
+          </div>
+        </div>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitReturnForm">确 定</el-button>
+          <el-button type="danger" @click="returnOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -314,8 +360,10 @@
 </template>
 
 <script setup name="Samples">
+import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import { listSamples, getSamples, addSamples, updateSamples, delSamples } from '@/api/sequencing/samples'
 import { updateProduceOriginConcentration } from '@/api/sequencing/production'
+import { confirmReturn } from '@/api/sequencing/return'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -420,6 +468,14 @@ const concRules = {
 const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId).filter(id => id))
 
 const open = ref(false)
+const returnOpen = ref(false)
+const returnForm = reactive({
+  orderId: '',
+  reimburseType: ''
+})
+const returnRules = {
+  reimburseType: [{ required: true, message: '请选择返回类型', trigger: 'change' }]
+}
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
@@ -616,7 +672,37 @@ function handleClearConcentration() { proxy.$modal.msg('功能开发中...') }
 function handleClearTemplate() { proxy.$modal.msg('功能开发中...') }
 function handleClearReport() { proxy.$modal.msg('功能开发中...') }
 function handleWeeklyReport() { proxy.$modal.msg('功能开发中...') }
-function handleArrangeReturn() { proxy.$modal.msg('功能开发中...') }
+function handleShowReturnDialog() {
+  if (selectedRows.value.length === 0) {
+    proxy.$modal.msgWarning('请选择需要操作的样品')
+    return
+  }
+  returnForm.orderId = selectedRows.value[0]?.orderId || ''
+  returnForm.reimburseType = ''
+  returnOpen.value = true
+}
+
+/** 提交安排返还表单 (Doc 7.3) */
+function submitReturnForm() {
+  proxy.$refs['returnFormRef'].validate(valid => {
+    if (valid) {
+      // 按照 Doc 7.3 构建参数
+      // 注意：如果样品没有 id (记录ID)，则传 produceIds
+      const req = {
+        reimburseConfirmReqs: selectedRows.value.map(row => ({
+          id: row.id, // 这里尝试读取 row.id，如果没有则是 null
+          produceIds: row.produceId + '',
+          reimburseType: returnForm.reimburseType
+        }))
+      }
+      confirmReturn(req).then(response => {
+        proxy.$modal.msgSuccess('安排成功')
+        returnOpen.value = false
+        getList()
+      })
+    }
+  })
+}
 function handleSelfProvidedPrimer() { proxy.$modal.msg('功能开发中...') }
 function handleTemplateVolumeMonitor() { proxy.$modal.msg('功能开发中...') }
 function handleBatchEdit() { proxy.$modal.msg('功能开发中...') }
@@ -633,10 +719,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-:deep(.well-form .el-form-item) {
-  margin-bottom: 0px;
-}
-
 :deep(.well-form .el-form-item) {
   margin-bottom: 0px;
 }

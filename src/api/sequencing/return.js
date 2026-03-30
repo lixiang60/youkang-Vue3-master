@@ -1,53 +1,45 @@
 import request from '@/utils/request'
 
-// 查询返还管理列表
-export function listReturn(query) {
+// 查询返还管理列表 (Doc 7.1)
+export function listReturn(data) {
   return request({
-    url: '/sequencing/return/list',
-    method: 'get',
-    params: query
-  })
-}
-
-// 查询返还管理详细
-export function getReturn(id) {
-  return request({
-    url: '/sequencing/return/' + id,
-    method: 'get'
-  })
-}
-
-// 新增返还管理
-export function addReturn(data) {
-  return request({
-    url: '/sequencing/return',
+    url: '/order/reimburse/list',
     method: 'post',
     data: data
   })
 }
 
-// 修改返还管理
-export function updateReturn(data) {
+// 查询返还管理详细 (Doc 7.2)
+export function getReturn(id) {
   return request({
-    url: '/sequencing/return',
-    method: 'put',
+    url: '/order/reimburse/' + id,
+    method: 'get'
+  })
+}
+
+// 确认返还 (Doc 7.3)
+export function confirmReturn(data) {
+  return request({
+    url: '/order/reimburse/confirm',
+    method: 'post',
     data: data
   })
 }
 
-// 删除返还管理
-export function delReturn(id) {
+// 删除返还管理 (Doc 7.4)
+export function delReturn(data) {
   return request({
-    url: '/sequencing/return/' + id,
-    method: 'delete'
+    url: '/order/reimburse/remove',
+    method: 'post',
+    data: data
   })
 }
 
 // 导出返还管理
-export function exportReturn(query) {
+export function exportReturn(data) {
   return request({
-    url: '/sequencing/return/export',
-    method: 'get',
-    params: query
+    url: '/order/reimburse/export',
+    method: 'post',
+    data: data
   })
 }

@@ -254,6 +254,7 @@
 </template>
 
 <script setup name="Prereaction">
+import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import { 
   listPrereaction, 
   reactionPreSendBack 

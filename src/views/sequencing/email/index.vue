@@ -52,14 +52,15 @@
 </template>
 
 <script setup name="Email">
+import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
+import DynamicTable from '@/components/DynamicTable/index.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import { 
   listEmailProduce,
   addEmail, 
   updateEmail, 
   delEmail
 } from '@/api/sequencing/email'
-import DynamicTable from '@/components/DynamicTable/index.vue'
-import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -76,27 +77,27 @@ const searchRef = ref(null)
 
 // 列配置 (根据截图及标准生产字段调整)
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { prop: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
-  { prop: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { prop: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { prop: 'customerAddress', label: '客户地址', width: 150, visible: true },
-  { prop: 'orderType', label: '订单类型', width: 100, visible: true },
-  { prop: 'customerLevel', label: '客户等级', width: 80, visible: true },
-  { prop: 'reagent', label: '试剂', width: 100, visible: true },
-  { prop: 'urgent', label: '加急', width: 80, visible: true },
-  { prop: 'sampleId', label: '样品编号', width: 120, visible: true },
-  { prop: 'primer', label: '测序引物', width: 100, visible: true },
-  { prop: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
-  { prop: 'sampleType', label: '样品类型', width: 80, visible: true },
-  { prop: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
-  { prop: 'isAsync', label: '是否测试', width: 80, visible: true },
-  { prop: 'originConcentration', label: '原浓度', width: 100, visible: true },
-  { prop: 'produceStatus', label: '完成情况', width: 100, visible: true },
-  { prop: 'returnState', label: '退回状态', width: 100, visible: true },
-  { prop: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
-  { prop: 'flowId', label: '流程ID', width: 100, visible: true },
-  { prop: 'flowName', label: '流程名称', width: 100, visible: true }
+  { type: 'selection', key: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'produceId', prop: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
+  { key: 'orderId', prop: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
+  { key: 'customerName', prop: 'customerName', label: '客户姓名', width: 100, visible: true },
+  { key: 'customerAddress', prop: 'customerAddress', label: '客户地址', width: 150, visible: true },
+  { key: 'orderType', prop: 'orderType', label: '订单类型', width: 100, visible: true },
+  { key: 'customerLevel', prop: 'customerLevel', label: '客户等级', width: 80, visible: true },
+  { key: 'reagent', prop: 'reagent', label: '试剂', width: 100, visible: true },
+  { key: 'urgent', prop: 'urgent', label: '加急', width: 80, visible: true },
+  { key: 'sampleId', prop: 'sampleId', label: '样品编号', width: 120, visible: true },
+  { key: 'primer', prop: 'primer', label: '测序引物', width: 100, visible: true },
+  { key: 'primerConcentration', prop: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
+  { key: 'sampleType', prop: 'sampleType', label: '样品类型', width: 80, visible: true },
+  { key: 'antibioticType', prop: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
+  { key: 'isAsync', prop: 'isAsync', label: '是否测试', width: 80, visible: true },
+  { key: 'originConcentration', prop: 'originConcentration', label: '原浓度', width: 100, visible: true },
+  { key: 'produceStatus', prop: 'produceStatus', label: '完成情况', width: 100, visible: true },
+  { key: 'returnState', prop: 'returnState', label: '退回状态', width: 100, visible: true },
+  { key: 'remark', prop: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'flowId', prop: 'flowId', label: '流程ID', width: 100, visible: true },
+  { key: 'flowName', prop: 'flowName', label: '流程名称', width: 100, visible: true }
 ])
 
 // 检索配置
@@ -105,24 +106,6 @@ const searchFields = ref([
   { prop: 'customerName', label: '客户姓名', type: 'input' },
   { prop: 'sampleId', label: '样品编号', type: 'input' }
 ])
-
-// 列可见性缓存
-const cacheKey = 'sequencing_email_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) { }
-}
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
 
 const data = reactive({
   form: {},

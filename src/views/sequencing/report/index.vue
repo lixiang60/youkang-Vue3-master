@@ -179,6 +179,7 @@
 </template>
 
 <script setup name="Report">
+import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import { 
   listReport, 
   updateReportStatus, 
