@@ -26,9 +26,14 @@ const useUserStore = defineStore(
         const uuid = userInfo.uuid
         return new Promise((resolve, reject) => {
           login(username, password, code, uuid).then(res => {
-            setToken(res.token)
-            this.token = res.token
-            resolve()
+            const token = res.accessToken || res.token
+            if (token) {
+              setToken(token)
+              this.token = token
+              resolve()
+            } else {
+              reject('登录返回的 Token 为空，请检查后端返回结构')
+            }
           }).catch(error => {
             reject(error)
           })

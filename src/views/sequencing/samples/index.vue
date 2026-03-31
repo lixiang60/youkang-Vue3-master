@@ -240,7 +240,8 @@
           <span style="font-weight: bold; font-size: 16px;">设置原浓度</span>
         </div>
       </template>
-      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form" style="min-height: 350px;">
+      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form"
+        style="min-height: 350px;">
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
           <div class="form-label" style="width: 140px;">生产编号：</div>
@@ -248,7 +249,7 @@
             <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
               :
               '未选择'
-              }}</span>
+            }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
@@ -291,7 +292,7 @@
       </template>
     </el-dialog>
 
-    <!-- 安排样品返还对话框 (Doc 7.3 对接) -->
+    <!-- 安排样品返还对话框 (Doc 2.9 对接) -->
     <el-dialog v-model="returnOpen" width="700px" append-to-body top="10vh">
       <template #header>
         <div style="display: flex; align-items: center; padding: 10px 0;">
@@ -301,7 +302,8 @@
           <span style="font-weight: bold; font-size: 16px;">安排样品返还</span>
         </div>
       </template>
-      <el-form ref="returnFormRef" :model="returnForm" :rules="returnRules" label-width="0" class="well-form" style="min-height: 350px;">
+      <el-form ref="returnFormRef" :model="returnForm" :rules="returnRules" label-width="0" class="well-form"
+        style="min-height: 350px;">
         <!-- 生产编号 -->
         <div class="form-row border-top">
           <div class="form-label" style="width: 140px;">生产编号：</div>
@@ -361,9 +363,8 @@
 
 <script setup name="Samples">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
-import { listSamples, getSamples, addSamples, updateSamples, delSamples } from '@/api/sequencing/samples'
+import { listSamples, getSamples, addSamples, updateSamples, delSamples, arrangeReturn } from '@/api/sequencing/samples'
 import { updateProduceOriginConcentration } from '@/api/sequencing/production'
-import { confirmReturn } from '@/api/sequencing/return'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -682,20 +683,24 @@ function handleShowReturnDialog() {
   returnOpen.value = true
 }
 
-/** 提交安排返还表单 (Doc 7.3) */
+/** 提交安排返还表单 (Doc 2.9) */
 function submitReturnForm() {
   proxy.$refs['returnFormRef'].validate(valid => {
     if (valid) {
-      // 按照 Doc 7.3 构建参数
-      // 注意：如果样品没有 id (记录ID)，则传 produceIds
-      const req = {
-        reimburseConfirmReqs: selectedRows.value.map(row => ({
-          id: row.id, // 这里尝试读取 row.id，如果没有则是 null
-          produceIds: row.produceId + '',
-          reimburseType: returnForm.reimburseType
-        }))
+      // 校验：只能传同一 orderId 下的样品
+      const orderIds = new Set(selectedRows.value.map(row => row.orderId))
+      if (orderIds.size > 1) {
+        proxy.$modal.msgError('只能安排同一订单号下的样品返还，请重新选择')
+        return
       }
-      confirmReturn(req).then(response => {
+
+      const data = {
+        orderId: returnForm.orderId,
+        produceIdList: selectedProduceIds.value,
+        reimburseType: returnForm.reimburseType
+      }
+      
+      arrangeReturn(data).then(response => {
         proxy.$modal.msgSuccess('安排成功')
         returnOpen.value = false
         getList()

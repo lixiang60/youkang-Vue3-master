@@ -63,3 +63,12 @@ export function importSamples(data) {
     }
   })
 }
+
+// 安排返还 (Doc 2.9)
+export function arrangeReturn(data) {
+  return request({
+    url: '/order/sample/sequence/arrangeReturn',
+    method: 'post',
+    data: data
+  })
+}
