@@ -107,27 +107,29 @@ const title = ref('')
 
 const columns = ref([
   { type: 'selection', key: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', prop: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { key: 'id', prop: 'id', label: 'ID', width: 60, fixed: true, sortable: true, visible: true },
   { key: 'customerName', prop: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'orderNo', prop: 'orderNo', label: '订单号', width: 160, visible: true },
-  { key: 'arrangeTime', prop: 'arrangeTime', label: '安排时间', width: 160, visible: true },
-  { key: 'arrangeBy', prop: 'arrangeBy', label: '安排人', width: 100, visible: true },
-  { key: 'returnType', prop: 'returnType', label: '返还类型', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'returnQuantity', prop: 'returnQuantity', label: '返还数量', width: 80, visible: true },
-  { key: 'productionNoRange', prop: 'productionNoRange', label: '生产编号范围', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'productionNoSet', prop: 'productionNoSet', label: '生产编号集', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'orderId', prop: 'orderId', label: '订单号', width: 160, visible: true },
+  { key: 'scheduleTime', prop: 'scheduleTime', label: '排版时间', width: 160, visible: true },
+  { key: 'scheduler', prop: 'scheduler', label: '排版人', width: 100, visible: true },
+  { key: 'reimburseType', prop: 'reimburseType', label: '返还类型', width: 140, showOverflowTooltip: true, visible: true },
+  { key: 'reimburseCount', prop: 'reimburseCount', label: '返还数量', width: 80, visible: true },
+  { key: 'produceIds', prop: 'produceIds', label: '生产编号', width: 150, showOverflowTooltip: true, visible: true },
   { key: 'status', prop: 'status', label: '状态', width: 100, visible: true },
-  { key: 'returnTime', prop: 'returnTime', label: '返还时间', width: 160, visible: true },
-  { key: 'returnBy', prop: 'returnBy', label: '返还人', width: 100, visible: true },
+  { key: 'reimburseTime', prop: 'reimburseTime', label: '返还时间', width: 160, visible: true },
+  { key: 'reimburser', prop: 'reimburser', label: '返还人', width: 100, visible: true },
   { key: 'belongCompany', prop: 'belongCompany', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'productionCompany', prop: 'productionCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: true }
+  { key: 'produceCompany', prop: 'produceCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'createUser', prop: 'createUser', label: '创建人', width: 100, visible: true },
+  { key: 'createTime', prop: 'createTime', label: '创建时间', width: 160, visible: true }
 ])
 
 
 // 检索配置
 const searchFields = ref([
-  { prop: 'orderNo', label: '订单号', type: 'input' },
-  { prop: 'customerName', label: '客户姓名', type: 'input' }
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' },
+  { prop: 'status', label: '状态', type: 'input' }
 ])
 
 function toggleSearchPanel() {
@@ -140,7 +142,8 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
+    orderId: undefined,
+    customerName: undefined,
     status: undefined
   },
   rules: {

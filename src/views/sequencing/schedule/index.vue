@@ -103,27 +103,27 @@
         <div
           style="background: #f5f7fa; padding: 5px 15px; border-top: 1px solid #dcdfe6; font-size: 12px; color: #606266; text-align: right;">
           共 1 页 &gt;&gt; 100 &lt;&lt; 1 - {{ selectedRows.length }} 共 {{ selectedRows.length }} 条 </div>
+      </div>
+      <template #footer>
+        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
+          <el-button @click="proceedToPlateConfig" class="premium-btn premium-btn-confirm">
+            <template #icon>
+              <el-icon>
+                <SuccessFilled />
+              </el-icon>
+            </template>
+            确 定
+          </el-button>
+          <el-button @click="openConfirmPlate = false" class="premium-btn premium-btn-cancel">
+            <template #icon>
+              <el-icon>
+                <CircleCloseFilled />
+              </el-icon>
+            </template>
+            取 消
+          </el-button>
         </div>
-        <template #footer>
-          <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
-            <el-button @click="proceedToPlateConfig" class="premium-btn premium-btn-confirm">
-              <template #icon>
-                <el-icon>
-                  <SuccessFilled />
-                </el-icon>
-              </template>
-              确 定
-            </el-button>
-            <el-button @click="openConfirmPlate = false" class="premium-btn premium-btn-cancel">
-              <template #icon>
-                <el-icon>
-                  <CircleCloseFilled />
-                </el-icon>
-              </template>
-              取 消
-            </el-button>
-          </div>
-        </template>
+      </template>
     </el-dialog>
 
     <!-- 步骤2：添加板号对话框 -->
@@ -141,7 +141,7 @@
           <div class="form-label">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #F56C6C; font-weight: bold;">{{ selectedRows.length
-                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -213,7 +213,7 @@
           <div class="form-label">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">{{ selectedRows.length
-                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -298,7 +298,7 @@
           <div class="form-label" style="width: 140px;">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #F56C6C; font-weight: bold;">{{ selectedRows.length
-                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row border-bottom" style="height: 180px;">
@@ -330,34 +330,81 @@
       </template>
     </el-dialog>
 
-    <!-- 模板BDT表打印对话框 -->
-    <el-dialog title="模板BDT表打印" v-model="openBDT" width="600px" append-to-body>
-      <el-form ref="bdtFormRef" :model="bdtForm" label-width="120px" class="well-form">
-        <div class="form-row border-top border-bottom">
-          <div class="form-label">板号：</div>
+    <!-- 模板BDT表打印对话框 (图1) -->
+    <el-dialog title="模板BDT表打印" v-model="openBDT" width="600px" append-to-body top="10vh">
+      <el-form ref="bdtFormRef" :model="bdtForm" label-width="0" class="well-form">
+        <div class="form-row border-top">
+          <div class="form-label" style="width: 120px;">板号：</div>
           <div class="form-content">
             <el-input v-model="bdtForm.plateNo" placeholder="请输入板号" style="width: 250px" />
           </div>
         </div>
+        <div class="form-row border-bottom">
+          <div class="form-label" style="width: 120px;"></div>
+          <div class="form-content" style="display: flex; justify-content: center;">
+            <el-button @click="handleLabelPrint" class="premium-btn premium-btn-confirm" style="height: 32px;">
+              <template #icon>
+                <el-icon>
+                  <Printer />
+                </el-icon>
+              </template>
+              标签打印
+            </el-button>
+          </div>
+        </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0;">
-          <el-button @click="submitBDTForm" class="premium-btn premium-btn-confirm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button @click="openBDT = false" class="premium-btn premium-btn-cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer">
+          <el-button type="success" @click="submitBDTForm">确 定</el-button>
+          <el-button type="danger" @click="openBDT = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 报表打印弹窗 (图2) -->
+    <el-dialog title="报表排版打印" v-model="openReport" width="1120px" append-to-body top="5vh">
+      <div id="printArea" class="report-print-wrap">
+        <div class="report-header">
+          <div class="meta-row" style="font-weight: bold; font-family: 'SimSun', serif;">
+            <span>模板版号：{{ bdtForm.plateNo }} 操作人：{{ reportMeta.user }}</span>
+            <span style="flex: 1; text-align: center;">
+              加急<span class="checkbox-mock"></span>
+              试做<span class="checkbox-mock"></span>
+            </span>
+            <span>打印时间：{{ reportMeta.time }} 第 1 页 共 1 页</span>
+          </div>
+        </div>
+
+        <table class="bdt-report-table">
+          <tbody>
+            <tr v-for="r in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']" :key="r">
+              <td v-for="c in 12" :key="c" class="well-cell-bdt">
+                <div class="well-cell-inner" v-if="getWellData(r, c).sampleId">
+                  <div class="cell-row-top">
+                    <span class="well-pos-blue">{{ r }}{{ c < 10 ? '0' + c : c }}</span>
+                        <span class="well-status-small">{{ getWellData(r, c).returnState || '成功' }}</span>
+                  </div>
+                  <div class="cell-row-order">{{ getWellData(r, c).produceId }}</div>
+                  <div class="cell-row-mid-bold">{{ getWellData(r, c).sampleId }}</div>
+                  <div class="cell-row-meta">{{ getWellData(r, c).fragmentSize }}</div>
+                  <div class="cell-row-bottom-blue">
+                    {{ getWellData(r, c).customerName }} {{ getWellData(r, c).templateNumber }}
+                  </div>
+                </div>
+                <div class="well-cell-inner" v-else>
+                  <div class="cell-row-top">
+                    <span class="well-pos-blue" style="color: #ccc;">{{ r }}{{ c < 10 ? '0' + c : c }}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button v-print="'#printArea'" type="primary">打 印</el-button>
+          <el-button @click="openReport = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -370,7 +417,9 @@
 import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
 const route = useRoute()
-import { listLayoutTemplate } from '@/api/sequencing/schedule'
+import useUserStore from '@/store/modules/user'
+const userStore = useUserStore()
+import { listLayoutTemplate, updateTemplateNo, ignoreTemp, templateBDT } from '@/api/sequencing/schedule'
 
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
@@ -416,9 +465,22 @@ const ignoreForm = reactive({
   remark: ''
 })
 
+const openReport = ref(false)
+const reportData = ref([])
+const reportMeta = reactive({
+  user: 'ADMIN',
+  time: ''
+})
+
 const bdtForm = reactive({
   plateNo: ''
 })
+
+const getWellData = (r, c) => {
+  const pos1 = r + c
+  const pos2 = r + (c < 10 ? '0' + c : c)
+  return reportData.value.find(item => item.templateHoleNo === pos1 || item.templateHoleNo === pos2) || {}
+}
 
 const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
 
@@ -615,7 +677,6 @@ function handleExport() {
   }, `schedule_${new Date().getTime()}.xlsx`)
 }
 
-import { updateTemplateNo, ignoreTemp, templateBDT } from '@/api/sequencing/schedule'
 
 /** 添加板号按钮操作 (两步流程) */
 function handleAddPlateNo() {
@@ -739,9 +800,24 @@ function submitBDTForm() {
     proxy.$modal.msgWarning('请输入板号')
     return
   }
+  handleLabelPrint()
+}
+
+/** 标签打印 (图2 报表触发) */
+function handleLabelPrint() {
+  if (!bdtForm.plateNo) {
+    proxy.$modal.msgWarning('请输入板号')
+    return
+  }
+  proxy.$modal.loading('数据加载中...')
   templateBDT({ templateNo: bdtForm.plateNo }).then(response => {
-    proxy.$modal.msgSuccess('打印成功')
-    openBDT.value = false
+    proxy.$modal.closeLoading()
+    reportData.value = response.data || []
+    reportMeta.time = proxy.parseTime(new Date(), '{y}/{m}/{d}')
+    reportMeta.user = userStore.name || 'ADMIN'
+    openReport.value = true
+  }).catch(() => {
+    proxy.$modal.closeLoading()
   })
 }
 
@@ -769,8 +845,74 @@ watch(() => route.path, (newPath) => {
   color: #606266 !important;
 }
 
-.well-form {
+:deep(.well-form) {
   border: 1px solid #dcdfe6;
+}
+
+.report-print-wrap {
+  padding: 10px;
+  background: #fff;
+  color: #333;
+  font-family: Arial, sans-serif;
+}
+
+.report-header {
+  border-bottom: 2px solid #333;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.bdt-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.well-cell-bdt {
+  border: 1px solid #333;
+  height: 95px;
+  vertical-align: top;
+  padding: 2px;
+}
+
+.well-cell-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cell-top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.well-pos {
+  color: blue;
+}
+
+.well-status {
+  font-size: 10px;
+}
+
+.cell-id {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.cell-desc,
+.cell-flow,
+.cell-conc {
+  font-size: 10px;
+  line-height: 1.2;
 }
 
 .form-row {
@@ -807,5 +949,55 @@ watch(() => route.path, (newPath) => {
 
 :deep(.well-form .el-form-item) {
   margin-bottom: 0px;
+}
+
+.well-pos-blue {
+  color: blue;
+  font-weight: bold;
+}
+
+.well-status-small {
+  font-size: 10px;
+}
+
+.cell-row-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.cell-row-mid-bold {
+  font-weight: bold;
+  font-size: 13px;
+  margin: 1px 0;
+}
+
+.cell-row-order,
+.cell-row-meta {
+  font-size: 11px;
+  line-height: 1.1;
+  color: #333;
+}
+
+.cell-row-bottom-blue {
+  color: blue;
+  font-size: 11px;
+  margin-top: auto;
+}
+
+.checkbox-mock {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #333;
+  margin-left: 4px;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+@media print {
+  .report-print-wrap {
+    padding: 0;
+  }
 }
 </style>

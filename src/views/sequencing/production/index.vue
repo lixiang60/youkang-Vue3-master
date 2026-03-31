@@ -88,13 +88,13 @@
         <div
           style="background: #f5f7fa; padding: 5px 15px; border-top: 1px solid #dcdfe6; font-size: 12px; color: #606266; text-align: right;">
           共 1 页 &gt;&gt; 100 &lt;&lt; 1 - {{ selectedRows.length }} 共 {{ selectedRows.length }} 条 </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="success" @click="proceedToStatusConfig">确 定</el-button>
+          <el-button type="danger" @click="statusConfirmOpen = false">取 消</el-button>
         </div>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button type="success" @click="proceedToStatusConfig">确 定</el-button>
-            <el-button type="danger" @click="statusConfirmOpen = false">取 消</el-button>
-          </div>
-        </template>
+      </template>
     </el-dialog>
 
     <!-- 步骤2：设置模板状态对话框 (仿制截图样式) -->
@@ -156,7 +156,7 @@
           <div class="form-label" style="width: 140px;">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">{{ selectedRows.length
-            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
@@ -253,7 +253,7 @@
         <div class="form-row">
           <div class="form-label">所属公司：</div>
           <div class="form-content">
-            <el-select v-model="pcrForm.belongCompany" placeholder="请选择" style="width: 200px">
+            <el-select v-model="pcrForm.belongCompany" placeholder="请选择" style="width: 200px" clearable>
               <el-option label="有康科技" value="有康科技" />
               <el-option label="深圳有康" value="深圳有康" />
               <el-option label="杭州有康" value="杭州有康" />
@@ -277,7 +277,7 @@
 
     <!-- PCR切胶报表预览对话框 -->
     <el-dialog title="PCR切胶报表预览" v-model="pcrReportOpen" width="1000px" append-to-body>
-      <div class="pcr-report-container">
+      <div id="pcrPrintArea" class="pcr-report-container">
         <el-row :gutter="20">
           <el-col :span="12" v-for="index in 2" :key="index">
             <table class="report-table">
@@ -303,7 +303,7 @@
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="pcrReportOpen = false">立即打印</el-button>
+          <el-button type="success" v-print="'#pcrPrintArea'">立即打印</el-button>
           <el-button type="danger" @click="pcrReportOpen = false">关 闭</el-button>
         </div>
       </template>
@@ -330,7 +330,7 @@
         <div class="form-row">
           <div class="form-label">所属实验室：</div>
           <div class="form-content">
-            <el-select v-model="resampleForm.belongLab" placeholder="请选择" style="width: 200px">
+            <el-select v-model="resampleForm.belongLab" placeholder="请选择" style="width: 200px" clearable>
               <el-option label="厦门实验室" value="厦门实验室" />
               <el-option label="上海实验室" value="上海实验室" />
               <el-option label="北京实验室" value="北京实验室" />
@@ -355,7 +355,7 @@
 
     <!-- 重抽操作表预览对话框 -->
     <el-dialog title="重抽操作表预览" v-model="resampleReportOpen" width="1200px" append-to-body>
-      <div class="pcr-report-container">
+      <div id="resamplePrintArea" class="pcr-report-container">
         <div style="text-align: center; margin-bottom: 20px;">
           <h2 style="margin: 0; font-size: 20px;">铂尚生物技术（上海）有限公司</h2>
           <div style="font-size: 14px; margin-top: 5px; font-weight: bold;">模板重抽接菌记录</div>
@@ -394,7 +394,7 @@
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="resampleReportOpen = false">立即打印</el-button>
+          <el-button type="success" v-print="'#resamplePrintArea'">立即打印</el-button>
           <el-button type="danger" @click="resampleReportOpen = false">关 闭</el-button>
         </div>
       </template>
@@ -413,7 +413,7 @@
         </div>
 
         <div class="plate-title">查询结果：</div>
-        
+
         <div class="plate-table-container">
           <table class="plate-table">
             <thead>
@@ -425,9 +425,7 @@
             <tbody>
               <tr v-for="r in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']" :key="r">
                 <td class="row-label">{{ r }}</td>
-                <td v-for="c in 12" :key="c" 
-                    :class="getWellClass(r, c)"
-                    @click="toggleWellSelect(r, c)">
+                <td v-for="c in 12" :key="c" :class="getWellClass(r, c)" @click="toggleWellSelect(r, c)">
                   <div class="well-cell">
                     <span v-if="plateHoleMap[r + c]" class="well-id">
                       {{ plateHoleMap[r + c].produceId ? plateHoleMap[r + c].produceId.toString().slice(-4) : '' }}
@@ -463,7 +461,8 @@
               <span>备注：</span>
               <el-input v-model="quickForm.remark" placeholder="备注内容" style="width: 100%" />
             </div>
-            <el-button type="primary" icon="Search" @click="handleBatchSubmit" class="premium-btn premium-btn-confirm" style="height: 32.5px;">提 交</el-button>
+            <el-button type="primary" icon="Search" @click="handleBatchSubmit" class="premium-btn premium-btn-confirm"
+              style="height: 32.5px;">提 交</el-button>
           </div>
         </div>
       </div>
@@ -782,7 +781,7 @@ function handlePcrGelCut() {
   pcrForm.value = {
     startOrderNo: undefined,
     endOrderNo: undefined,
-    belongCompany: '上海实验室'
+    belongCompany: ''
   }
   pcrOpen.value = true
 }
@@ -791,7 +790,12 @@ const pcrDataList = ref([])
 
 function handlePrintPcr() {
   proxy.$modal.loading('请求中...')
-  getPcrGelCutList(pcrForm.value).then(response => {
+  const params = {
+    ...pcrForm.value,
+    belongCompany: '' // 暂时屏蔽所属公司，统一传递空值
+  }
+
+  getPcrGelCutList(params).then(response => {
     // 兼容多种响应格式 (直接返回数组 / 包装在 data 下)
     const res = response.data || response
     pcrDataList.value = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
@@ -884,16 +888,16 @@ function handleBatchSubmit() {
     return
   }
   const produceIds = Array.from(selectedWells.value).map(addr => plateHoleMap.value[addr].produceId)
-  
+
   proxy.$modal.loading('提交中...')
-  
+
   // 1. 设置模板状态
   const p1 = updateProduceTempStatus({
     produceIdList: produceIds,
     returnState: quickForm.returnState,
     remark: quickForm.remark
   })
-  
+
   // 2. 如果填了原浓度，则设置原浓度
   let p2 = Promise.resolve()
   if (quickForm.originConcentration) {
@@ -928,7 +932,11 @@ const resampleDataList = ref([])
 
 function submitResample() {
   proxy.$modal.loading('请求中...')
-  getResampleList(resampleForm.value).then(response => {
+  const params = {
+    ...resampleForm.value,
+    belongLab: '' // 暂时屏蔽实验室，统一传递空值
+  }
+  getResampleList(params).then(response => {
     // 兼容多种响应格式 (直接返回数组 / 包装在 data 下)
     const res = response.data || response
     resampleDataList.value = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
@@ -1026,9 +1034,11 @@ watch(() => route.path, (newPath) => {
   padding: 20px;
   background-color: #fff;
 }
+
 .quick-setting-wrap {
   padding: 10px;
 }
+
 .top-ops {
   margin-bottom: 20px;
   background: #fdfdfd;
@@ -1036,83 +1046,102 @@ watch(() => route.path, (newPath) => {
   border: 1px solid #ebeef5;
   border-radius: 4px;
 }
+
 .op-item {
   display: flex;
   align-items: center;
 }
+
 .plate-title {
   font-weight: bold;
   margin-bottom: 10px;
   padding-left: 5px;
   border-left: 4px solid #409eff;
 }
+
 .plate-table-container {
   overflow-x: auto;
   margin-bottom: 20px;
 }
+
 .plate-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
   border: 2px solid #555;
 }
-.plate-table th, .plate-table td {
+
+.plate-table th,
+.plate-table td {
   border: 1px solid #ccc;
   text-align: center;
   height: 45px;
 }
+
 .plate-table th {
   background: #f5f7fa;
   font-size: 14px;
 }
+
 .row-label {
   background: #f5f7fa;
   font-weight: bold;
 }
+
 .well-td {
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .well-td.has-data {
   background: #f0f9eb;
 }
+
 .well-td.is-selected {
   background: #409eff !important;
   color: #fff;
 }
+
 .well-td:hover:not(.is-selected) {
   background: #ecf5ff;
 }
+
 .well-cell {
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .well-id {
   font-size: 11px;
 }
+
 .bottom-batch-form {
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   padding: 15px;
   background: #f8f9fa;
 }
+
 .batch-row {
   display: flex;
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
 }
+
 .batch-item {
   display: flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
 }
+
 .flex-fill {
   flex: 1;
 }
+
 .ml10 {
   margin-left: 10px;
 }
