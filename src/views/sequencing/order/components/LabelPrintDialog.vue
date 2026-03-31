@@ -49,8 +49,8 @@
       </el-row>
 
       <div class="print-action-area">
-        <el-button type="default" class="print-btn" @click="handlePrintAction">
-          <el-icon><Printer /></el-icon> 标签打印
+        <el-button type="primary" icon="Printer" class="print-btn" @click="handlePrintAction">
+          标签打印
         </el-button>
       </div>
 
@@ -74,8 +74,8 @@
 
     <template #footer>
       <div class="dialog-footer" style="text-align: center;">
-        <el-button type="success" @click="handleConfirm">确 定</el-button>
-        <el-button type="danger" @click="handleCancel">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确 定</el-button>
+        <el-button @click="handleCancel">取 消</el-button>
       </div>
     </template>
   </el-dialog>

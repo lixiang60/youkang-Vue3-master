@@ -179,6 +179,7 @@
     <template #footer>
       <div class="dialog-footer" style="text-align: center">
         <el-button type="primary" @click="submitForm">{{ isEdit ? '修 改' : '添 加' }}</el-button>
+        <el-button @click="handleUpdateVisible(false)">取 消</el-button>
       </div>
     </template>
   </el-dialog>
