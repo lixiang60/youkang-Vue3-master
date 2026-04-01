@@ -90,25 +90,48 @@ const cacheKey = 'sequencing_resend_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'productionNo', label: '生产编号', width: 100, fixed: true, sortable: true, visible: true },
-  { key: 'orderNo', label: '订单号', width: 160, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'customerLevel', label: '客户等级', width: 80, visible: true },
-  { key: 'researchGroup', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'sampleNo', label: '样品编号', width: 120, visible: true },
-  { key: 'sequencingPrimer', label: '测序引物', width: 100, visible: true },
-  { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
-  { key: 'sampleType', label: '样品类型', width: 80, visible: true },
-  { key: 'vectorName', label: '载体名称', width: 100, visible: true },
-  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
-  { key: 'isLiquid', label: '是否测通', width: 80, visible: true },
-  { key: 'completionStatus', label: '完成情况', width: 80, visible: true }
+  { key: 'productionNo', label: '生产编号', prop: 'productionNo', width: 100, fixed: true, visible: true },
+  { key: 'orderId', label: '订单号', prop: 'orderId', width: 160, fixed: true, visible: true },
+  { key: 'customerName', label: '客户姓名', prop: 'customerName', width: 100, visible: true },
+  {
+    key: 'customerAddress',
+    label: '客户地址',
+    prop: 'customerAddress',
+    width: 150,
+    showOverflowTooltip: true,
+    visible: false
+  },
+  { key: 'customerLevel', label: '客户等级', prop: 'customerLevel', width: 80, visible: true },
+  {
+    key: 'researchGroup',
+    label: '课题组',
+    prop: 'researchGroup',
+    width: 120,
+    showOverflowTooltip: true,
+    visible: true
+  },
+  { key: 'sampleId', label: '样品编号', prop: 'sampleId', width: 120, visible: true },
+  { key: 'primer', label: '测序引物', prop: 'primer', width: 120, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', prop: 'primerConcentration', width: 80, visible: true },
+  { key: 'sampleType', label: '样品类型', prop: 'sampleType', width: 80, visible: true },
+  { key: 'carrierName', label: '载体名称', prop: 'carrierName', width: 100, visible: true },
+  { key: 'fragmentSize', label: '片段大小', prop: 'fragmentSize', width: 80, visible: true },
+  { key: 'testResult', label: '是否测通', prop: 'testResult', width: 80, visible: true },
+  { key: 'performance', label: '完成情况', prop: 'performance', width: 100, visible: true },
+  { key: 'returnState', label: '返回状态', prop: 'returnState', width: 100, visible: true },
+  { key: 'remark', label: '备注', prop: 'remark', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'flowName', label: '流程名称', prop: 'flowName', width: 120, visible: true },
+  { key: 'templatePlateNo', label: '板号', prop: 'templatePlateNo', width: 100, visible: true },
+  { key: 'templateHoleNo', label: '孔号', prop: 'templateHoleNo', width: 80, visible: true },
+  { key: 'createUser', label: '添加人', prop: 'createUser', width: 100, visible: true }
 ])
 
 const searchFields = ref([
-  { prop: 'orderNo', label: '订单号', type: 'input' },
-  { prop: 'customerName', label: '客户姓名', type: 'input' }
+  { prop: 'templateNo', label: '任务板号', type: 'input' },
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' },
+  { prop: 'sampleId', label: '样品编号', type: 'input' },
+  { prop: 'sampleType', label: '样品类型', type: 'input' }
 ])
 
 // --- 2. State ---
@@ -128,8 +151,11 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    status: undefined
+    orderId: undefined,
+    templateNo: undefined,
+    customerName: undefined,
+    sampleId: undefined,
+    sampleType: undefined
   },
   rules: {
     name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]

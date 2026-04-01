@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
-// 查询样品补送邮件列表
-export function listResend_email(query) {
+// 获取模板生产列表 (补送邮件共用此接口)
+export function listResend_email(data) {
   return request({
-    url: '/sequencing/resend_email/list',
-    method: 'get',
-    params: query
+    url: '/order/sample/template/produce/list',
+    method: 'post',
+    data: data
   })
 }
 
