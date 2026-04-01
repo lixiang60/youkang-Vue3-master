@@ -80,7 +80,7 @@ const props = defineProps({
   },
   height: {
     type: [String, Number],
-    default: '600px'
+    default: undefined
   }
 })
 

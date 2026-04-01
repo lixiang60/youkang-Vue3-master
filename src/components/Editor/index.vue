@@ -130,8 +130,8 @@ watch(() => props.modelValue, (v) => {
 
 // 如果设置了上传地址则自定义图片上传事件
 onMounted(() => {
+  const quill = quillEditorRef.value.getQuill()
   if (props.type == 'url') {
-    let quill = quillEditorRef.value.getQuill()
     let toolbar = quill.getModule("toolbar")
     if (toolbar) {
       toolbar.addHandler("image", (value) => {
@@ -142,8 +142,24 @@ onMounted(() => {
         }
       })
     }
-    quill.root.addEventListener('paste', handlePasteCapture, true)
+  } else if (props.type == 'base64') {
+    let toolbar = quill.getModule("toolbar")
+    if (toolbar) {
+      toolbar.addHandler("image", () => {
+        const input = document.createElement('input')
+        input.setAttribute('type', 'file')
+        input.setAttribute('accept', 'image/*')
+        input.click()
+        input.onchange = () => {
+          const file = input.files[0]
+          if (file) {
+            insertImage(file)
+          }
+        }
+      })
+    }
   }
+  quill.root.addEventListener('paste', handlePasteCapture, true)
 })
 
 // 上传前校检格式和大小
@@ -216,11 +232,23 @@ function handlePasteCapture(e) {
 }
 
 function insertImage(file) {
-  const formData = new FormData()
-  formData.append("file", file)
-  axios.post(uploadUrl.value, formData, { headers: { "Content-Type": "multipart/form-data", Authorization: headers.value.Authorization } }).then(res => {
-    handleUploadSuccess(res.data)
-  })
+  if (!handleBeforeUpload(file)) return
+  if (props.type === 'base64') {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const quill = toRaw(quillEditorRef.value).getQuill()
+      const length = (quill.getSelection() || {}).index || 0
+      quill.insertEmbed(length, "image", e.target.result)
+      quill.setSelection(length + 1)
+    }
+    reader.readAsDataURL(file)
+  } else {
+    const formData = new FormData()
+    formData.append("file", file)
+    axios.post(uploadUrl.value, formData, { headers: { "Content-Type": "multipart/form-data", Authorization: headers.value.Authorization } }).then(res => {
+      handleUploadSuccess(res.data)
+    })
+  }
 }
 </script>
 

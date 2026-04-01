@@ -1,22 +1,15 @@
 <template>
-  <el-dialog
-    :title="title"
-    :model-value="modelValue"
-    width="1000px"
-    @update:model-value="handleUpdateVisible"
-    append-to-body
-  >
+  <el-dialog :title="title" :model-value="modelValue" width="1000px" @update:model-value="handleUpdateVisible"
+    append-to-body>
     <el-form ref="formRef" :model="form" :rules="rules" label-width="140px" label-position="left">
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item label="客户选择" prop="customerInfo.customerId">
-            <el-select v-model="form.customerInfo.customerId" placeholder="请选择客户" filterable clearable style="width: 92%" @change="handleCustomerChange">
-              <el-option
-                v-for="item in localCustomerOptions"
-                :key="item.customerId"
+            <el-select v-model="form.customerInfo.customerId" placeholder="请选择客户" filterable clearable
+              style="width: 92%" @change="handleCustomerChange">
+              <el-option v-for="item in localCustomerOptions" :key="item.customerId"
                 :label="`${item.customerId}-${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
-                :value="item.customerId"
-              />
+                :value="item.customerId" />
             </el-select>
           </el-form-item>
         </el-col>
@@ -68,13 +61,8 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="送样日期：" prop="sampleDeliveryDate">
-            <el-date-picker
-              v-model="form.sampleDeliveryDate"
-              type="date"
-              placeholder="选择日期"
-              style="width: 80%"
-              value-format="YYYY-MM-DD"
-            />
+            <el-date-picker v-model="form.sampleDeliveryDate" type="date" placeholder="选择日期" style="width: 80%"
+              value-format="YYYY-MM-DD" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -109,13 +97,8 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item label="模板内容：" prop="templateContent">
-            <Editor
-               :toolbar="false"
-               v-model="form.templateContent"
-               :minHeight="150"
-               style="width: 100%;"
-               @paste-analyze="handlePasteAnalyze"
-             />
+            <Editor :toolbar="false" v-model="form.templateContent" :minHeight="150" style="width: 100%;"
+              @paste-analyze="handlePasteAnalyze" type="base64" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -127,16 +110,17 @@
               <el-button type="danger" link @click="form.sampleInfoList = []">清空列表</el-button>
             </div>
             <el-table :data="form.sampleInfoList" border size="small" style="width: 100%" max-height="300">
-               <el-table-column prop="sampleId" label="样品编号" width="150" show-overflow-tooltip />
-               <el-table-column prop="sampleType" label="样品类型" width="100" />
-               <el-table-column prop="primer" label="引物" width="150" show-overflow-tooltip />
-               <el-table-column prop="project" label="项目" width="150" show-overflow-tooltip />
-               <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-               <el-table-column label="操作" width="80" fixed="right">
-                 <template #default="scope">
-                   <el-button type="danger" link icon="Delete" @click="form.sampleInfoList.splice(scope.$index, 1)"></el-button>
-                 </template>
-               </el-table-column>
+              <el-table-column prop="sampleId" label="样品编号" width="150" show-overflow-tooltip />
+              <el-table-column prop="sampleType" label="样品类型" width="100" />
+              <el-table-column prop="primer" label="引物" width="150" show-overflow-tooltip />
+              <el-table-column prop="project" label="项目" width="150" show-overflow-tooltip />
+              <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+              <el-table-column label="操作" width="80" fixed="right">
+                <template #default="scope">
+                  <el-button type="danger" link icon="Delete"
+                    @click="form.sampleInfoList.splice(scope.$index, 1)"></el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </el-form-item>
         </el-col>
@@ -233,13 +217,13 @@ const form = ref({
     phone: undefined,
     customerUnit: undefined
   },
-  isEmail: 1,
+  isEmail: 0,
   generation: 1,
   belongCompany: '深圳有康',
   produceCompany: '杭州有康',
   templateType: 1,
   sampleInfoList: [],
-  genNo: 'TEST001',
+  genNo: '',
   remark: undefined,
   templateArrangement: '1',
   sequencingLab: undefined,
@@ -287,7 +271,7 @@ watch(() => props.modelValue, (val) => {
         const data = response.data
         // 1. 保留 reset() 赋予的默认字段值，避免被后端缺失的字段覆盖为 undefined
         form.value = { ...form.value, ...data }
-        
+
         // 2. 补救后端返回的扁平字段到 nested 结构 customerInfo 中
         if (data.customerId) {
           form.value.customerInfo = {
@@ -295,7 +279,7 @@ watch(() => props.modelValue, (val) => {
             customerName: data.customerName,
             address: data.customerAddress
           }
-          
+
           const found = localCustomerOptions.value.find(item => item.customerId == data.customerId)
           if (found) {
             form.value.customerInfo = { ...form.value.customerInfo, ...found }
@@ -315,7 +299,7 @@ watch(() => form.value.templateContent, (v) => {
   }
   if (parseTimer.value) clearTimeout(parseTimer.value)
   parseTimer.value = setTimeout(() => {
-     autoParseTemplate() 
+    autoParseTemplate()
   }, 500)
 }, { immediate: true })
 
@@ -385,24 +369,24 @@ function autoParseTemplate(rawContent) {
     const table = div.querySelector('table')
     const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
     let data = []
-    
+
     const defaultKeys = [
-      'sampleId', 'primer', 'primerConcentration', 'primerType', 
-      'sampleType', 'antibioticType', 'carrierName', 'fragmentSize', 
+      'sampleId', 'primer', 'primerConcentration', 'primerType',
+      'sampleType', 'antibioticType', 'carrierName', 'fragmentSize',
       'testResult', 'returnState', 'returnType', 'remark'
     ]
 
     const headerMap = {
-      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer', 
+      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer',
       '引物浓度': 'primerConcentration', '引物类型': 'primerType',
       '样品类型': 'sampleType', '抗生素类': 'antibioticType', '抗性': 'antibioticType',
-      '载体名称': 'carrierName', '片段大小': 'fragmentSize', 
+      '载体名称': 'carrierName', '片段大小': 'fragmentSize',
       '是否测通': 'testResult', '测序结果': 'testResult',
       '是否返还': 'returnState', '退回状态': 'returnState',
       '返还类型': 'returnType', '样品备注': 'remark', '备注': 'remark',
       '样品位置': 'samplePosition', '引物位置': 'primerPosition',
       '序列': 'seq', '项目号': 'project', '测序项目': 'project', '项目': 'project', '质粒长度': 'plasmidLength',
-      '原浓度': 'originConcentration', '模板板号': 'templatePlateNo', 
+      '原浓度': 'originConcentration', '模板板号': 'templatePlateNo',
       '模板孔号': 'templateHoleNo', '完成状态': 'performance', '完成情况': 'performance',
       '流程名称': 'flowName', '板号': 'plateNo',
       '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
@@ -410,57 +394,57 @@ function autoParseTemplate(rawContent) {
     }
 
     if (table) {
-       const rows = table.rows
-       if (rows.length < 1) return
-       const firstRowTexts = Array.from(rows[0].cells).map(cell => getCellText(cell))
-       const getKey = (header) => headerMap[header] || header
-       let validKeys = firstRowTexts.map(getKey)
-       const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
-       let startRow = 1
-       if (knownKeysCount === 0) { validKeys = defaultKeys; startRow = 0 }
+      const rows = table.rows
+      if (rows.length < 1) return
+      const firstRowTexts = Array.from(rows[0].cells).map(cell => getCellText(cell))
+      const getKey = (header) => headerMap[header] || header
+      let validKeys = firstRowTexts.map(getKey)
+      const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
+      let startRow = 1
+      if (knownKeysCount === 0) { validKeys = defaultKeys; startRow = 0 }
 
-       for (let i = startRow; i < rows.length; i++) {
-         const cells = rows[i].cells
-         const item = {}
-         let hasData = false
-         validKeys.forEach((key, index) => {
-           if (index < cells.length) {
-             const val = getCellText(cells[index])
-             if (val) hasData = true
-             if (key) item[key] = val
-           }
-         })
-         if (hasData) data.push(item)
-       }
+      for (let i = startRow; i < rows.length; i++) {
+        const cells = rows[i].cells
+        const item = {}
+        let hasData = false
+        validKeys.forEach((key, index) => {
+          if (index < cells.length) {
+            const val = getCellText(cells[index])
+            if (val) hasData = true
+            if (key) item[key] = val
+          }
+        })
+        if (hasData) data.push(item)
+      }
     } else {
       // Plain text / TSV fallback
       const text = div.innerText.trim()
       const rows = text.split('\n').map(r => r.trim()).filter(r => r)
       if (rows.length < 1) return
-      
+
       const firstRowParts = rows[0].split('\t').map(h => h.trim())
       const getKey = (header) => headerMap[header] || header
       let validKeys = firstRowParts.map(getKey)
 
       const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
-      
+
       let startRow = 1
       if (knownKeysCount === 0) {
-         validKeys = defaultKeys
-         startRow = 0
+        validKeys = defaultKeys
+        startRow = 0
       }
 
       for (let i = startRow; i < rows.length; i++) {
-         const cells = rows[i].split('\t')
-         const item = {}
-         validKeys.forEach((key, index) => {
-            if (key && index < cells.length) item[key] = cells[index]?.trim()
-         })
-         data.push(item)
+        const cells = rows[i].split('\t')
+        const item = {}
+        validKeys.forEach((key, index) => {
+          if (key && index < cells.length) item[key] = cells[index]?.trim()
+        })
+        data.push(item)
       }
     }
     if (data.length > 0) {
-       form.value.sampleInfoList = data
+      form.value.sampleInfoList = data
     }
   } catch (error) {
     console.warn('Auto parse failed:', error)
@@ -472,7 +456,7 @@ function submitForm() {
     if (valid) {
       const submitData = { ...form.value }
       delete submitData.templateContent
-      
+
       if (isEdit.value) {
         updateOrder(submitData).then(response => {
           proxy.$modal.msgSuccess('修改成功')
