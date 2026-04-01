@@ -78,23 +78,9 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
-          <el-button class="premium-btn premium-btn-confirm" @click="submitForm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确定
-          </el-button>
-          <el-button class="premium-btn premium-btn-cancel" @click="cancel">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取消
-          </el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -144,23 +130,9 @@
         </div>
       </div>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
-          <el-button class="premium-btn premium-btn-confirm" @click="proceedToPlateConfig">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确定
-          </el-button>
-          <el-button class="premium-btn premium-btn-cancel" @click="openConfirmPlate = false">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取消
-          </el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="proceedToPlateConfig">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="openConfirmPlate = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -218,23 +190,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
-          <el-button class="premium-btn premium-btn-confirm" @click="submitPlateForm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确定
-          </el-button>
-          <el-button class="premium-btn premium-btn-cancel" @click="openPlate = false">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取消
-          </el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitPlateForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="openPlate = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -305,23 +263,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
-          <el-button class="premium-btn premium-btn-confirm" @click="submitWellForm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确定
-          </el-button>
-          <el-button class="premium-btn premium-btn-cancel" @click="openWell = false">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取消
-          </el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitWellForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="openWell = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -354,23 +298,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
-          <el-button class="premium-btn premium-btn-confirm" @click="submitIgnoreForm">
-            <template #icon>
-              <el-icon>
-                <SuccessFilled />
-              </el-icon>
-            </template>
-            确定
-          </el-button>
-          <el-button class="premium-btn premium-btn-cancel" @click="openIgnore = false">
-            <template #icon>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </template>
-            取消
-          </el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitIgnoreForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="openIgnore = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -387,21 +317,16 @@
         <div class="form-row border-bottom">
           <div class="form-label" style="width: 120px"></div>
           <div class="form-content" style="display: flex; justify-content: center">
-            <el-button class="premium-btn premium-btn-confirm" style="height: 32px" @click="handleLabelPrint">
-              <template #icon>
-                <el-icon>
-                  <Printer />
-                </el-icon>
-              </template>
+            <el-button type="success" :icon="Printer" style="height: 32px" @click="handleLabelPrint">
               标签打印
             </el-button>
           </div>
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitBDTForm">确定</el-button>
-          <el-button type="danger" @click="openBDT = false">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitBDTForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="openBDT = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -446,9 +371,9 @@
         </table>
       </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#printArea'" type="primary">打 印</el-button>
-          <el-button @click="openReport = false">关 闭</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#printArea'" type="success" :icon="Printer">打印</el-button>
+          <el-button type="danger" :icon="Close" @click="openReport = false">关闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -458,6 +383,7 @@
 <script setup name="Schedule">
 import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
+import { Check, Close, Printer } from '@element-plus/icons-vue'
 import useUserStore from '@/store/modules/user'
 import {
   listLayoutTemplate,
