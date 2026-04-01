@@ -232,12 +232,16 @@ function handleExport() {
   )
 }
 
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 </script>
 
