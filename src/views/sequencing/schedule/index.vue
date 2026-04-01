@@ -869,12 +869,16 @@ function getWellData(r, c) {
 }
 
 // --- 5. Lifecycle ---
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 
 // --- 6. Watchers ---

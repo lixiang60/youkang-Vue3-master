@@ -1006,12 +1006,16 @@ function handleBatchSubmit() {
 }
 
 // --- 5. Lifecycle Hooks ---
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 
 // --- 6. Watchers ---

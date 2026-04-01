@@ -366,11 +366,17 @@ function handleReturnLabel() {
   proxy.$modal.msg('返还标签生成开发中...')
 }
 
+// 4. 生命周期
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
+
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 </script>
 

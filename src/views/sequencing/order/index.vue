@@ -465,6 +465,7 @@ function handleTemplateLabel() {
 }
 
 // --- 5. Lifecycle Hooks ---
+let isInitialActivated = true
 onMounted(() => {
   getList()
   listCustomerOption().then(response => {
@@ -473,7 +474,10 @@ onMounted(() => {
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 
 // --- 6. Watchers ---
