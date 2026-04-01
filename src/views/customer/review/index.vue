@@ -1,33 +1,41 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['customer:review:audit']"
+          size="small"
+          type="warning"
+          plain
+          icon="Key"
+          @click="handleReview"
+          >审核</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['customer:review:save']"
+          size="small"
+          type="success"
+          plain
+          icon="FolderChecked"
+          @click="handleSave"
+          >暂存</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:review:remove']"
+          size="small"
           type="danger"
           plain
           icon="Delete"
@@ -36,74 +44,32 @@
           >删除</el-button
         >
       </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Search" @click="handleQuery">查询</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:review:audit']" type="warning" plain icon="Key" @click="handleReview"
-          >审核</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:review:save']" type="success" plain icon="FolderChecked" @click="handleSave"
-          >暂存</el-button
-        >
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table
-      v-loading="loading"
-      :data="dataList"
-      border
-      stripe
-      style="width: 100%"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="50" align="center" fixed />
-      <el-table-column label="客户ID" align="center" prop="customerId" width="80" fixed />
-      <el-table-column label="姓名客户" align="center" prop="name" width="100" fixed show-overflow-tooltip />
-      <el-table-column label="地区" align="center" prop="region" width="100" />
-      <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
-      <el-table-column label="邮编" align="center" prop="zipCode" width="100" />
-      <el-table-column label="电话" align="center" prop="phone" width="120" />
-      <el-table-column label="手机" align="center" prop="mobile" width="120" />
-      <el-table-column label="邮箱" align="center" prop="email" width="120" show-overflow-tooltip />
-      <el-table-column label="等级" align="center" prop="level" width="80" />
-      <el-table-column label="状态" align="center" prop="status" width="80" />
-      <el-table-column label="销售员" align="center" prop="salesman" width="100" />
-      <el-table-column label="发票抬头" align="center" prop="invoiceTitle" width="150" show-overflow-tooltip />
-      <el-table-column label="结算方式" align="center" prop="paymentMethod" width="100" />
-      <el-table-column label="发票种类" align="center" prop="invoiceType" width="120" />
-      <el-table-column label="备注" align="center" prop="remark" width="100" show-overflow-tooltip />
-      <el-table-column label="添加人" align="center" prop="addedBy" width="100" />
-      <el-table-column label="时间" align="center" prop="createTime" width="110">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总积分" align="center" prop="totalPoints" width="80" />
-      <el-table-column label="可用积分" align="center" prop="availablePoints" width="90" />
-      <el-table-column label="已使用积分" align="center" prop="usedPoints" width="100" />
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
+    <dynamic-table
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
+      :loading="loading"
+      size="small"
+      :data="dataList"
+      :columns="columns"
       :total="total"
       @pagination="getList"
-    />
+      @selection-change="handleSelectionChange"
+    >
+      <template #createTime="{ row }">
+        <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
+      </template>
+    </dynamic-table>
   </div>
 </template>
 
 <script setup name="Review">
 import { listReview, delReview } from '@/api/customer/review'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import DynamicTable from '@/components/DynamicTable/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -114,6 +80,43 @@ const ids = ref([])
 const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
+
+const searchFields = ref([
+  { prop: 'name', label: '名称', type: 'input' },
+  {
+    prop: 'status',
+    label: '状态',
+    type: 'select',
+    options: [
+      { label: '正常', value: '0' },
+      { label: '停用', value: '1' }
+    ]
+  }
+])
+
+const columns = ref([
+  { type: 'selection', width: 50, fixed: true, visible: true },
+  { key: 'customerId', label: '客户ID', width: 80, fixed: true, visible: true },
+  { key: 'name', label: '姓名客户', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', width: 100, visible: true },
+  { key: 'address', label: '地址', width: 150, showOverflowTooltip: true, visible: true },
+  { key: 'zipCode', label: '邮编', width: 100, visible: false },
+  { key: 'phone', label: '电话', width: 120, visible: false },
+  { key: 'mobile', label: '手机', width: 120, visible: true },
+  { key: 'email', label: '邮箱', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'level', label: '等级', width: 80, visible: true },
+  { key: 'status', label: '状态', width: 80, visible: true },
+  { key: 'salesman', label: '销售员', width: 100, visible: true },
+  { key: 'invoiceTitle', label: '发票抬头', width: 150, showOverflowTooltip: true, visible: false },
+  { key: 'paymentMethod', label: '结算方式', width: 100, visible: true },
+  { key: 'invoiceType', label: '发票种类', width: 120, visible: false },
+  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false },
+  { key: 'addedBy', label: '添加人', width: 100, visible: false },
+  { key: 'createTime', label: '时间', width: 110, slot: 'createTime', visible: true },
+  { key: 'totalPoints', label: '总积分', width: 80, visible: true },
+  { key: 'availablePoints', label: '可用积分', width: 90, visible: true },
+  { key: 'usedPoints', label: '已使用积分', width: 100, visible: false }
+])
 
 const data = reactive({
   queryParams: {
@@ -131,13 +134,18 @@ function getList() {
   loading.value = true
   listReview(queryParams.value)
     .then(response => {
-      dataList.value = response.rows
-      total.value = response.total
+      dataList.value = response.rows || (response.data && (response.data.rows || response.data.records)) || []
+      total.value = response.total || (response.data && response.data.total) || 0
       loading.value = false
     })
     .catch(() => {
       loading.value = false
     })
+}
+
+/** 切换搜索面板 */
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
 }
 
 /** 搜索按钮操作 */

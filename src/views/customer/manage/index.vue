@@ -1,47 +1,24 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true">
-      <el-form-item label="客户名称" prop="customerName">
-        <el-input
-          v-model="queryParams.customerName"
-          placeholder="请输入客户名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="手机号" prop="phone">
-        <el-input
-          v-model="queryParams.phone"
-          placeholder="请输入手机号"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="启用" value="启用" />
-          <el-option label="停用" value="停用" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:manage:add']" type="primary" plain icon="Plus" @click="handleAdd"
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['customer:manage:add']" size="small" type="primary" plain icon="Plus" @click="handleAdd"
           >添加</el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:manage:edit']"
+          size="small"
           type="success"
           plain
           icon="Edit"
@@ -51,11 +28,12 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="Edit" @click="handleEdit">编辑</el-button>
+        <el-button size="small" plain icon="Edit" @click="handleEdit">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:manage:remove']"
+          size="small"
           type="danger"
           plain
           icon="Delete"
@@ -65,16 +43,13 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" plain icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
+        <el-button size="small" type="warning" plain icon="Star" @click="handleTransferPoints">转至积分</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="Star" @click="handleTransferPoints">转至积分</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Setting" @click="handleContinueSetting">继续设置</el-button>
+        <el-button size="small" plain icon="Setting" @click="handleContinueSetting">继续设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
@@ -105,129 +80,129 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <base-dialog v-model="open" :title="title" width="900px">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="姓名客户：" prop="customerName">
+    <el-dialog v-model="open" :title="title" width="900px" append-to-body>
+      <div class="well-form">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">姓名客户：</div>
+            <div class="form-content">
               <el-input v-model="form.customerName" placeholder="请输入客户姓名" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="所属公司：" prop="company">
+            </div>
+            <div class="form-label">所属公司：</div>
+            <div class="form-content">
               <el-select v-model="form.company" placeholder="请选择所属公司" style="width: 100%">
                 <el-option label="杭州有康" value="杭州有康" />
                 <el-option label="北京分公司" value="北京分公司" />
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="地区：" prop="region">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">地区：</div>
+            <div class="form-content">
               <el-select v-model="form.region" placeholder="请选择地区" style="width: 100%">
                 <el-option label="华东" value="华东" />
                 <el-option label="华北" value="华北" />
                 <el-option label="华南" value="华南" />
               </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="地址：" prop="address">
+            </div>
+            <div class="form-label">地址：</div>
+            <div class="form-content">
               <el-input v-model="form.address" placeholder="请输入详细地址" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="课题组：" prop="subjectGroupId">
-              <el-input v-model="form.subjectGroupName" placeholder="请输入课题组" style="width: 280px" readonly />
-              <el-button icon="Search" circle style="margin-left: 10px" @click="openSubjectGroupSelector"></el-button>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="手机：" prop="phone">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">课题组：</div>
+            <div class="form-content">
+              <div style="display: flex; gap: 10px">
+                <el-input v-model="form.subjectGroupName" placeholder="请输入课题组" readonly />
+                <el-button icon="Search" circle @click="openSubjectGroupSelector"></el-button>
+              </div>
+            </div>
+            <div class="form-label">手机：</div>
+            <div class="form-content">
               <el-input v-model="form.phone" placeholder="请输入手机号码" maxlength="11">
                 <template #suffix>
                   <el-icon><More /></el-icon>
                 </template>
               </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="邮箱：" prop="email">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">邮箱：</div>
+            <div class="form-content">
               <el-input v-model="form.email" placeholder="请输入邮箱地址" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="微信ID：" prop="wechatId">
+            </div>
+            <div class="form-label">微信ID：</div>
+            <div class="form-content">
               <el-input v-model="form.wechatId" placeholder="请输入微信ID" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="等级：" prop="customerLevel">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">等级：</div>
+            <div class="form-content">
               <el-select v-model="form.customerLevel" placeholder="请选择等级" style="width: 100%">
                 <el-option label="普通" value="普通" />
                 <el-option label="VIP1" value="VIP1" />
                 <el-option label="VIP2" value="VIP2" />
                 <el-option label="VIP3" value="VIP3" />
               </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态：" prop="status">
+            </div>
+            <div class="form-label">状态：</div>
+            <div class="form-content">
               <el-radio-group v-model="form.status">
                 <el-radio label="1">启用</el-radio>
                 <el-radio label="0">禁用</el-radio>
               </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="销售员：" prop="salesPerson">
-              <el-input v-model="form.salesPerson" placeholder="请输入销售员" style="width: 280px" />
-              <el-button icon="Search" circle style="margin-left: 10px"></el-button>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="客户单位：" prop="customerUnit">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">销售员：</div>
+            <div class="form-content">
+              <div style="display: flex; gap: 10px">
+                <el-input v-model="form.salesPerson" placeholder="请输入销售员" />
+                <el-button icon="Search" circle></el-button>
+              </div>
+            </div>
+            <div class="form-label">客户单位：</div>
+            <div class="form-content">
               <el-input v-model="form.customerUnit" placeholder="请输入客户单位" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="结算方式：" prop="paymentMethod">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">结算方式：</div>
+            <div class="form-content">
               <dynamic-selector v-model="form.paymentMethod" type="paymentMethod" placeholder="请选择结算方式" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="发票种类：" prop="invoiceType">
+            </div>
+            <div class="form-label">发票种类：</div>
+            <div class="form-content">
               <dynamic-selector v-model="form.invoiceType" type="invoiceType" placeholder="请选择发票种类" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注：" prop="remarks">
-              <el-input v-model="form.remarks" type="textarea" :rows="4" placeholder="请输入备注信息" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">备注：</div>
+            <div class="form-content">
+              <el-input v-model="form.remarks" type="textarea" :rows="3" placeholder="请输入备注信息" />
+            </div>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
+          <el-button class="premium-btn premium-btn-confirm" @click="submitForm">
+            <template #icon>
+              <el-icon><SuccessFilled /></el-icon>
+            </template>
+            确 定
+          </el-button>
+          <el-button class="premium-btn premium-btn-cancel" @click="cancel">
+            <template #icon>
+              <el-icon><CircleCloseFilled /></el-icon>
+            </template>
+            取 消
+          </el-button>
         </div>
       </template>
-    </base-dialog>
+    </el-dialog>
 
     <!-- 课题组选择组件 -->
     <subject-group-selector
@@ -241,9 +216,9 @@
 <script setup name="Manage">
 import { listManage, getManage, addManage, updateManage, delManage } from '@/api/customer/manage'
 import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
-import BaseDialog from '@/components/BaseDialog/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -258,11 +233,32 @@ const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
 
+const searchFields = ref([
+  { prop: 'customerName', label: '客户名称', type: 'input' },
+  { prop: 'phone', label: '手机号', type: 'input' },
+  {
+    prop: 'status',
+    label: '状态',
+    type: 'select',
+    options: [
+      { label: '启用', value: '启用' },
+      { label: '停用', value: '停用' }
+    ]
+  }
+])
+
 // 列信息
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'id', label: '客户ID', width: 80, fixed: true, visible: true },
-  { key: 'customerName', label: '姓名昵称', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
+  {
+    key: 'customerName',
+    label: '姓名昵称',
+    width: 100,
+    fixed: true,
+    showOverflowTooltip: true,
+    visible: true
+  },
   { key: 'subjectGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
   { key: 'region', label: '地区', width: 100, visible: true },
   { key: 'address', label: '地址', width: 150, showOverflowTooltip: true, visible: false },
@@ -308,8 +304,8 @@ function getList() {
   loading.value = true
   listManage(queryParams.value)
     .then(response => {
-      dataList.value = response.data.rows
-      total.value = response.data.total
+      dataList.value = response.rows || (response.data && (response.data.rows || response.data.records)) || []
+      total.value = response.total || (response.data && response.data.total) || 0
       loading.value = false
     })
     .catch(() => {
@@ -346,6 +342,11 @@ function reset() {
     remarks: ''
   }
   proxy.resetForm('formRef')
+}
+
+/** 切换搜索面板 */
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
 }
 
 /** 搜索按钮操作 */

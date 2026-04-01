@@ -1,57 +1,36 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:research:add']" type="success" plain icon="Plus" @click="handleAdd"
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['customer:research:add']"
+          size="small"
+          type="success"
+          plain
+          icon="Plus"
+          @click="handleAdd"
           >添加</el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research:remove']"
+          size="small"
           type="danger"
           plain
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['customer:research:batch']"
-          type="primary"
-          plain
-          icon="Document"
-          @click="handleBatchEdit"
-          >批量编辑</el-button
         >
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
@@ -62,6 +41,7 @@
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       :loading="loading"
+      size="small"
       :data="dataList"
       :columns="columns"
       :total="total"
@@ -77,12 +57,13 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <base-dialog v-model="open" :title="title" width="800px">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="客户选择" prop="customerId">
-              <el-select v-model="form.customerId" placeholder="请选择客户" filterable clearable>
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
+      <div class="well-form">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">客户选择：</div>
+            <div class="form-content">
+              <el-select v-model="form.customerId" placeholder="请选择客户" filterable clearable style="width: 100%">
                 <el-option
                   v-for="item in customerOptions"
                   :key="item.customerId"
@@ -90,13 +71,18 @@
                   :value="item.customerId"
                 />
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="课题组选择" prop="subjectGroupId">
-              <el-select v-model="form.subjectGroupId" placeholder="请选择课题组" filterable clearable>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">课题组选择：</div>
+            <div class="form-content">
+              <el-select
+                v-model="form.subjectGroupId"
+                placeholder="请选择课题组"
+                filterable
+                clearable
+                style="width: 100%"
+              >
                 <el-option
                   v-for="item in subjectGroupOptions"
                   :key="item.id"
@@ -104,31 +90,41 @@
                   :value="item.id"
                 />
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">备注：</div>
+            <div class="form-content">
               <el-input v-model="form.remark" type="textarea" :rows="5" placeholder="请输入备注信息" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+            </div>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">添 加</el-button>
+        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
+          <el-button class="premium-btn premium-btn-confirm" @click="submitForm">
+            <template #icon>
+              <el-icon><SuccessFilled /></el-icon>
+            </template>
+            {{ form.id ? '修 改' : '添 加' }}
+          </el-button>
+          <el-button class="premium-btn premium-btn-cancel" @click="cancel">
+            <template #icon>
+              <el-icon><CircleCloseFilled /></el-icon>
+            </template>
+            取 消
+          </el-button>
         </div>
       </template>
-    </base-dialog>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Research">
 import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
 import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
-import BaseDialog from '@/components/BaseDialog/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -144,6 +140,19 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const searchFields = ref([
+  { prop: 'name', label: '名称', type: 'input' },
+  {
+    prop: 'status',
+    label: '状态',
+    type: 'select',
+    options: [
+      { label: '正常', value: '0' },
+      { label: '停用', value: '1' }
+    ]
+  }
+])
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -186,8 +195,8 @@ function getList() {
   loading.value = true
   listResearch(queryParams.value)
     .then(response => {
-      dataList.value = response.data.records
-      total.value = response.data.total
+      dataList.value = response.rows || (response.data && (response.data.rows || response.data.records)) || []
+      total.value = response.total || (response.data && response.data.total) || 0
       loading.value = false
     })
     .catch(() => {
@@ -210,6 +219,11 @@ function reset() {
     remark: undefined
   }
   proxy.resetForm('formRef')
+}
+
+/** 切换搜索面板 */
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
 }
 
 /** 搜索按钮操作 */
@@ -249,15 +263,6 @@ function handleUpdate(row) {
   })
 }
 
-/** 批量编辑按钮操作 */
-function handleBatchEdit() {
-  if (ids.value.length === 0) {
-    proxy.$modal.msgWarning('请选择要批量编辑的记录')
-    return
-  }
-  proxy.$modal.msgInfo('批量编辑功能开发中...')
-}
-
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
@@ -294,21 +299,9 @@ function handleDelete(row) {
     .catch(() => {})
 }
 
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download(
-    'customer/research/export',
-    {
-      ...queryParams.value
-    },
-    `research_${new Date().getTime()}.xlsx`
-  )
-}
-
 onMounted(() => {
   getList()
   listCustomerOption().then(response => {
-    console.log('Customer Options Response:', response)
     customerOptions.value = response.data.records
   })
   listSubjectGroupOption().then(response => {

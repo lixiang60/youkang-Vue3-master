@@ -1,38 +1,30 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
-          clearable
-          style="width: 200px"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:research_group:add']" type="success" plain icon="Plus" @click="handleAdd"
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['customer:research_group:add']"
+          size="small"
+          type="success"
+          plain
+          icon="Plus"
+          @click="handleAdd"
           >添加</el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:edit']"
+          size="small"
           type="primary"
           plain
           icon="Edit"
@@ -44,6 +36,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:remove']"
+          size="small"
           type="danger"
           plain
           icon="Delete"
@@ -53,11 +46,9 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:import']"
+          size="small"
           type="success"
           plain
           icon="Upload"
@@ -68,6 +59,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:price']"
+          size="small"
           type="warning"
           plain
           icon="Money"
@@ -76,8 +68,16 @@
         >
       </el-col>
       <el-col :span="1.5">
+        <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
+      </el-col>
+    </el-row>
+
+    <!-- 额外功能按钮组 -->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:reminder']"
+          size="small"
           type="info"
           plain
           icon="Bell"
@@ -88,6 +88,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:prepayment']"
+          size="small"
           type="warning"
           plain
           icon="Wallet"
@@ -98,6 +99,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:batch']"
+          size="small"
           type="primary"
           plain
           icon="Document"
@@ -106,13 +108,19 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:research_group:label']" plain icon="Collection" @click="handleGeneLabel"
+        <el-button
+          v-hasPermi="['customer:research_group:label']"
+          size="small"
+          plain
+          icon="Collection"
+          @click="handleGeneLabel"
           >基因标签</el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:all_prices']"
+          size="small"
           type="warning"
           plain
           icon="Box"
@@ -123,6 +131,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:blank_price']"
+          size="small"
           type="success"
           plain
           icon="PriceTag"
@@ -130,7 +139,6 @@
           >空白价格</el-button
         >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
@@ -138,6 +146,7 @@
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       :loading="loading"
+      size="small"
       :data="dataList"
       :columns="columns"
       :total="total"
@@ -169,84 +178,87 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <base-dialog v-model="open" :title="title" width="800px">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" prop="name">
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
+      <div class="well-form">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">名称：</div>
+            <div class="form-content">
               <el-input v-model="form.name" placeholder="请输入名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="地区" prop="region">
+            </div>
+            <div class="form-label">地区：</div>
+            <div class="form-content">
               <el-input v-model="form.region" placeholder="请输入地区" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="业务员" prop="salesPerson">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">业务员：</div>
+            <div class="form-content">
               <el-input v-model="form.salesPerson" placeholder="请输入业务员" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="结算方式" prop="paymentMethod">
-              <el-select v-model="form.paymentMethod" placeholder="请选择结算方式">
+            </div>
+            <div class="form-label">结算方式：</div>
+            <div class="form-content">
+              <el-select v-model="form.paymentMethod" placeholder="请选择结算方式" style="width: 100%">
                 <el-option label="月结" value="月结" />
                 <el-option label="现结" value="现结" />
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="发票抬头" prop="invoiceTitle">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">发票抬头：</div>
+            <div class="form-content">
               <el-input v-model="form.invoiceTitle" placeholder="请输入发票抬头" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="所属公司" prop="companyId">
+            </div>
+            <div class="form-label">所属公司：</div>
+            <div class="form-content">
               <el-input v-model="form.companyId" placeholder="请输入所属公司" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="联系人" prop="contactPerson">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">联系人：</div>
+            <div class="form-content">
               <el-input v-model="form.contactPerson" placeholder="请输入联系人" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="联系电话" prop="contactPhone">
+            </div>
+            <div class="form-label">联系电话：</div>
+            <div class="form-content">
               <el-input v-model="form.contactPhone" placeholder="请输入联系电话" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="积分基数" prop="pointsBase">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">积分基数：</div>
+            <div class="form-content">
               <el-input v-model="form.pointsBase" placeholder="请输入积分基数" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="积分金额" prop="pointsAmount">
+            </div>
+            <div class="form-label">积分金额：</div>
+            <div class="form-content">
               <el-input v-model="form.pointsAmount" placeholder="请输入积分金额" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="联系地址" prop="contactAddress">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">联系地址：</div>
+            <div class="form-content">
               <el-input v-model="form.contactAddress" placeholder="请输入联系地址" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+            </div>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
+          <el-button class="premium-btn premium-btn-confirm" @click="submitForm">
+            <template #icon>
+              <el-icon><SuccessFilled /></el-icon>
+            </template>
+            确 定
+          </el-button>
+          <el-button class="premium-btn premium-btn-cancel" @click="cancel">
+            <template #icon>
+              <el-icon><CircleCloseFilled /></el-icon>
+            </template>
+            取 消
+          </el-button>
         </div>
       </template>
-    </base-dialog>
+    </el-dialog>
   </div>
 </template>
 
@@ -258,8 +270,8 @@ import {
   updateResearch_group,
   delResearch_group
 } from '@/api/customer/research_group'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
-import BaseDialog from '@/components/BaseDialog/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -272,6 +284,19 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const searchFields = ref([
+  { prop: 'name', label: '名称', type: 'input' },
+  {
+    prop: 'status',
+    label: '状态',
+    type: 'select',
+    options: [
+      { label: '正常', value: '0' },
+      { label: '停用', value: '1' }
+    ]
+  }
+])
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -317,8 +342,8 @@ function getList() {
   loading.value = true
   listResearch_group(queryParams.value)
     .then(response => {
-      dataList.value = response.data.rows
-      total.value = response.data.total
+      dataList.value = response.rows || (response.data && (response.data.rows || response.data.records)) || []
+      total.value = response.total || (response.data && response.data.total) || 0
       loading.value = false
     })
     .catch(() => {
@@ -349,6 +374,11 @@ function reset() {
     remark: undefined
   }
   proxy.resetForm('formRef')
+}
+
+/** 切换搜索面板 */
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
 }
 
 /** 搜索按钮操作 */
@@ -483,17 +513,6 @@ function handleDelete(row) {
       proxy.$modal.msgSuccess('删除成功')
     })
     .catch(() => {})
-}
-
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download(
-    'customer/research_group/export',
-    {
-      ...queryParams.value
-    },
-    `research_group_${new Date().getTime()}.xlsx`
-  )
 }
 
 onMounted(() => {
