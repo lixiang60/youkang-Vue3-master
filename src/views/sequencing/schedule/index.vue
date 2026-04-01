@@ -416,86 +416,17 @@
 <script setup name="Schedule">
 import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
-const route = useRoute()
 import useUserStore from '@/store/modules/user'
-const userStore = useUserStore()
 import { listLayoutTemplate, updateTemplateNo, ignoreTemp, templateBDT } from '@/api/sequencing/schedule'
-
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
-const searchRef = ref(null)
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
-
-const dataList = ref([])
-const open = ref(false)
-const loading = ref(true)
-const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const title = ref('')
-
-const openConfirmPlate = ref(false)
-const openPlate = ref(false)
-const openWell = ref(false)
-const openIgnore = ref(false)
-const openBDT = ref(false)
-const selectedRows = ref([])
-const plateForm = ref({
-  templatePlateNo: '',
-  templateHoleNo: 'A1',
-  templateStype: '横排',
-  machineType: '192',
-  remark: ''
-})
-
-const wellForm = reactive({
-  machineType: '192',
-  templateStype: '横排',
-  mergeType: '合并',
-  templatePlateNo: '',
-  templateHoleNo: '',
-  remark: ''
-})
-
-const ignoreForm = reactive({
-  remark: ''
-})
-
-const openReport = ref(false)
-const reportData = ref([])
-const reportMeta = reactive({
-  user: 'ADMIN',
-  time: ''
-})
-
-const bdtForm = reactive({
-  plateNo: ''
-})
-
-const getWellData = (r, c) => {
-  const pos1 = r + c
-  const pos2 = r + (c < 10 ? '0' + c : c)
-  return reportData.value.find(item => item.templateHoleNo === pos1 || item.templateHoleNo === pos2) || {}
-}
-
-const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
-
-const plateRules = {
-  templatePlateNo: [{ required: true, message: '请输入模板板号', trigger: 'blur' }],
-  templateHoleNo: [{ required: true, message: '请输入起始孔号', trigger: 'blur' }],
-  templateStype: [{ required: true, message: '请选择排版方式', trigger: 'change' }]
-}
-
-const wellRules = {
-  templatePlateNo: [{ required: true, message: '请输入板号', trigger: 'blur' }],
-  templateHoleNo: [{ required: true, message: '请输入孔号', trigger: 'blur' }]
-}
-
-
+const userStore = useUserStore()
+const route = useRoute()
+const cacheKey = 'sequencing_schedule_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -522,24 +453,6 @@ const columns = ref([
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
 ])
 
-const cacheKey = 'sequencing_schedule_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) { }
-}
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
-// 检索配置
 const searchFields = ref([
   { prop: 'orderId', label: '订单号', type: 'input' },
   { prop: 'customerName', label: '客户姓名', type: 'input' },
@@ -547,10 +460,69 @@ const searchFields = ref([
   { prop: 'returnState', label: '返回状态', type: 'input' }
 ])
 
-function toggleSearchPanel() {
-  searchRef.value?.toggleCollapse()
+const plateRules = {
+  templatePlateNo: [{ required: true, message: '请输入模板板号', trigger: 'blur' }],
+  templateHoleNo: [{ required: true, message: '请输入起始孔号', trigger: 'blur' }],
+  templateStype: [{ required: true, message: '请选择排版方式', trigger: 'change' }]
 }
 
+const wellRules = {
+  templatePlateNo: [{ required: true, message: '请输入板号', trigger: 'blur' }],
+  templateHoleNo: [{ required: true, message: '请输入孔号', trigger: 'blur' }]
+}
+
+// --- 2. State ---
+const searchRef = ref(null)
+const dataList = ref([])
+const total = ref(0)
+const loading = ref(true)
+const showSearch = ref(true)
+const open = ref(false)
+const title = ref('')
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const selectedRows = ref([])
+
+// 弹窗状态
+const openConfirmPlate = ref(false)
+const openPlate = ref(false)
+const openWell = ref(false)
+const openIgnore = ref(false)
+const openBDT = ref(false)
+const openReport = ref(false)
+
+// 表单数据
+const plateForm = ref({
+  templatePlateNo: '',
+  templateHoleNo: 'A1',
+  templateStype: '横排',
+  machineType: '192',
+  remark: ''
+})
+
+const wellForm = reactive({
+  machineType: '192',
+  templateStype: '横排',
+  mergeType: '合并',
+  templatePlateNo: '',
+  templateHoleNo: '',
+  remark: ''
+})
+
+const ignoreForm = reactive({
+  remark: ''
+})
+
+const bdtForm = reactive({
+  plateNo: ''
+})
+
+const reportData = ref([])
+const reportMeta = reactive({
+  user: 'ADMIN',
+  time: ''
+})
 
 const data = reactive({
   form: {},
@@ -563,13 +535,28 @@ const data = reactive({
     returnState: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
   }
 })
 
 const { queryParams, form, rules } = toRefs(data)
+
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) { }
+}
+
+// --- 3. Computed ---
+const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
+
+// --- 4. Methods ---
 
 /** 查询列表 */
 function getList() {
@@ -583,13 +570,29 @@ function getList() {
   })
 }
 
-/** 取消按钮 */
-function cancel() {
-  open.value = false
-  reset()
+/** 搜索 & 操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1
+  getList()
 }
 
-/** 表单重置 */
+function handleRefresh() {
+  getList()
+  proxy.$modal.msgSuccess('刷新成功')
+}
+
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
+}
+
+function handleSelectionChange(selection) {
+  selectedRows.value = selection
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+/** 基础 CRUD */
 function reset() {
   form.value = {
     id: undefined,
@@ -600,34 +603,17 @@ function reset() {
   proxy.resetForm('formRef')
 }
 
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1
-  getList()
+function cancel() {
+  open.value = false
+  reset()
 }
 
-/** 刷新按钮操作 */
-function handleRefresh() {
-  getList()
-  proxy.$modal.msgSuccess('刷新成功')
-}
-
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  selectedRows.value = selection
-  ids.value = selection.map(item => item.id)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
-
-/** 新增按钮操作 */
 function handleAdd() {
   reset()
   open.value = true
   title.value = '添加模板排版'
 }
 
-/** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
@@ -638,7 +624,6 @@ function handleUpdate(row) {
   })
 }
 
-/** 提交按钮 */
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
@@ -659,7 +644,6 @@ function submitForm() {
   })
 }
 
-/** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
   proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
@@ -670,15 +654,13 @@ function handleDelete(row) {
   }).catch(() => { })
 }
 
-/** 导出按钮操作 */
 function handleExport() {
   proxy.download('sequencing/schedule/export', {
     ...queryParams.value
   }, `schedule_${new Date().getTime()}.xlsx`)
 }
 
-
-/** 添加板号按钮操作 (两步流程) */
+/** 业务操作 - 板号设置 */
 function handleAddPlateNo() {
   if (multiple.value) {
     proxy.$modal.msgWarning('请先勾选需要操作的样品')
@@ -687,7 +669,6 @@ function handleAddPlateNo() {
   openConfirmPlate.value = true
 }
 
-/** 确认生产编号后进入配置页 */
 function proceedToPlateConfig() {
   openConfirmPlate.value = false
   plateForm.value.templatePlateNo = ''
@@ -698,7 +679,6 @@ function proceedToPlateConfig() {
   openPlate.value = true
 }
 
-/** 提交版号表单 */
 function submitPlateForm() {
   proxy.$refs['plateFormRef'].validate(valid => {
     if (valid) {
@@ -723,7 +703,7 @@ function submitPlateForm() {
   })
 }
 
-/** 添加孔号按钮操作 */
+/** 业务操作 - 孔号设置 */
 function handleAddWellNo() {
   if (multiple.value) {
     proxy.$modal.msgWarning('请先勾选需要操作的样品')
@@ -738,7 +718,6 @@ function handleAddWellNo() {
   openWell.value = true
 }
 
-/** 提交孔号表单 */
 function submitWellForm() {
   proxy.$refs['wellFormRef'].validate(valid => {
     if (valid) {
@@ -761,7 +740,8 @@ function submitWellForm() {
     }
   })
 }
-/** 排版忽略按钮操作 */
+
+/** 业务操作 - 排版忽略 */
 function handleLayoutStrategy() {
   if (multiple.value) {
     proxy.$modal.msgWarning('请先勾选需要操作的样品')
@@ -771,7 +751,6 @@ function handleLayoutStrategy() {
   openIgnore.value = true
 }
 
-/** 提交忽略表单 */
 function submitIgnoreForm() {
   const data = {
     templateInfo: selectedRows.value.map(item => ({
@@ -788,13 +767,12 @@ function submitIgnoreForm() {
   })
 }
 
-/** 模板BDT打印按钮操作 */
+/** 业务操作 - BDT 报表与打印 */
 function handleTemplateBDT() {
   bdtForm.plateNo = ''
   openBDT.value = true
 }
 
-/** 提交模板BDT表单 */
 function submitBDTForm() {
   if (!bdtForm.plateNo) {
     proxy.$modal.msgWarning('请输入板号')
@@ -803,7 +781,6 @@ function submitBDTForm() {
   handleLabelPrint()
 }
 
-/** 标签打印 (图2 报表触发) */
 function handleLabelPrint() {
   if (!bdtForm.plateNo) {
     proxy.$modal.msgWarning('请输入板号')
@@ -821,8 +798,14 @@ function handleLabelPrint() {
   })
 }
 
+/** 辅助方法 */
+function getWellData(r, c) {
+  const pos1 = r + c
+  const pos2 = r + (c < 10 ? '0' + c : c)
+  return reportData.value.find(item => item.templateHoleNo === pos1 || item.templateHoleNo === pos2) || {}
+}
 
-
+// --- 5. Lifecycle ---
 onMounted(() => {
   getList()
 })
@@ -830,6 +813,13 @@ onMounted(() => {
 onActivated(() => {
   getList()
 })
+
+// --- 6. Watchers ---
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
 
 </script>
 

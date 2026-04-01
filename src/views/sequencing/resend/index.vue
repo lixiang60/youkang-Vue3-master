@@ -66,21 +66,15 @@
 </template>
 
 <script setup name="Resend">
+import { ref, reactive, toRefs, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { listResend, getResend, addResend, updateResend, delResend } from '@/api/sequencing/resend'
+import DynamicTable from '@/components/DynamicTable/index.vue'
+import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
-const searchRef = ref(null)
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
-
-const dataList = ref([])
-const open = ref(false)
-const loading = ref(true)
-const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const title = ref('')
+const cacheKey = 'sequencing_resend_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -100,33 +94,22 @@ const columns = ref([
   { key: 'completionStatus', label: '完成情况', width: 80, visible: true }
 ])
 
-const cacheKey = 'sequencing_resend_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) { }
-}
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
-// 检索配置
 const searchFields = ref([
   { prop: 'orderNo', label: '订单号', type: 'input' },
   { prop: 'customerName', label: '客户姓名', type: 'input' }
 ])
 
-function toggleSearchPanel() {
-  searchRef.value?.toggleCollapse()
-}
-
+// --- 2. State ---
+const searchRef = ref(null)
+const dataList = ref([])
+const total = ref(0)
+const loading = ref(true)
+const showSearch = ref(true)
+const open = ref(false)
+const title = ref('')
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
 
 const data = reactive({
   form: {},
@@ -137,13 +120,25 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
   }
 })
 
 const { queryParams, form, rules } = toRefs(data)
+
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) { }
+}
+
+// --- 3. Methods ---
 
 /** 查询列表 */
 function getList() {
@@ -157,13 +152,28 @@ function getList() {
   })
 }
 
-/** 取消按钮 */
-function cancel() {
-  open.value = false
-  reset()
+/** 搜索 & 操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1
+  getList()
 }
 
-/** 表单重置 */
+function handleRefresh() {
+  getList()
+  proxy.$modal.msgSuccess('刷新成功')
+}
+
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
+}
+
+function handleSelectionChange(selection) {
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+/** 基础 CRUD */
 function reset() {
   form.value = {
     id: undefined,
@@ -174,33 +184,17 @@ function reset() {
   proxy.resetForm('formRef')
 }
 
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1
-  getList()
+function cancel() {
+  open.value = false
+  reset()
 }
 
-/** 刷新按钮操作 */
-function handleRefresh() {
-  getList()
-  proxy.$modal.msgSuccess('刷新成功')
-}
-
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
-
-/** 新增按钮操作 */
 function handleAdd() {
   reset()
   open.value = true
   title.value = '添加样品补送'
 }
 
-/** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
@@ -211,18 +205,17 @@ function handleUpdate(row) {
   })
 }
 
-/** 提交按钮 */
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value.id !== undefined) {
-        updateResend(form.value).then(response => {
+        updateResend(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addResend(form.value).then(response => {
+        addResend(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -232,10 +225,9 @@ function submitForm() {
   })
 }
 
-/** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
     return delResend(idList)
   }).then(() => {
     getList()
@@ -243,18 +235,26 @@ function handleDelete(row) {
   }).catch(() => { })
 }
 
-/** 导出按钮操作 */
 function handleExport() {
   proxy.download('sequencing/resend/export', {
     ...queryParams.value
   }, `resend_${new Date().getTime()}.xlsx`)
 }
 
-// 占位方法
-function handleAudit() { proxy.$modal.msg('功能开发中...') }
-function handleAddPlateNo() { proxy.$modal.msg('功能开发中...') }
-function handleReactionStop() { proxy.$modal.msg('功能开发中...') }
+/** 业务操作 */
+function handleAudit() {
+  proxy.$modal.msg('功能开发中...')
+}
 
+function handleAddPlateNo() {
+  proxy.$modal.msg('功能开发中...')
+}
+
+function handleReactionStop() {
+  proxy.$modal.msg('功能开发中...')
+}
+
+// --- 4. Lifecycle Hooks ---
 onMounted(() => {
   getList()
 })
@@ -262,4 +262,12 @@ onMounted(() => {
 onActivated(() => {
   getList()
 })
+
+// --- 5. Watchers ---
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
 </script>

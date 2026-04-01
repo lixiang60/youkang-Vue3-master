@@ -362,17 +362,17 @@
 </template>
 
 <script setup name="Samples">
-import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
+import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { listSamples, getSamples, addSamples, updateSamples, delSamples, arrangeReturn } from '@/api/sequencing/samples'
 import { updateProduceOriginConcentration } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
-const searchRef = ref(null)
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
+const cacheKey = 'sequencing_samples_columns_visible'
 
-const dataList = ref([])
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
@@ -409,36 +409,6 @@ const columns = ref([
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
-// 显隐列缓存加载
-const cacheKey = 'sequencing_samples_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) {
-        col.visible = cache[key]
-      }
-    })
-  } catch (e) {
-    console.warn('Failed to parse columns cache:', e)
-  }
-}
-
-// 监听显隐列变化并缓存
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => {
-    const key = col.key || col.prop || col.type
-    if (key) {
-      cache[key] = col.visible
-    }
-  })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
-// 检索条件字段配置
 const searchFields = ref([
   { prop: 'orderId', label: '订单号', type: 'input' },
   { prop: 'sampleId', label: '样品编号', type: 'input' },
@@ -457,34 +427,21 @@ const searchFields = ref([
   { prop: 'project', label: '测序项目', type: 'input' },
   { prop: 'plateNo', label: '板号', type: 'input' }
 ])
-const selectedRows = ref([])
-const concOpen = ref(false)
-const concForm = reactive({
-  originConcentration: '',
-  remark: ''
-})
+
 const concRules = {
   originConcentration: [{ required: true, message: '请选择或输入原浓度', trigger: 'change' }]
 }
-const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId).filter(id => id))
 
-const open = ref(false)
-const returnOpen = ref(false)
-const returnForm = reactive({
-  orderId: '',
-  reimburseType: ''
-})
 const returnRules = {
   reimburseType: [{ required: true, message: '请选择返回类型', trigger: 'change' }]
 }
+
+// --- 2. State & Forms ---
+const searchRef = ref(null)
+const dataList = ref([])
+const total = ref(0)
 const loading = ref(true)
 const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const title = ref('')
-
 const data = reactive({
   form: {},
   queryParams: {
@@ -499,13 +456,48 @@ const data = reactive({
     plateNo: undefined
   },
   rules: {
-    orderId: [
-      { required: true, message: '订单号不能为空', trigger: 'blur' }
-    ]
+    orderId: [{ required: true, message: '订单号不能为空', trigger: 'blur' }]
   }
 })
 
 const { queryParams, form, rules } = toRefs(data)
+
+const open = ref(false)
+const title = ref('')
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const selectedRows = ref([])
+
+// 弹窗表单状态
+const concOpen = ref(false)
+const concForm = reactive({
+  originConcentration: '',
+  remark: ''
+})
+
+const returnOpen = ref(false)
+const returnForm = reactive({
+  orderId: '',
+  reimburseType: ''
+})
+
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) { }
+}
+
+// --- 3. Computed ---
+const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId).filter(id => id))
+
+// --- 4. Methods ---
 
 /** 查询列表 */
 function getList() {
@@ -519,13 +511,29 @@ function getList() {
   })
 }
 
-/** 取消按钮 */
-function cancel() {
-  open.value = false
-  reset()
+/** 搜索 & 操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1
+  getList()
 }
 
-/** 表单重置 */
+function handleRefresh() {
+  getList()
+  proxy.$modal.msgSuccess('刷新成功')
+}
+
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
+}
+
+function handleSelectionChange(selection) {
+  selectedRows.value = selection
+  ids.value = selection.map(item => item.produceId)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+/** 基础 CRUD */
 function reset() {
   form.value = {
     produceId: undefined,
@@ -556,39 +564,17 @@ function reset() {
   proxy.resetForm('formRef')
 }
 
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1
-  getList()
+function cancel() {
+  open.value = false
+  reset()
 }
 
-/** 刷新按钮操作 */
-function handleRefresh() {
-  getList()
-  proxy.$modal.msgSuccess('刷新成功')
-}
-
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  selectedRows.value = selection
-  ids.value = selection.map(item => item.produceId)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
-
-/** 新增按钮操作 */
 function handleAdd() {
   reset()
   open.value = true
   title.value = '添加测序样品'
 }
 
-// 暂位方法或者是事件定义
-function toggleSearchPanel() {
-  searchRef.value?.toggleCollapse()
-}
-
-/** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const produceId = row.produceId || ids.value
@@ -600,18 +586,17 @@ function handleUpdate(row) {
   })
 }
 
-/** 提交按钮 */
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value._isEdit) {
-        updateSamples(form.value).then(response => {
+        updateSamples(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addSamples(form.value).then(response => {
+        addSamples(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -621,10 +606,9 @@ function submitForm() {
   })
 }
 
-/** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.produceId || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
     return delSamples(idList)
   }).then(() => {
     getList()
@@ -632,15 +616,13 @@ function handleDelete(row) {
   }).catch(() => { })
 }
 
-/** 导出按钮操作 */
 function handleExport() {
   proxy.download('order/sample/export', {
     ...queryParams.value
   }, `samples_${new Date().getTime()}.xlsx`)
 }
 
-// 占位方法
-/** 原浓度按钮操作 */
+/** 业务操作 - 原浓度设置 */
 function handleOriginalConcentration() {
   if (multiple.value) {
     proxy.$modal.msgWarning('请先勾选需要操作的样品')
@@ -651,7 +633,6 @@ function handleOriginalConcentration() {
   concOpen.value = true
 }
 
-/** 提交原浓度表单 */
 function submitConcForm() {
   proxy.$refs['concFormRef'].validate(valid => {
     if (valid) {
@@ -660,7 +641,7 @@ function submitConcForm() {
         originConcentration: concForm.originConcentration,
         remark: concForm.remark
       }
-      updateProduceOriginConcentration(data).then(response => {
+      updateProduceOriginConcentration(data).then(() => {
         proxy.$modal.msgSuccess('设置成功')
         concOpen.value = false
         getList()
@@ -668,11 +649,8 @@ function submitConcForm() {
     }
   })
 }
-function handleClearWellNo() { proxy.$modal.msg('功能开发中...') }
-function handleClearConcentration() { proxy.$modal.msg('功能开发中...') }
-function handleClearTemplate() { proxy.$modal.msg('功能开发中...') }
-function handleClearReport() { proxy.$modal.msg('功能开发中...') }
-function handleWeeklyReport() { proxy.$modal.msg('功能开发中...') }
+
+/** 业务操作 - 流程处理 */
 function handleShowReturnDialog() {
   if (selectedRows.value.length === 0) {
     proxy.$modal.msgWarning('请选择需要操作的样品')
@@ -683,24 +661,20 @@ function handleShowReturnDialog() {
   returnOpen.value = true
 }
 
-/** 提交安排返还表单 (Doc 2.9) */
 function submitReturnForm() {
   proxy.$refs['returnFormRef'].validate(valid => {
     if (valid) {
-      // 校验：只能传同一 orderId 下的样品
       const orderIds = new Set(selectedRows.value.map(row => row.orderId))
       if (orderIds.size > 1) {
         proxy.$modal.msgError('只能安排同一订单号下的样品返还，请重新选择')
         return
       }
-
       const data = {
         orderId: returnForm.orderId,
         produceIdList: selectedProduceIds.value,
         reimburseType: returnForm.reimburseType
       }
-
-      arrangeReturn(data).then(response => {
+      arrangeReturn(data).then(() => {
         proxy.$modal.msgSuccess('安排成功')
         returnOpen.value = false
         getList()
@@ -708,6 +682,13 @@ function submitReturnForm() {
     }
   })
 }
+
+/** 占位操作集锦 */
+function handleClearWellNo() { proxy.$modal.msg('功能开发中...') }
+function handleClearConcentration() { proxy.$modal.msg('功能开发中...') }
+function handleClearTemplate() { proxy.$modal.msg('功能开发中...') }
+function handleClearReport() { proxy.$modal.msg('功能开发中...') }
+function handleWeeklyReport() { proxy.$modal.msg('功能开发中...') }
 function handleSelfProvidedPrimer() { proxy.$modal.msg('功能开发中...') }
 function handleTemplateVolumeMonitor() { proxy.$modal.msg('功能开发中...') }
 function handleBatchEdit() { proxy.$modal.msg('功能开发中...') }
@@ -718,6 +699,8 @@ function handleSupplementLabel() { proxy.$modal.msg('功能开发中...') }
 function handleReEnable() { proxy.$modal.msg('功能开发中...') }
 function handleAddPrimer() { proxy.$modal.msg('功能开发中...') }
 function handleSampleInfo() { proxy.$modal.msg('功能开发中...') }
+
+// --- 5. Lifecycle Hooks ---
 onMounted(() => {
   getList()
 })
@@ -725,6 +708,17 @@ onMounted(() => {
 onActivated(() => {
   getList()
 })
+
+// --- 6. Watchers ---
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => {
+    const key = col.key || col.prop || col.type
+    if (key) cache[key] = col.visible
+  })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
 </script>
 
 <style scoped>

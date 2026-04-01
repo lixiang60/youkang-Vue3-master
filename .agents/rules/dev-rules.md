@@ -21,3 +21,13 @@ description: 工具与编辑器行为规范
 - **优先使用element原生样式**：优先使用element原生类，样式保持代码简洁，截图只是layout实现
 - **禁止随意添加私有样式**：在 Vue 组件中，**杜绝**无理由添加与全局视觉设计不一致的随意样式定义。绝大多数基础样式（边距、颜色、字体、按钮样式）应引用全局系统。
 - **Scoped 约束**：由于是公共/后台系统，组件内部自定义样式必须使用 `<style scoped>`，防止样式污染全局或其他组件。
+
+## 2. 页面样式代码结构风格
+
+- Imports (导入)：统一放在最顶部。
+- Constants & Config (常量与配置)：包括 columns 定义、searchFields、验证规则 rules 等静态配置。
+- State (响应式状态)：集中定义所有 ref 和 reactive（如 loading、分页数据、弹窗控制开关、表单对象等）。
+- Computed (计算属性)：如 selectedProduceIds。
+- Methods (方法)：按照逻辑功能分组（查询、基础 CRUD、业务操作、辅助工具函数）。
+- Lifecycle Hooks (生命周期)：onMounted 和 onActivated 放在方法之后。
+- Watchers (监听器)：如列显隐的 watch。

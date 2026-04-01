@@ -479,7 +479,6 @@
 <script setup name="Production">
 import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
-const route = useRoute()
 import {
   listProduceList,
   getProduction,
@@ -493,36 +492,11 @@ import {
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
-const searchRef = ref(null)
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
-
-const dataList = ref([])
-const open = ref(false)
-const loading = ref(true)
-const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const title = ref('')
-
-// 对话框显隐控制器集结
-const imageSettingOpen = ref(false)
-const statusConfirmOpen = ref(false)
-const statusOpen = ref(false)
-const concOpen = ref(false)
-const pcrOpen = ref(false)
-const pcrReportOpen = ref(false)
-const resampleOpen = ref(false)
-const resampleReportOpen = ref(false)
-
-const selectedRows = ref([])
-const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
-
-const concRules = {
-  originConcentration: [{ required: true, message: '请输入或选择原浓度', trigger: 'change' }]
-}
+const route = useRoute()
+const cacheKey = 'sequencing_production_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -546,24 +520,6 @@ const columns = ref([
   { prop: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
-const cacheKey = 'sequencing_production_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) { }
-}
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
-// 检索配置
 const searchFields = ref([
   { prop: 'templateNo', label: '板号', type: 'input' },
   { prop: 'orderId', label: '订单号', type: 'input' },
@@ -571,11 +527,34 @@ const searchFields = ref([
   { prop: 'sampleId', label: '样品编号', type: 'input' }
 ])
 
-function toggleSearchPanel() {
-  searchRef.value?.toggleCollapse()
+const concRules = {
+  originConcentration: [{ required: true, message: '请输入或选择原浓度', trigger: 'change' }]
 }
 
+// --- 2. State & Forms ---
+const searchRef = ref(null)
+const dataList = ref([])
+const total = ref(0)
+const loading = ref(true)
+const showSearch = ref(true)
+const open = ref(false)
+const title = ref('')
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const selectedRows = ref([])
 
+// 弹窗状态控制器
+const imageSettingOpen = ref(false)
+const statusConfirmOpen = ref(false)
+const statusOpen = ref(false)
+const concOpen = ref(false)
+const pcrOpen = ref(false)
+const pcrReportOpen = ref(false)
+const resampleOpen = ref(false)
+const resampleReportOpen = ref(false)
+
+// 表单数据
 const data = reactive({
   form: {},
   queryParams: {
@@ -589,23 +568,58 @@ const data = reactive({
     createUser: undefined
   },
   rules: {
-    productionNo: [
-      { required: true, message: '生产编号不能为空', trigger: 'blur' }
-    ]
+    productionNo: [{ required: true, message: '生产编号不能为空', trigger: 'blur' }]
   }
 })
 
 const { queryParams, form, rules } = toRefs(data)
 
+const statusForm = ref({})
+const concForm = ref({})
+const pcrForm = ref({})
+const resampleForm = ref({})
+
+// 报表与图像设置数据
+const pcrDataList = ref([])
+const resampleDataList = ref([])
+const quickPlateNo = ref('')
+const plateHoleMap = ref({}) // 孔位数据映射 { 'A1': row }
+const selectedWells = ref(new Set())
+const quickForm = reactive({
+  returnState: '模板成功',
+  originConcentration: '',
+  remark: ''
+})
+
+const reportMeta = reactive({
+  user: 'ADMIN',
+  time: ''
+})
+
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) { }
+}
+
+// --- 3. Computed ---
+const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
+
+
+// --- 4. Methods ---
+
 /** 查询列表 */
 function getList() {
   loading.value = true
   listProduceList(queryParams.value).then(response => {
-    // 增强型解析逻辑：优先解析 response.data.data.rows(Axios双重包装), 
-    // 其次 response.data.rows(标准包装), 最后 response.rows(根部导出)
     const res = response.data || response
     const finalData = (res.data && res.data.rows) ? res.data : res
-
     dataList.value = finalData.rows || []
     total.value = finalData.total || 0
     loading.value = false
@@ -614,13 +628,29 @@ function getList() {
   })
 }
 
-/** 取消按钮 */
-function cancel() {
-  open.value = false
-  reset()
+/** 搜索 & 通用操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1
+  getList()
 }
 
-/** 表单重置 */
+function handleRefresh() {
+  getList()
+  proxy.$modal.msgSuccess('刷新成功')
+}
+
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
+}
+
+function handleSelectionChange(selection) {
+  selectedRows.value = selection
+  ids.value = selection.map(item => item.produceId)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+
+/** 基础 CRUD */
 function reset() {
   form.value = {
     id: undefined,
@@ -631,34 +661,17 @@ function reset() {
   proxy.resetForm('formRef')
 }
 
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1
-  getList()
+function cancel() {
+  open.value = false
+  reset()
 }
 
-/** 刷新按钮操作 */
-function handleRefresh() {
-  getList()
-  proxy.$modal.msgSuccess('刷新成功')
-}
-
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  selectedRows.value = selection
-  ids.value = selection.map(item => item.produceId)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
-
-/** 新增按钮操作 */
 function handleAdd() {
   reset()
   open.value = true
   title.value = '添加模板生产'
 }
 
-/** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
@@ -669,18 +682,17 @@ function handleUpdate(row) {
   })
 }
 
-/** 提交按钮 */
 function submitForm() {
   proxy.$refs['formRef'].validate(valid => {
     if (valid) {
       if (form.value.id !== undefined) {
-        updateProduction(form.value).then(response => {
+        updateProduction(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addProduction(form.value).then(response => {
+        addProduction(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -690,10 +702,9 @@ function submitForm() {
   })
 }
 
-/** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
     return delProduction(idList)
   }).then(() => {
     getList()
@@ -701,14 +712,13 @@ function handleDelete(row) {
   }).catch(() => { })
 }
 
-/** 导出按钮操作 */
 function handleExport() {
   proxy.download('sequencing/production/export', {
     ...queryParams.value
   }, `production_${new Date().getTime()}.xlsx`)
 }
 
-// 业务逻辑方法
+/** 业务操作 - 原浓度设置 */
 function handleOriginConcentration() {
   if (ids.value.length === 0) return
   concForm.value = {
@@ -734,6 +744,7 @@ function submitConc() {
   })
 }
 
+/** 业务操作 - 模板状态 */
 function handleTemplateStatus() {
   if (ids.value.length === 0) return
   statusConfirmOpen.value = true
@@ -757,6 +768,7 @@ function submitStatus() {
   })
 }
 
+/** 业务操作 - 退回 */
 function handleSendBack() {
   if (ids.value.length === 0) {
     proxy.$modal.msgWarning('请选择需要操作的样品')
@@ -777,6 +789,7 @@ function handleSendBack() {
   }).catch(() => { })
 }
 
+/** 业务操作 - PCR切胶 */
 function handlePcrGelCut() {
   pcrForm.value = {
     startOrderNo: undefined,
@@ -786,17 +799,13 @@ function handlePcrGelCut() {
   pcrOpen.value = true
 }
 
-const pcrDataList = ref([])
-
 function handlePrintPcr() {
   proxy.$modal.loading('请求中...')
   const params = {
     ...pcrForm.value,
-    belongCompany: '' // 暂时屏蔽所属公司，统一传递空值
+    belongCompany: ''
   }
-
   getPcrGelCutList(params).then(response => {
-    // 兼容多种响应格式 (直接返回数组 / 包装在 data 下)
     const res = response.data || response
     pcrDataList.value = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
     pcrReportOpen.value = true
@@ -806,16 +815,33 @@ function handlePrintPcr() {
   })
 }
 
-// 图像设置 (模板状态快速设置) 相关
-const quickPlateNo = ref('')
-const plateHoleMap = ref({}) // 孔位数据映射 { 'A1': row }
-const selectedWells = ref(new Set())
-const quickForm = reactive({
-  returnState: '模板成功',
-  originConcentration: '',
-  remark: ''
-})
+/** 业务操作 - 重抽操作表 */
+function handleResampleList() {
+  resampleForm.value = {
+    templatePlateNos: undefined,
+    belongLab: '实验室',
+    reportType: '重抽操作表'
+  }
+  resampleOpen.value = true
+}
 
+function submitResample() {
+  proxy.$modal.loading('请求中...')
+  const params = {
+    ...resampleForm.value,
+    belongLab: ''
+  }
+  getResampleList(params).then(response => {
+    const res = response.data || response
+    resampleDataList.value = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
+    resampleReportOpen.value = true
+    proxy.$modal.closeLoading()
+  }).catch(() => {
+    proxy.$modal.closeLoading()
+  })
+}
+
+/** 业务操作 - 图像设置 (快速状态设置) */
 function handleImageSetting() {
   imageSettingOpen.value = true
   quickPlateNo.value = ''
@@ -830,13 +856,10 @@ function handleSearchPlate() {
   }
   loading.value = true
   getUserTemplateHole({ templatePlateNo: quickPlateNo.value }).then(response => {
-    // 根据文档，getUserTemplateHole 返回 Array[ {templateHoleNo, produceId} ]
     const data = response.data || response || []
     const map = {}
     data.forEach(item => {
-      if (item.templateHoleNo) {
-        map[item.templateHoleNo] = item
-      }
+      if (item.templateHoleNo) map[item.templateHoleNo] = item
     })
     plateHoleMap.value = map
     loading.value = false
@@ -849,16 +872,9 @@ function toggleWellSelect(r, c) {
   const addr = r + c
   if (!plateHoleMap.value[addr]) return
   const newSet = new Set(selectedWells.value)
-  if (newSet.has(addr)) {
-    newSet.delete(addr)
-  } else {
-    newSet.add(addr)
-  }
+  if (newSet.has(addr)) newSet.delete(addr)
+  else newSet.add(addr)
   selectedWells.value = newSet
-}
-
-function isSelected(r, c) {
-  return selectedWells.value.has(r + c)
 }
 
 function getWellClass(r, c) {
@@ -872,9 +888,7 @@ function getWellClass(r, c) {
 
 function handleFullSelect() {
   const newSet = new Set()
-  Object.keys(plateHoleMap.value).forEach(addr => {
-    newSet.add(addr)
-  })
+  Object.keys(plateHoleMap.value).forEach(addr => newSet.add(addr))
   selectedWells.value = newSet
 }
 
@@ -888,17 +902,12 @@ function handleBatchSubmit() {
     return
   }
   const produceIds = Array.from(selectedWells.value).map(addr => plateHoleMap.value[addr].produceId)
-
   proxy.$modal.loading('提交中...')
-
-  // 1. 设置模板状态
   const p1 = updateProduceTempStatus({
     produceIdList: produceIds,
     returnState: quickForm.returnState,
     remark: quickForm.remark
   })
-
-  // 2. 如果填了原浓度，则设置原浓度
   let p2 = Promise.resolve()
   if (quickForm.originConcentration) {
     p2 = updateProduceOriginConcentration({
@@ -907,51 +916,17 @@ function handleBatchSubmit() {
       remark: quickForm.remark
     })
   }
-
   Promise.all([p1, p2]).then(() => {
     proxy.$modal.msgSuccess('批量设置成功')
     proxy.$modal.closeLoading()
-    handleSearchPlate() // 刷新当前板子状态
-    getList() // 刷新底部分页列表
+    handleSearchPlate()
+    getList()
   }).catch(() => {
     proxy.$modal.closeLoading()
   })
 }
 
-
-function handleResampleList() {
-  resampleForm.value = {
-    templatePlateNos: undefined,
-    belongLab: '厦门实验室',
-    reportType: '重抽操作表'
-  }
-  resampleOpen.value = true
-}
-
-const resampleDataList = ref([])
-
-function submitResample() {
-  proxy.$modal.loading('请求中...')
-  const params = {
-    ...resampleForm.value,
-    belongLab: '' // 暂时屏蔽实验室，统一传递空值
-  }
-  getResampleList(params).then(response => {
-    // 兼容多种响应格式 (直接返回数组 / 包装在 data 下)
-    const res = response.data || response
-    resampleDataList.value = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
-    resampleReportOpen.value = true
-    proxy.$modal.closeLoading()
-  }).catch(() => {
-    proxy.$modal.closeLoading()
-  })
-}
-
-const statusForm = ref({})
-const concForm = ref({})
-const pcrForm = ref({})
-const resampleForm = ref({})
-
+// --- 5. Lifecycle Hooks ---
 onMounted(() => {
   getList()
 })
@@ -959,6 +934,14 @@ onMounted(() => {
 onActivated(() => {
   getList()
 })
+
+// --- 6. Watchers ---
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => { if (col.key || col.prop) cache[col.key || col.prop] = col.visible })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
 </script>
 
 <style scoped>

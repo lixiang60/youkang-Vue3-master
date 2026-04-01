@@ -88,14 +88,11 @@
 </template>
 
 <script setup name="Order">
-import { listOrder, getOrder, addOrder, updateOrder, delOrder } from '@/api/sequencing/order'
+import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
+import { listOrder, delOrder } from '@/api/sequencing/order'
 import { listCustomerOption } from '@/api/common'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
-import ImageUpload from '@/components/ImageUpload/index.vue'
-import FileUpload from '@/components/FileUpload/index.vue'
-import BaseDialog from '@/components/BaseDialog/index.vue'
-import Editor from '@/components/Editor/index.vue'
 
 import BatchAddOrderDialog from './components/BatchAddOrderDialog.vue'
 import AddSequencingSampleDialog from './components/AddSequencingSampleDialog.vue'
@@ -103,32 +100,12 @@ import BatchAddSampleDialog from './components/BatchAddSampleDialog.vue'
 import LabelPrintDialog from './components/LabelPrintDialog.vue'
 import OrderDialog from './components/OrderDialog.vue'
 import EditOrderDialog from './components/EditOrderDialog.vue'
-import { QuillEditor } from "@vueup/vue-quill"
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
-const searchRef = ref(null)
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
-
-const dataList = ref([])
-const customerOptions = ref([])
-const selectedCustomer = ref(null)
-const open = ref(false)
-const openEdit = ref(false)
-const batchAddVisible = ref(false)
-const sampleDialogVisible = ref(false)
-const batchSampleVisible = ref(false)
-const labelPrintVisible = ref(false)
-const currentOrderId = ref(null)
-const currentOrderNo = ref('')
-const currentOrderRow = ref({})
-const loading = ref(true)
-const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const title = ref('')
+const cacheKey = 'sequencing_order_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -149,34 +126,51 @@ const columns = ref([
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
 ])
 
-// 显隐列缓存加载
-const cacheKey = 'sequencing_order_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) {
-        col.visible = cache[key]
-      }
-    })
-  } catch (e) {
-    console.warn('Failed to parse order columns cache:', e)
-  }
-}
+const editorOptions = ref({
+  theme: "snow",
+  bounds: document.body,
+  debug: "warn",
+  modules: {
+    toolbar: [
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote", "code-block"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      [{ size: ["small", false, "large", "huge"] }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
+      ["clean"],
+      ["link", "image", "video"]
+    ]
+  },
+  placeholder: "请输入内容",
+  readOnly: false
+})
 
-// 监听显隐列变化并缓存
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => {
-    const key = col.key || col.prop || col.type
-    if (key) {
-      cache[key] = col.visible
-    }
-  })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
+// --- 2. State & Forms ---
+const searchRef = ref(null)
+const dataList = ref([])
+const customerOptions = ref([])
+const total = ref(0)
+const loading = ref(true)
+const showSearch = ref(true)
+
+// 弹窗状态
+const open = ref(false)
+const openEdit = ref(false)
+const batchAddVisible = ref(false)
+const sampleDialogVisible = ref(false)
+const batchSampleVisible = ref(false)
+const labelPrintVisible = ref(false)
+
+// 当前操作状态
+const currentOrderId = ref(null)
+const currentOrderNo = ref('')
+const currentOrderRow = ref({})
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
 
 const data = reactive({
   queryParams: {
@@ -189,7 +183,21 @@ const data = reactive({
   }
 })
 
-// 检索条件字段配置
+const { queryParams } = toRefs(data)
+
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) { }
+}
+
+// --- 3. Computed ---
 const searchFields = computed(() => [
   { prop: 'orderId', label: '订单编号', type: 'input' },
   {
@@ -203,38 +211,7 @@ const searchFields = computed(() => [
   }
 ])
 
-function toggleSearchPanel() {
-  searchRef.value?.toggleCollapse()
-}
-
-
-
-const editorOptions = ref({
-  theme: "snow",
-  bounds: document.body,
-  debug: "warn",
-  modules: {
-    // 工具栏配置
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],      // 加粗 斜体 下划线 删除线
-      ["blockquote", "code-block"],                   // 引用  代码块
-      [{ list: "ordered" }, { list: "bullet" }],      // 有序、无序列表
-      [{ indent: "-1" }, { indent: "+1" }],           // 缩进
-      [{ size: ["small", false, "large", "huge"] }],  // 字体大小
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],        // 标题
-      [{ color: [] }, { background: [] }],            // 字体颜色、字体背景颜色
-      [{ align: [] }],                                // 对齐方式
-      ["clean"],                                      // 清除文本格式
-      ["link", "image", "video"]                      // 链接、图片、视频
-    ]
-  },
-  placeholder: "请输入内容",
-  readOnly: false
-})
-
-const { queryParams } = toRefs(data)
-
-
+// --- 4. Methods ---
 
 /** 查询列表 */
 function getList() {
@@ -248,212 +225,41 @@ function getList() {
   })
 }
 
-function reset() {
-  form.value = {
-    id: undefined,
-    customerInfo: {
-      customerId: undefined,
-      customerName: undefined,
-      subjectGroupId: undefined,
-      subjectGroupName: undefined,
-      address: undefined,
-      email: undefined,
-      phone: undefined,
-      customerUnit: undefined
-    },
-    isEmail: 0,
-    generation: 1,
-    belongCompany: '深圳有康',
-    produceCompany: '杭州有康',
-    templateType: 1,
-    sampleInfoList: [],
-    genNo: 'TEST001',
-    remark: undefined,
-    // Keep internal UI fields if needed, or map them to new structure if possible
-    templateArrangement: '1',
-    sequencingLab: undefined,
-    synthesisLab: undefined,
-    infoIncomplete: undefined,
-    sampleDeliveryDate: new Date().toISOString().split('T')[0],
-    urgent: '0',
-    templateContent: undefined,
-    sequencingTemplateAttachment: undefined,
-    synthesisTemplateAttachment: undefined,
-    photoAttachment: undefined,
-  }
-  selectedCustomer.value = null
-  proxy.resetForm('formRef')
-}
-
-function handlePasteAnalyze(content) {
-  console.log("handlePasteAnalyze content length:", content?.length)
-  autoParseTemplate(content)
-}
-
-function autoParseTemplate(rawContent) {
-  // Use rawContent if provided (from paste event), otherwise use current editor content
-  const contentToParse = rawContent || form.value.templateContent
-
-  if (!contentToParse) {
-    return
-  }
-  console.log("autoParseTemplate processing...")
-  console.log("contentToParse", contentToParse)
-  try {
-    const div = document.createElement('div')
-    div.innerHTML = contentToParse
-    const table = div.querySelector('table')
-
-    const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
-
-    let data = []
-
-    // Default order based on user requirement/image
-    const defaultKeys = [
-      'sampleId', 'primer', 'primerConcentration', 'primerType',
-      'sampleType', 'antibioticType', 'carrierName', 'fragmentSize',
-      'testResult', 'returnState', 'returnType', 'remark'
-    ]
-
-    const headerMap = {
-      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer',
-      '引物浓度': 'primerConcentration', '引物类型': 'primerType',
-      '样品类型': 'sampleType', '抗生素类': 'antibioticType', '抗性': 'antibioticType',
-      '载体名称': 'carrierName', '片段大小': 'fragmentSize',
-      '是否测通': 'testResult', '测序结果': 'testResult',
-      '是否返还': 'returnState', '退回状态': 'returnState',
-      '返还类型': 'returnType',
-      '样品备注': 'remark', '备注': 'remark',
-
-      // Old/Other mappings
-      '样品位置': 'samplePosition', '引物位置': 'primerPosition',
-      '序列': 'seq', '项目号': 'project', '测序项目': 'project', '质粒长度': 'plasmidLength',
-      '原浓度': 'originConcentration', '模板板号': 'templatePlateNo',
-      '模板孔号': 'templateHoleNo', '完成状态': 'performance', '完成情况': 'performance',
-      '流程名称': 'flowName', '板号': 'plateNo',
-      '孔号': 'holeNo', '所属公司': 'belongCompany', '生产公司': 'produceCompany',
-      '孔数': 'holeNumber', '孔号数量': 'holeNumber', '排版方式': 'layout'
-    }
-
-    if (table) {
-      const rows = table.rows
-      if (rows.length < 1) return
-
-      // Try to identify headers
-      const firstRowTexts = Array.from(rows[0].cells).map(cell => getCellText(cell))
-      const getKey = (header) => headerMap[header] || header
-      let validKeys = firstRowTexts.map(getKey)
-
-      const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
-
-      let startRow = 1
-      // If mostly unknown, assume it's data with default order
-      if (knownKeysCount === 0) {
-        validKeys = defaultKeys
-        startRow = 0 // First row is data
-      }
-
-      for (let i = startRow; i < rows.length; i++) {
-        const cells = rows[i].cells
-        const item = {}
-        let hasData = false
-        validKeys.forEach((key, index) => {
-          if (index < cells.length) {
-            const val = getCellText(cells[index])
-            if (val) hasData = true
-            if (key) item[key] = val
-          }
-        })
-        if (hasData) data.push(item)
-      }
-
-    } else {
-      // Plain text / TSV fallback
-      const text = div.innerText.trim()
-      const rows = text.split('\n').map(r => r.trim()).filter(r => r)
-      if (rows.length < 1) return
-
-      const firstRowParts = rows[0].split('\t').map(h => h.trim())
-      const getKey = (header) => headerMap[header] || header
-      let validKeys = firstRowParts.map(getKey)
-
-      const knownKeysCount = validKeys.filter(k => Object.values(headerMap).includes(k)).length
-
-      let startRow = 1
-      if (knownKeysCount === 0) {
-        validKeys = defaultKeys
-        // Handle case where split might produce more cols than default keys (ignore extra) 
-        // or fewer (handle gracefully)
-        startRow = 0
-      }
-
-      for (let i = startRow; i < rows.length; i++) {
-        const cells = rows[i].split('\t')
-        const item = {}
-        // If using default keys, we blindly map index to key
-        validKeys.forEach((key, index) => {
-          if (key && index < cells.length) item[key] = cells[index]?.trim()
-        })
-        data.push(item)
-      }
-    }
-
-    console.log("data", data)
-    if (data.length > 0) {
-      console.log('Parsed Excel Data:', data)
-      form.value.sampleInfoList = data
-    }
-
-  } catch (error) {
-    // Silent fail for auto-parse
-    console.warn('Auto parse failed:', error)
-  }
-}
-
-function handleTemplateParse() {
-  autoParseTemplate()
-}
-
-/** 搜索按钮操作 */
+/** 搜索 & 操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1
   getList()
 }
 
-/** 刷新按钮操作 */
 function handleRefresh() {
   getList()
   proxy.$modal.msgSuccess('刷新成功')
 }
 
+function toggleSearchPanel() {
+  searchRef.value?.toggleCollapse()
+}
+
 function handleSelect(selection, row) {
-  console.log("handleSelect Current operated row:", row)
-  // Fallback to orderId if id is missing
   ids.value = selection.map(item => item.id || item.orderId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
-  // Update current row state
   if (selection.find(r => r.orderId === row.orderId)) {
-    // Row was selected
     currentOrderRow.value = row
   } else {
-    // Row was deselected
     if (currentOrderRow.value.orderId === row.orderId) {
-      // Fallback to the last selected item if available, or empty
       currentOrderRow.value = selection.length > 0 ? selection[selection.length - 1] : {}
     }
   }
 }
 
-
-/** 新增按钮操作 */
+/** 基础 CRUD */
 function handleAdd() {
   currentOrderRow.value = {}
   open.value = true
   title.value = '添加订单'
 }
 
-/** 修改按钮操作 */
 function handleUpdate(row) {
   const listRow = row.orderId ? row : currentOrderRow.value
   if (listRow && listRow.orderId) {
@@ -464,34 +270,9 @@ function handleUpdate(row) {
   }
 }
 
-/** 提交按钮 */
-function submitForm() {
-  proxy.$refs['formRef'].validate(valid => {
-    if (valid) {
-      const submitData = { ...form.value }
-      delete submitData.templateContent
-
-      if (form.value.orderId !== undefined) {
-        updateOrder(submitData).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-        })
-      } else {
-        console.log("add", submitData)
-        addOrder(submitData).then(response => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          getList()
-        })
-      }
-    }
-  })
-}
-
-/** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.orderId || ids.value.join(',')
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
     return delOrder(idList)
   }).then(() => {
     getList()
@@ -499,24 +280,20 @@ function handleDelete(row) {
   }).catch(() => { })
 }
 
-// 占位方法
+/** 业务操作 - 订单处理 */
 function handleSequencingOrder() {
   batchAddVisible.value = true
 }
+
 function handleSequencingSample() {
   if (ids.value.length !== 1) {
     proxy.$modal.msgWarning('请选择一条订单数据')
     return
   }
-
   currentOrderId.value = ids.value[0]
-  // Pass the full row object to the dialog for immediate data population (echo)
   currentOrderRow.value = currentOrderRow.value || {}
-
-  console.log('Opening Sample Dialog. OrderID:', currentOrderId.value, 'RowData:', currentOrderRow.value)
   sampleDialogVisible.value = true
 }
-
 
 function handleBatchAdd() {
   if (ids.value.length !== 1) {
@@ -532,18 +309,67 @@ function handleBatchAdd() {
 function handleLabelPrint() {
   labelPrintVisible.value = true
 }
+
+/** 辅助方法 - 模板解析 */
+function handlePasteAnalyze(content) {
+  autoParseTemplate(content)
+}
+
+function autoParseTemplate(rawContent) {
+  const contentToParse = rawContent || form.value.templateContent
+  if (!contentToParse) return
+  try {
+    const div = document.createElement('div')
+    div.innerHTML = contentToParse
+    const table = div.querySelector('table')
+    const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
+    let data = []
+    const defaultKeys = ['sampleId', 'primer', 'primerConcentration', 'primerType', 'sampleType', 'antibioticType', 'carrierName', 'fragmentSize', 'testResult', 'returnState', 'returnType', 'remark']
+    const headerMap = {
+      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer',
+      '引物浓度': 'primerConcentration', '引物类型': 'primerType',
+      '样品类型': 'sampleType', '抗生素类': 'antibioticType', '抗性': 'antibioticType',
+      '载体名称': 'carrierName', '片段大小': 'fragmentSize',
+      '是否测通': 'testResult', '测序结果': 'testResult',
+      '是否返还': 'returnState', '退回状态': 'returnState',
+      '返还类型': 'returnType', '样品备注': 'remark', '备注': 'remark'
+    }
+
+    if (table) {
+      const rows = table.rows
+      if (rows.length < 1) return
+      const firstRowTexts = Array.from(rows[0].cells).map(cell => getCellText(cell))
+      let validKeys = firstRowTexts.map(h => headerMap[h] || h)
+      let startRow = 1
+      if (validKeys.filter(k => Object.values(headerMap).includes(k)).length === 0) {
+        validKeys = defaultKeys
+        startRow = 0
+      }
+      for (let i = startRow; i < rows.length; i++) {
+        const cells = rows[i].cells
+        const item = {}
+        validKeys.forEach((key, idx) => { if (idx < cells.length) item[key] = getCellText(cells[idx]) })
+        if (Object.values(item).some(v => v)) data.push(item)
+      }
+    }
+    if (data.length > 0) form.value.sampleInfoList = data
+  } catch (error) {
+    console.warn('Auto parse failed:', error)
+  }
+}
+
+/** 占位操作 */
 function handleInternalOperation() { proxy.$modal.msg('功能开发中...') }
 function handleDailyReport() { proxy.$modal.msg('功能开发中...') }
 function handleOrderMonitor() { proxy.$modal.msg('功能开发中...') }
 function handleTransfer() { proxy.$modal.msg('功能开发中...') }
 function handleGeneSequencingOrder() { proxy.$modal.msg('功能开发中...') }
 function handleTemplateLabel() { proxy.$modal.msg('功能开发中...') }
-function handleSyncYoukang() { proxy.$modal.msg('功能开发中...') }
 
+// --- 5. Lifecycle Hooks ---
 onMounted(() => {
   getList()
   listCustomerOption().then(response => {
-    console.log('Customer Options Response:', response)
     customerOptions.value = response.data.records
   })
 })
@@ -551,6 +377,17 @@ onMounted(() => {
 onActivated(() => {
   getList()
 })
+
+// --- 6. Watchers ---
+watch(columns, (newVal) => {
+  const cache = {}
+  newVal.forEach(col => {
+    const key = col.key || col.prop || col.type
+    if (key) cache[key] = col.visible
+  })
+  localStorage.setItem(cacheKey, JSON.stringify(cache))
+}, { deep: true })
+
 </script>
 
 
