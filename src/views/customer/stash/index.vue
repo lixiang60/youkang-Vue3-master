@@ -106,19 +106,9 @@
         </el-form>
       </div>
       <template #footer>
-        <div style="display: flex; justify-content: center; gap: 20px; padding: 10px 0">
-          <el-button class="premium-btn premium-btn-confirm" @click="submitForm">
-            <template #icon>
-              <el-icon><SuccessFilled /></el-icon>
-            </template>
-            确 定
-          </el-button>
-          <el-button class="premium-btn premium-btn-cancel" @click="cancel">
-            <template #icon>
-              <el-icon><CircleCloseFilled /></el-icon>
-            </template>
-            取 消
-          </el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="primary" :icon="Check" @click="submitForm">确 定</el-button>
+          <el-button :icon="Close" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -129,7 +119,7 @@
 import { listStash, getStash, addStash, updateStash, delStash } from '@/api/customer/stash'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
-import { Search, Refresh, Plus, Edit, Delete, Download } from '@element-plus/icons-vue'
+import { Search, Refresh, Plus, Edit, Delete, Download, Check, Close } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
