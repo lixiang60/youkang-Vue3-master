@@ -5,13 +5,13 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:manage:add']" size="small" type="primary" plain icon="Plus" @click="handleAdd"
+        <el-button v-hasPermi="['customer:manage:add']" size="small" type="primary" :icon="Plus" @click="handleAdd"
           >添加</el-button
         >
       </el-col>
@@ -20,36 +20,34 @@
           v-hasPermi="['customer:manage:edit']"
           size="small"
           type="success"
-          plain
-          icon="Edit"
+          :icon="Edit"
           :disabled="single"
           @click="handleUpdate"
           >修改设置</el-button
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Edit" @click="handleEdit">编辑</el-button>
+        <el-button size="small" :icon="EditSearch" @click="handleEdit">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:manage:remove']"
           size="small"
           type="danger"
-          plain
-          icon="Delete"
+          :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
+        <el-button size="small" type="info" :icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Star" @click="handleTransferPoints">转至积分</el-button>
+        <el-button size="small" type="warning" :icon="Star" @click="handleTransferPoints">转至积分</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Setting" @click="handleContinueSetting">继续设置</el-button>
+        <el-button size="small" type="info" :icon="Setting" @click="handleContinueSetting">继续设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
@@ -219,6 +217,17 @@ import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelect
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import {
+  Search,
+  Refresh,
+  Plus,
+  Edit,
+  Delete,
+  ShoppingCart,
+  Star,
+  Setting,
+  Edit as EditSearch
+} from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 

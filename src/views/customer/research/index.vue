@@ -5,19 +5,13 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['customer:research:add']"
-          size="small"
-          type="success"
-          plain
-          icon="Plus"
-          @click="handleAdd"
+        <el-button v-hasPermi="['customer:research:add']" size="small" type="primary" :icon="Plus" @click="handleAdd"
           >添加</el-button
         >
       </el-col>
@@ -26,8 +20,7 @@
           v-hasPermi="['customer:research:remove']"
           size="small"
           type="danger"
-          plain
-          icon="Delete"
+          :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
@@ -125,6 +118,7 @@ import { listResearch, getResearch, addResearch, updateResearch, delResearch } f
 import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')

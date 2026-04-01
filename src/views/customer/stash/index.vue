@@ -5,13 +5,13 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:stash:add']" size="small" type="primary" plain icon="Plus" @click="handleAdd"
+        <el-button v-hasPermi="['customer:stash:add']" size="small" type="primary" :icon="Plus" @click="handleAdd"
           >新增</el-button
         >
       </el-col>
@@ -20,8 +20,7 @@
           v-hasPermi="['customer:stash:edit']"
           size="small"
           type="success"
-          plain
-          icon="Edit"
+          :icon="Edit"
           :disabled="single"
           @click="handleUpdate"
           >修改</el-button
@@ -32,8 +31,7 @@
           v-hasPermi="['customer:stash:remove']"
           size="small"
           type="danger"
-          plain
-          icon="Delete"
+          :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
@@ -44,8 +42,7 @@
           v-hasPermi="['customer:stash:export']"
           size="small"
           type="warning"
-          plain
-          icon="Download"
+          :icon="Download"
           @click="handleExport"
           >导出</el-button
         >
@@ -132,6 +129,7 @@
 import { listStash, getStash, addStash, updateStash, delStash } from '@/api/customer/stash'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import { Search, Refresh, Plus, Edit, Delete, Download } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')

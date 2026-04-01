@@ -5,18 +5,17 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research_group:add']"
           size="small"
-          type="success"
-          plain
-          icon="Plus"
+          type="primary"
+          :icon="Plus"
           @click="handleAdd"
           >添加</el-button
         >
@@ -25,9 +24,8 @@
         <el-button
           v-hasPermi="['customer:research_group:edit']"
           size="small"
-          type="primary"
-          plain
-          icon="Edit"
+          type="success"
+          :icon="Edit"
           :disabled="single"
           @click="handleUpdate"
           >编辑</el-button
@@ -38,8 +36,7 @@
           v-hasPermi="['customer:research_group:remove']"
           size="small"
           type="danger"
-          plain
-          icon="Delete"
+          :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
@@ -49,9 +46,8 @@
         <el-button
           v-hasPermi="['customer:research_group:import']"
           size="small"
-          type="success"
-          plain
-          icon="Upload"
+          type="info"
+          :icon="Upload"
           @click="handleImport"
           >导入</el-button
         >
@@ -61,8 +57,7 @@
           v-hasPermi="['customer:research_group:price']"
           size="small"
           type="warning"
-          plain
-          icon="Money"
+          :icon="Money"
           @click="handleSetPrice"
           >设置价格</el-button
         >
@@ -79,8 +74,7 @@
           v-hasPermi="['customer:research_group:reminder']"
           size="small"
           type="info"
-          plain
-          icon="Bell"
+          :icon="Bell"
           @click="handleReminderSettings"
           >提醒设置</el-button
         >
@@ -90,8 +84,7 @@
           v-hasPermi="['customer:research_group:prepayment']"
           size="small"
           type="warning"
-          plain
-          icon="Wallet"
+          :icon="Wallet"
           @click="handlePrepaymentSettings"
           >预付款设置</el-button
         >
@@ -101,8 +94,7 @@
           v-hasPermi="['customer:research_group:batch']"
           size="small"
           type="primary"
-          plain
-          icon="Document"
+          :icon="Document"
           @click="handleBatchEdit"
           >批量编辑</el-button
         >
@@ -111,8 +103,7 @@
         <el-button
           v-hasPermi="['customer:research_group:label']"
           size="small"
-          plain
-          icon="Collection"
+          :icon="Collection"
           @click="handleGeneLabel"
           >基因标签</el-button
         >
@@ -122,8 +113,7 @@
           v-hasPermi="['customer:research_group:all_prices']"
           size="small"
           type="warning"
-          plain
-          icon="Box"
+          :icon="Box"
           @click="handleAllPrices"
           >所有价格</el-button
         >
@@ -133,8 +123,7 @@
           v-hasPermi="['customer:research_group:blank_price']"
           size="small"
           type="success"
-          plain
-          icon="PriceTag"
+          :icon="PriceTag"
           @click="handleBlankPrice"
           >空白价格</el-button
         >
@@ -272,6 +261,21 @@ import {
 } from '@/api/customer/research_group'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import {
+  Search,
+  Refresh,
+  Plus,
+  Edit,
+  Delete,
+  Upload,
+  Money,
+  Bell,
+  Wallet,
+  Document,
+  Collection,
+  Box,
+  PriceTag
+} from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 
