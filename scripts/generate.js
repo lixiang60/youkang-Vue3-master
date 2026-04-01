@@ -2,7 +2,7 @@
 
 /**
  * 统一CLI工具 - 生成组件、页面和API
- * 使用方法: 
+ * 使用方法:
  *   npm run generate
  *   或 node scripts/generate.js [类型] [参数...]
  */
@@ -23,8 +23,8 @@ const rl = readline.createInterface({
 
 // 提示用户输入
 function prompt(question) {
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
+  return new Promise(resolve => {
+    rl.question(question, answer => {
       resolve(answer.trim())
     })
   })
@@ -97,7 +97,7 @@ export default ${componentName}
 // 页面模板
 function getPageTemplate(moduleName, pageName, chineseName) {
   const PageName = toPascalCase(pageName)
-  
+
   return `<template>
   <div class="app-container">
     <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
@@ -455,7 +455,7 @@ onMounted(() => {
 // API 模板
 function getApiTemplate(moduleName, resourceName, chineseName) {
   const ResourceName = toPascalCase(resourceName)
-  
+
   return `import request from '@/utils/request'
 
 // 查询${chineseName}列表
@@ -515,7 +515,7 @@ export function export${ResourceName}(query) {
 // 路由配置模板
 function getRouteTemplate(moduleName, pageName, chineseName) {
   const PageName = toPascalCase(pageName)
-  
+
   return `
 // ${chineseName}路由配置
 // 将以下配置添加到 src/router/index.js 的 dynamicRoutes 数组中
@@ -568,7 +568,6 @@ async function generateComponent(componentName, targetDir) {
     console.log('')
     console.log('💡 使用方法:')
     console.log(`   import ${componentName} from '@/${targetDir}/${componentName}'`)
-
   } catch (error) {
     console.error('❌ 创建组件失败:', error.message)
   }
@@ -585,7 +584,7 @@ async function generateApi(moduleName, resourceName, chineseName) {
     }
 
     const apiFile = path.join(apiDir, `${resourceName}.js`)
-    
+
     if (fs.existsSync(apiFile)) {
       console.warn('\n⚠️  警告: API 文件已存在')
       const overwrite = await prompt('是否覆盖? (y/n): ')
@@ -602,8 +601,9 @@ async function generateApi(moduleName, resourceName, chineseName) {
     console.log(`📁 文件: src/api/${moduleName}/${resourceName}.js`)
     console.log('')
     console.log('💡 使用方法:')
-    console.log(`   import { list${ResourceName}, get${ResourceName}, add${ResourceName}, update${ResourceName}, del${ResourceName} } from '@/api/${moduleName}/${resourceName}'`)
-
+    console.log(
+      `   import { list${ResourceName}, get${ResourceName}, add${ResourceName}, update${ResourceName}, del${ResourceName} } from '@/api/${moduleName}/${resourceName}'`
+    )
   } catch (error) {
     console.error('❌ 创建API失败:', error.message)
   }
@@ -650,7 +650,6 @@ async function generatePage(moduleName, pageName, chineseName) {
     console.log(`   - 修改: ${moduleName}:${pageName}:edit`)
     console.log(`   - 删除: ${moduleName}:${pageName}:remove`)
     console.log(`   - 导出: ${moduleName}:${pageName}:export`)
-
   } catch (error) {
     console.error('❌ 生成失败:', error.message)
   }
@@ -676,54 +675,54 @@ async function main() {
   // 如果有命令行参数，直接执行
   if (args.length > 0) {
     const type = args[0]
-    
+
     if (type === 'component' || type === 'c') {
       const componentName = args[1]
       const targetDir = args[2] || 'components'
-      
+
       if (!componentName) {
         console.error('❌ 错误: 请提供组件名称')
         console.log('使用方法: npm run generate component <组件名> [目录]')
         process.exit(1)
       }
-      
+
       if (!/^[A-Z][a-zA-Z0-9]*$/.test(componentName)) {
         console.error('❌ 错误: 组件名称必须使用 PascalCase 格式')
         process.exit(1)
       }
-      
+
       await generateComponent(componentName, targetDir)
       rl.close()
       return
     }
-    
+
     if (type === 'page' || type === 'p') {
       const moduleName = args[1]
       const pageName = args[2]
       const chineseName = args[3] || pageName
-      
+
       if (!moduleName || !pageName) {
         console.error('❌ 错误: 请提供模块名和页面名')
         console.log('使用方法: npm run generate page <模块名> <页面名> [中文名]')
         process.exit(1)
       }
-      
+
       await generatePage(moduleName, pageName, chineseName)
       rl.close()
       return
     }
-    
+
     if (type === 'api' || type === 'a') {
       const moduleName = args[1]
       const resourceName = args[2]
       const chineseName = args[3] || resourceName
-      
+
       if (!moduleName || !resourceName) {
         console.error('❌ 错误: 请提供模块名和资源名')
         console.log('使用方法: npm run generate api <模块名> <资源名> [中文名]')
         process.exit(1)
       }
-      
+
       await generateApi(moduleName, resourceName, chineseName)
       rl.close()
       return
@@ -745,63 +744,60 @@ async function main() {
       // 生成组件
       console.log('\n=== 生成组件 ===')
       const componentName = await prompt('组件名称 (PascalCase, 如: UserCard): ')
-      
+
       if (!componentName) {
         console.log('❌ 组件名称不能为空')
         continue
       }
-      
+
       if (!/^[A-Z][a-zA-Z0-9]*$/.test(componentName)) {
         console.log('❌ 组件名称必须使用 PascalCase 格式')
         continue
       }
-      
-      const targetDir = await prompt('目标目录 (默认: components): ') || 'components'
-      
+
+      const targetDir = (await prompt('目标目录 (默认: components): ')) || 'components'
+
       await generateComponent(componentName, targetDir)
-      
     } else if (choice === '2') {
       // 生成页面
       console.log('\n=== 生成页面 ===')
       const moduleName = await prompt('模块名 (如: system, business): ')
-      
+
       if (!moduleName) {
         console.log('❌ 模块名不能为空')
         continue
       }
-      
+
       const pageName = await prompt('页面名 (如: product, order): ')
-      
+
       if (!pageName) {
         console.log('❌ 页面名不能为空')
         continue
       }
-      
-      const chineseName = await prompt('中文名称 (如: 产品管理): ') || pageName
-      
+
+      const chineseName = (await prompt('中文名称 (如: 产品管理): ')) || pageName
+
       await generatePage(moduleName, pageName, chineseName)
-      
     } else if (choice === '3') {
       // 生成API
       console.log('\n=== 生成API ===')
       const moduleName = await prompt('模块名 (如: system, business): ')
-      
+
       if (!moduleName) {
         console.log('❌ 模块名不能为空')
         continue
       }
-      
+
       const resourceName = await prompt('资源名 (如: product, order): ')
-      
+
       if (!resourceName) {
         console.log('❌ 资源名不能为空')
         continue
       }
-      
-      const chineseName = await prompt('中文名称 (如: 产品): ') || resourceName
-      
+
+      const chineseName = (await prompt('中文名称 (如: 产品): ')) || resourceName
+
       await generateApi(moduleName, resourceName, chineseName)
-      
     } else {
       console.log('❌ 无效的选项，请重新选择')
     }

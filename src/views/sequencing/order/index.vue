@@ -4,12 +4,27 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="Plus" @click="handleAdd"
-          v-hasPermi="['sequencing:order:add']">添加</el-button>
+        <el-button
+          v-hasPermi="['sequencing:order:add']"
+          size="small"
+          type="success"
+          plain
+          icon="Plus"
+          @click="handleAdd"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['sequencing:order:edit']">编辑</el-button>
+        <el-button
+          v-hasPermi="['sequencing:order:edit']"
+          size="small"
+          type="primary"
+          plain
+          icon="Edit"
+          :disabled="single"
+          @click="handleUpdate"
+          >编辑</el-button
+        >
       </el-col>
 
       <el-col :span="1.5">
@@ -31,11 +46,21 @@
         <el-button size="small" type="warning" plain icon="Printer" @click="handleLabelPrint">标签打印</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['sequencing:order:remove']">删除</el-button>
+        <el-button
+          v-hasPermi="['sequencing:order:remove']"
+          size="small"
+          type="danger"
+          plain
+          icon="Delete"
+          :disabled="multiple"
+          @click="handleDelete"
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Operation" @click="handleInternalOperation">内部操作表</el-button>
+        <el-button size="small" type="info" plain icon="Operation" @click="handleInternalOperation"
+          >内部操作表</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="DataBoard" @click="handleDailyReport">业务员日报表</el-button>
@@ -47,41 +72,71 @@
         <el-button size="small" type="success" plain icon="Switch" @click="handleTransfer">调拨</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="List" @click="handleGeneSequencingOrder">基因测序单</el-button>
+        <el-button size="small" type="primary" plain icon="List" @click="handleGeneSequencingOrder"
+          >基因测序单</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="CollectionTag" @click="handleTemplateLabel">模板标签</el-button>
+        <el-button size="small" type="danger" plain icon="CollectionTag" @click="handleTemplateLabel"
+          >模板标签</el-button
+        >
       </el-col>
       <!-- <el-col :span="1.5">
         <el-button size="small" plain icon="RefreshRight" @click="handleSyncYoukang">同步康为</el-button>
       </el-col> -->
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table :header-cell-style="{ fontSize: '12px' }" size="small" :loading="loading" :data="dataList"
-      :columns="columns" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
-      @pagination="getList" @select="handleSelect">
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      :header-cell-style="{ fontSize: '12px' }"
+      size="small"
+      :loading="loading"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @select="handleSelect"
+    >
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime) }}</span>
       </template>
     </dynamic-table>
 
     <!-- 添加对话框 -->
-    <order-dialog v-model="open" :title="title" :order-row="currentOrderRow" :customer-options="customerOptions"
-      @success="getList" />
+    <order-dialog
+      v-model="open"
+      :title="title"
+      :order-row="currentOrderRow"
+      :customer-options="customerOptions"
+      @success="getList"
+    />
 
     <!-- 修改对话框 -->
-    <edit-order-dialog v-model="openEdit" :order-row="currentOrderRow" :customer-options="customerOptions"
-      @success="getList" />
+    <edit-order-dialog
+      v-model="openEdit"
+      :order-row="currentOrderRow"
+      :customer-options="customerOptions"
+      @success="getList"
+    />
 
     <batch-add-order-dialog v-model="batchAddVisible" :customer-options="customerOptions" @success="getList" />
 
-    <add-sequencing-sample-dialog v-model="sampleDialogVisible" :order-id="currentOrderId" :order-row="currentOrderRow"
-      @success="getList" />
+    <add-sequencing-sample-dialog
+      v-model="sampleDialogVisible"
+      :order-id="currentOrderId"
+      :order-row="currentOrderRow"
+      @success="getList"
+    />
 
-    <batch-add-sample-dialog v-model="batchSampleVisible" :order-id="currentOrderId" :order-no="currentOrderNo"
-      @success="getList" />
+    <batch-add-sample-dialog
+      v-model="batchSampleVisible"
+      :order-id="currentOrderId"
+      :order-no="currentOrderNo"
+      @success="getList"
+    />
 
     <label-print-dialog v-model="labelPrintVisible" />
   </div>
@@ -100,7 +155,7 @@ import BatchAddSampleDialog from './components/BatchAddSampleDialog.vue'
 import LabelPrintDialog from './components/LabelPrintDialog.vue'
 import OrderDialog from './components/OrderDialog.vue'
 import EditOrderDialog from './components/EditOrderDialog.vue'
-import "@vueup/vue-quill/dist/vue-quill.snow.css"
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
@@ -127,24 +182,24 @@ const columns = ref([
 ])
 
 const editorOptions = ref({
-  theme: "snow",
+  theme: 'snow',
   bounds: document.body,
-  debug: "warn",
+  debug: 'warn',
   modules: {
     toolbar: [
-      ["bold", "italic", "underline", "strike"],
-      ["blockquote", "code-block"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ indent: "-1" }, { indent: "+1" }],
-      [{ size: ["small", false, "large", "huge"] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ size: ['small', false, 'large', 'huge'] }],
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
       [{ color: [] }, { background: [] }],
       [{ align: [] }],
-      ["clean"],
-      ["link", "image", "video"]
+      ['clean'],
+      ['link', 'image', 'video']
     ]
   },
-  placeholder: "请输入内容",
+  placeholder: '请输入内容',
   readOnly: false
 })
 
@@ -194,7 +249,7 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) { }
+  } catch (e) {}
 }
 
 // --- 3. Computed ---
@@ -216,13 +271,15 @@ const searchFields = computed(() => [
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listOrder(queryParams.value).then(response => {
-    dataList.value = response.data.rows
-    total.value = response.data.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listOrder(queryParams.value)
+    .then(response => {
+      dataList.value = response.data.rows
+      total.value = response.data.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 搜索 & 操作 */
@@ -272,12 +329,16 @@ function handleUpdate(row) {
 
 function handleDelete(row) {
   const idList = row.orderId || ids.value.join(',')
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
-    return delOrder(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => { })
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(() => {
+      return delOrder(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 /** 业务操作 - 订单处理 */
@@ -322,17 +383,40 @@ function autoParseTemplate(rawContent) {
     const div = document.createElement('div')
     div.innerHTML = contentToParse
     const table = div.querySelector('table')
-    const getCellText = (cell) => (cell.innerText || cell.textContent || '').trim()
+    const getCellText = cell => (cell.innerText || cell.textContent || '').trim()
     let data = []
-    const defaultKeys = ['sampleId', 'primer', 'primerConcentration', 'primerType', 'sampleType', 'antibioticType', 'carrierName', 'fragmentSize', 'testResult', 'returnState', 'returnType', 'remark']
+    const defaultKeys = [
+      'sampleId',
+      'primer',
+      'primerConcentration',
+      'primerType',
+      'sampleType',
+      'antibioticType',
+      'carrierName',
+      'fragmentSize',
+      'testResult',
+      'returnState',
+      'returnType',
+      'remark'
+    ]
     const headerMap = {
-      '样品编号': 'sampleId', '测序引物': 'primer', '引物名称': 'primer',
-      '引物浓度': 'primerConcentration', '引物类型': 'primerType',
-      '样品类型': 'sampleType', '抗生素类': 'antibioticType', '抗性': 'antibioticType',
-      '载体名称': 'carrierName', '片段大小': 'fragmentSize',
-      '是否测通': 'testResult', '测序结果': 'testResult',
-      '是否返还': 'returnState', '退回状态': 'returnState',
-      '返还类型': 'returnType', '样品备注': 'remark', '备注': 'remark'
+      样品编号: 'sampleId',
+      测序引物: 'primer',
+      引物名称: 'primer',
+      引物浓度: 'primerConcentration',
+      引物类型: 'primerType',
+      样品类型: 'sampleType',
+      抗生素类: 'antibioticType',
+      抗性: 'antibioticType',
+      载体名称: 'carrierName',
+      片段大小: 'fragmentSize',
+      是否测通: 'testResult',
+      测序结果: 'testResult',
+      是否返还: 'returnState',
+      退回状态: 'returnState',
+      返还类型: 'returnType',
+      样品备注: 'remark',
+      备注: 'remark'
     }
 
     if (table) {
@@ -348,7 +432,9 @@ function autoParseTemplate(rawContent) {
       for (let i = startRow; i < rows.length; i++) {
         const cells = rows[i].cells
         const item = {}
-        validKeys.forEach((key, idx) => { if (idx < cells.length) item[key] = getCellText(cells[idx]) })
+        validKeys.forEach((key, idx) => {
+          if (idx < cells.length) item[key] = getCellText(cells[idx])
+        })
         if (Object.values(item).some(v => v)) data.push(item)
       }
     }
@@ -359,12 +445,24 @@ function autoParseTemplate(rawContent) {
 }
 
 /** 占位操作 */
-function handleInternalOperation() { proxy.$modal.msg('功能开发中...') }
-function handleDailyReport() { proxy.$modal.msg('功能开发中...') }
-function handleOrderMonitor() { proxy.$modal.msg('功能开发中...') }
-function handleTransfer() { proxy.$modal.msg('功能开发中...') }
-function handleGeneSequencingOrder() { proxy.$modal.msg('功能开发中...') }
-function handleTemplateLabel() { proxy.$modal.msg('功能开发中...') }
+function handleInternalOperation() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleDailyReport() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleOrderMonitor() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleTransfer() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleGeneSequencingOrder() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleTemplateLabel() {
+  proxy.$modal.msg('功能开发中...')
+}
 
 // --- 5. Lifecycle Hooks ---
 onMounted(() => {
@@ -379,17 +477,19 @@ onActivated(() => {
 })
 
 // --- 6. Watchers ---
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => {
-    const key = col.key || col.prop || col.type
-    if (key) cache[key] = col.visible
-  })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key) cache[key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
 </script>
-
 
 <style>
 .editor-global-fix .ql-editor {

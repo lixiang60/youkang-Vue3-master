@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-bind="$attrs"
-    :class="['base-dialog', customClass]"
-    :close-on-click-modal="false"
-    append-to-body
-  >
+  <el-dialog v-bind="$attrs" :class="['base-dialog', customClass]" :close-on-click-modal="false" append-to-body>
     <slot></slot>
     <template v-if="$slots.header" #header>
       <slot name="header"></slot>
@@ -33,7 +28,7 @@ defineProps({
 
   :deep(.el-form-item) {
     margin-bottom: 8px; /* Adjust as needed, default is usually 18px */
-    
+
     &.el-form-item--default {
       margin-bottom: 12px;
     }

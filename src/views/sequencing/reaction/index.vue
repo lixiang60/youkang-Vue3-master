@@ -5,8 +5,9 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="EditPen" @click="handleUpdate"
-          :disabled="single">编辑</el-button>
+        <el-button size="small" type="primary" plain icon="EditPen" :disabled="single" @click="handleUpdate"
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
@@ -15,30 +16,31 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain @click="handleOriginConcentration" :disabled="multiple">
-          <template #icon><el-icon>
-              <EditPen />
-            </el-icon></template>
+        <el-button size="small" type="primary" plain :disabled="multiple" @click="handleOriginConcentration">
+          <template #icon
+            ><el-icon> <EditPen /> </el-icon
+          ></template>
           原浓度
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain @click="handleAddPlate" :disabled="multiple">
-          <template #icon><el-icon>
-              <Calendar />
-            </el-icon></template>
+        <el-button size="small" type="success" plain :disabled="multiple" @click="handleAddPlate">
+          <template #icon
+            ><el-icon> <Calendar /> </el-icon
+          ></template>
           添加板号
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus"
-          :disabled="multiple">报告状态</el-button>
+        <el-button size="small" type="warning" plain icon="Message" :disabled="multiple" @click="handleReportStatus"
+          >报告状态</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain @click="handleAddHole" :disabled="single">
-          <template #icon><el-icon>
-              <List />
-            </el-icon></template>
+        <el-button size="small" type="success" plain :disabled="single" @click="handleAddHole">
+          <template #icon
+            ><el-icon> <List /> </el-icon
+          ></template>
           添加孔号
         </el-button>
       </el-col>
@@ -49,15 +51,17 @@
         <el-button size="small" type="info" plain icon="Grid" @click="handleNotImplemented">上机表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="CircleClose" @click="handleStop"
-          :disabled="multiple">反应停止</el-button>
+        <el-button size="small" type="danger" plain icon="CircleClose" :disabled="multiple" @click="handleStop"
+          >反应停止</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" plain icon="Histogram" @click="handleNotImplemented">新上基表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Warning" @click="handleInsufficient"
-          :disabled="multiple">样品不足</el-button>
+        <el-button size="small" type="warning" plain icon="Warning" :disabled="multiple" @click="handleInsufficient"
+          >样品不足</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="info" plain icon="Compass" @click="handleDispense">机器分装</el-button>
@@ -69,11 +73,14 @@
         <el-button size="small" plain icon="Odometer" @click="handleNotImplemented">稀释</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="List" @click="handleNotImplemented">调整和加料明细</el-button>
+        <el-button size="small" type="warning" plain icon="List" @click="handleNotImplemented"
+          >调整和加料明细</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="RefreshRight" @click="handlePreReaction"
-          :disabled="multiple">反应预做</el-button>
+        <el-button size="small" type="success" plain icon="RefreshRight" :disabled="multiple" @click="handlePreReaction"
+          >反应预做</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Camera" @click="showSearch = !showSearch">图像设置</el-button>
@@ -81,16 +88,25 @@
       <el-col :span="1.5">
         <el-button size="small" type="info" plain icon="Files" @click="handleNotImplemented">添加引物</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -135,30 +151,35 @@
     <!-- 设置原浓度对话框 (仿制截图样式) -->
     <el-dialog v-model="concOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
             <Edit />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">设置原浓度</span>
+          <span style="font-weight: bold; font-size: 16px">设置原浓度</span>
         </div>
       </template>
       <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form">
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
-              :
-              '未选择' }}</span>
+            <span style="font-size: 14px; color: #333">{{
+              selectedProduceIds.length > 0 ? selectedProduceIds.join(', ') : '未选择'
+            }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">原浓度：</div>
+          <div class="form-label" style="width: 140px">原浓度：</div>
           <div class="form-content">
-            <el-form-item prop="originConcentration" label-width="0" style="margin-bottom: 0;">
-              <el-select v-model="concForm.originConcentration" placeholder="请选择或输入原浓度" filterable allow-create
-                style="width: 280px">
+            <el-form-item prop="originConcentration" label-width="0" style="margin-bottom: 0">
+              <el-select
+                v-model="concForm.originConcentration"
+                placeholder="请选择或输入原浓度"
+                filterable
+                allow-create
+                style="width: 280px"
+              >
                 <el-option label="0.3" value="0.3" />
                 <el-option label="0.5" value="0.5" />
                 <el-option label="0.7" value="0.7" />
@@ -171,7 +192,7 @@
                 <el-option label="低" value="低" />
                 <el-option label="加测" value="加测" />
                 <template #prefix>
-                  <el-icon style="color: #E6A23C;">
+                  <el-icon style="color: #e6a23c">
                     <WarningFilled />
                   </el-icon>
                 </template>
@@ -180,10 +201,16 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 180px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px;">
-            <el-input v-model="concForm.remark" type="textarea" :rows="6" placeholder="请输入备注内容" style="height: 100%;" />
+        <div class="form-row border-bottom" style="height: 180px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px">
+            <el-input
+              v-model="concForm.remark"
+              type="textarea"
+              :rows="6"
+              placeholder="请输入备注内容"
+              style="height: 100%"
+            />
           </div>
         </div>
       </el-form>
@@ -198,26 +225,26 @@
     <!-- 添加板号对话框 (仿制截图样式) -->
     <el-dialog v-model="plateOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #67C23A; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #67c23a; font-size: 20px">
             <Calendar />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">添加板号</span>
+          <span style="font-weight: bold; font-size: 16px">添加板号</span>
         </div>
       </template>
       <el-form ref="plateFormRef" :model="plateForm" label-width="0" class="well-form">
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
-              :
-              '未选择' }}</span>
+            <span style="font-size: 14px; color: #333">{{
+              selectedProduceIds.length > 0 ? selectedProduceIds.join(', ') : '未选择'
+            }}</span>
           </div>
         </div>
         <!-- 机器类型 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">机器类型：</div>
+          <div class="form-label" style="width: 140px">机器类型：</div>
           <div class="form-content">
             <el-radio-group v-model="plateForm.machineType">
               <el-radio label="192">192</el-radio>
@@ -226,7 +253,7 @@
         </div>
         <!-- 排版方式 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">排版方式：</div>
+          <div class="form-label" style="width: 140px">排版方式：</div>
           <div class="form-content">
             <el-radio-group v-model="plateForm.layout">
               <el-radio label="横排">横排</el-radio>
@@ -236,17 +263,22 @@
         </div>
         <!-- 板号输入 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">板号：</div>
+          <div class="form-label" style="width: 140px">板号：</div>
           <div class="form-content">
             <el-input v-model="plateForm.plateNo" placeholder="请输入板号" style="width: 250px" />
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px;">
-            <el-input v-model="plateForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容"
-              style="height: 100%;" />
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px">
+            <el-input
+              v-model="plateForm.remark"
+              type="textarea"
+              :rows="5"
+              placeholder="请输入备注内容"
+              style="height: 100%"
+            />
           </div>
         </div>
       </el-form>
@@ -261,23 +293,23 @@
     <!-- 添加孔号对话框 (仿制截图样式) -->
     <el-dialog v-model="holeOpen" width="600px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
             <List />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">添加孔号</span>
+          <span style="font-weight: bold; font-size: 16px">添加孔号</span>
         </div>
       </template>
       <el-form :model="holeForm" label-width="0" class="well-form">
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 14px; color: #333; font-weight: bold;">{{ holeForm.produceId }}</span>
+            <span style="font-size: 14px; color: #333; font-weight: bold">{{ holeForm.produceId }}</span>
           </div>
         </div>
         <!-- 机器类型 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">机器类型：</div>
+          <div class="form-label" style="width: 140px">机器类型：</div>
           <div class="form-content">
             <el-radio-group v-model="holeForm.machineType">
               <el-radio label="192">192</el-radio>
@@ -286,7 +318,7 @@
         </div>
         <!-- 排版方式 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">排版方式：</div>
+          <div class="form-label" style="width: 140px">排版方式：</div>
           <div class="form-content">
             <el-radio-group v-model="holeForm.layout">
               <el-radio label="横排">横排</el-radio>
@@ -295,22 +327,28 @@
           </div>
         </div>
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">板号：</div>
+          <div class="form-label" style="width: 140px">板号：</div>
           <div class="form-content">
             <el-input v-model="holeForm.plateNo" placeholder="请输入板号" style="width: 250px" />
           </div>
         </div>
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">孔号：</div>
+          <div class="form-label" style="width: 140px">孔号：</div>
           <div class="form-content">
             <el-input v-model="holeForm.holeNo" placeholder="请输入孔号 ( e.g. A01 )" style="width: 250px" />
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px;">
-            <el-input v-model="holeForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" style="height: 100%;" />
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px">
+            <el-input
+              v-model="holeForm.remark"
+              type="textarea"
+              :rows="5"
+              placeholder="请输入备注内容"
+              style="height: 100%"
+            />
           </div>
         </div>
       </el-form>
@@ -325,27 +363,27 @@
     <!-- 设置报告状态对话框 (仿制截图样式) -->
     <el-dialog v-model="statusOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
             <MessageFilled />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">设置报告状态</span>
+          <span style="font-weight: bold; font-size: 16px">设置报告状态</span>
         </div>
       </template>
       <el-form :model="statusForm" label-width="0" class="well-form">
         <!-- 生产编号 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">
-              选中数量：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
-                selectedProduceIds.join(',') }}
+            <span style="font-size: 13px; color: #f56c6c">
+              选中数量：<span style="font-weight: bold">{{ selectedProduceIds.length }}</span
+              >，选中生产编号：{{ selectedProduceIds.join(',') }}
             </span>
           </div>
         </div>
         <!-- 报告状态 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">报告状态：</div>
+          <div class="form-label" style="width: 140px">报告状态：</div>
           <div class="form-content">
             <el-form-item label-width="0">
               <el-select v-model="statusForm.reportStatus" placeholder="请选择" style="width: 250px">
@@ -357,16 +395,16 @@
                 <el-option label="报告重切" value="报告重切" />
                 <el-option label="报告重新扩增" value="报告重新扩增" />
               </el-select>
-              <el-icon style="margin-left: 10px; color: #F56C6C; font-size: 18px; vertical-align: middle;">
+              <el-icon style="margin-left: 10px; color: #f56c6c; font-size: 18px; vertical-align: middle">
                 <Warning />
               </el-icon>
             </el-form-item>
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
             <el-input v-model="statusForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
           </div>
         </div>
@@ -382,28 +420,28 @@
     <!-- 停止反应对话框 (仿制截图样式) -->
     <el-dialog v-model="stopOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
             <EditPen />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">停止反应</span>
+          <span style="font-weight: bold; font-size: 16px">停止反应</span>
         </div>
       </template>
       <el-form :model="stopForm" label-width="0" class="well-form">
         <!-- 生产编号 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">
-              选中数量：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
-                selectedProduceIds.join(',') }}
+            <span style="font-size: 13px; color: #f56c6c">
+              选中数量：<span style="font-weight: bold">{{ selectedProduceIds.length }}</span
+              >，选中生产编号：{{ selectedProduceIds.join(',') }}
             </span>
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
             <el-input v-model="stopForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
           </div>
         </div>
@@ -419,28 +457,28 @@
     <!-- 反应预做设置对话框 (仿制截图样式) -->
     <el-dialog v-model="preOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
             <EditPen />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">反应预做设置</span>
+          <span style="font-weight: bold; font-size: 16px">反应预做设置</span>
         </div>
       </template>
       <el-form :model="preForm" label-width="0" class="well-form">
         <!-- 生产编号 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">
-              选中个数：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
-                selectedProduceIds.join(',') }}
+            <span style="font-size: 13px; color: #f56c6c">
+              选中个数：<span style="font-weight: bold">{{ selectedProduceIds.length }}</span
+              >，选中生产编号：{{ selectedProduceIds.join(',') }}
             </span>
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
             <el-input v-model="preForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
           </div>
         </div>
@@ -456,28 +494,28 @@
     <!-- 样品不足对话框 (仿制截图样式) -->
     <el-dialog v-model="insufficientOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
             <WarningFilled />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">样品不足</span>
+          <span style="font-weight: bold; font-size: 16px">样品不足</span>
         </div>
       </template>
       <el-form :model="insufficientForm" label-width="0" class="well-form">
         <!-- 生产编号 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">
-              选中个数：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
-                selectedProduceIds.join(',') }}
+            <span style="font-size: 13px; color: #f56c6c">
+              选中个数：<span style="font-weight: bold">{{ selectedProduceIds.length }}</span
+              >，选中生产编号：{{ selectedProduceIds.join(',') }}
             </span>
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
             <el-input v-model="insufficientForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
           </div>
         </div>
@@ -491,22 +529,22 @@
     </el-dialog>
 
     <!-- DBT查询对话框 -->
-    <el-dialog title="测序BDT表" v-model="bdtOpen" width="1000px" append-to-body>
+    <el-dialog v-model="bdtOpen" title="测序BDT表" width="1000px" append-to-body>
       <el-form :model="bdtQuery" label-width="0" class="well-form">
         <div class="form-row border-top">
-          <div class="form-label" style="width: 120px;">板号：</div>
+          <div class="form-label" style="width: 120px">板号：</div>
           <div class="form-content">
             <el-input v-model="bdtQuery.plateNo" placeholder="请输入板号" style="width: 250px" />
           </div>
         </div>
         <div class="form-row border-bottom">
-          <div class="form-label" style="width: 120px;">报表类型：</div>
-          <div class="form-content" style="display: flex; align-items: center; justify-content: space-between;">
+          <div class="form-label" style="width: 120px">报表类型：</div>
+          <div class="form-content" style="display: flex; align-items: center; justify-content: space-between">
             <el-radio-group v-model="bdtQuery.reportType">
               <el-radio label="BDT表">BDT表</el-radio>
               <el-radio label="模板BDT表">模板BDT表</el-radio>
             </el-radio-group>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px">
               <el-button type="primary" icon="Search" @click="handlePrintBdt">查 询</el-button>
               <el-button type="success" icon="Printer" @click="handleNotImplemented">标签打印</el-button>
             </div>
@@ -514,9 +552,12 @@
         </div>
       </el-form>
 
-      <div v-if="bdtList.length > 0" class="report-container" id="printBDT">
-        <div class="print-header"
-          style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 18px; display: none;">测序BDT表
+      <div v-if="bdtList.length > 0" id="printBDT" class="report-container">
+        <div
+          class="print-header"
+          style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 18px; display: none"
+        >
+          测序BDT表
         </div>
         <table class="report-table">
           <thead>
@@ -549,28 +590,33 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" :disabled="bdtList.length === 0" v-print="'#printBDT'">打 印</el-button>
+          <el-button v-print="'#printBDT'" type="success" :disabled="bdtList.length === 0">打 印</el-button>
           <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
 
     <!-- 机器分装表对话框 -->
-    <el-dialog title="测序机器分装表打印" v-model="dispenseOpen" width="1000px" append-to-body>
+    <el-dialog v-model="dispenseOpen" title="测序机器分装表打印" width="1000px" append-to-body>
       <el-form :model="dispenseQuery" label-width="0" class="well-form">
         <div class="form-row border-top border-bottom">
-          <div class="form-label" style="width: 120px;">板号：</div>
-          <div class="form-content" style="display: flex; align-items: center; justify-content: space-between;">
+          <div class="form-label" style="width: 120px">板号：</div>
+          <div class="form-content" style="display: flex; align-items: center; justify-content: space-between">
             <el-input v-model="dispenseQuery.plateNo" placeholder="请输入板号" style="width: 250px" />
-            <el-button type="info" icon="Printer" class="premium-btn"
-              style="background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%); color: #333; border: 1px solid #ccc;"
-              @click="handlePrintDispense">机器分装表打印</el-button>
+            <el-button
+              type="info"
+              icon="Printer"
+              class="premium-btn"
+              style="background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%); color: #333; border: 1px solid #ccc"
+              @click="handlePrintDispense"
+              >机器分装表打印</el-button
+            >
           </div>
         </div>
       </el-form>
 
-      <div v-if="dispenseList.length > 0" class="report-container" id="printDispense">
-        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">反应板号：{{ dispenseQuery.plateNo }}</div>
+      <div v-if="dispenseList.length > 0" id="printDispense" class="report-container">
+        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px">反应板号：{{ dispenseQuery.plateNo }}</div>
         <table class="report-table">
           <thead>
             <tr>
@@ -612,7 +658,7 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" :disabled="dispenseList.length === 0" v-print="'#printDispense'">打 印</el-button>
+          <el-button v-print="'#printDispense'" type="success" :disabled="dispenseList.length === 0">打 印</el-button>
           <el-button type="danger" @click="dispenseOpen = false">取 消</el-button>
         </div>
       </template>
@@ -678,13 +724,19 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) { }
+  } catch (e) {}
 }
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      if (col.key) cache[col.key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
 
 // 检索配置
 const searchFields = ref([
@@ -717,14 +769,16 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listReactionProduce(queryParams.value).then(response => {
-    const res = response.data || response // 兼容不同包装格式
-    dataList.value = res.rows || []
-    total.value = res.total || 0
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listReactionProduce(queryParams.value)
+    .then(response => {
+      const res = response.data || response // 兼容不同包装格式
+      dataList.value = res.rows || []
+      total.value = res.total || 0
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 function handleQuery() {
@@ -977,13 +1031,17 @@ function handlePreReaction() {
 }
 
 function submitPreReaction() {
-  proxy.$modal.confirm('是否确认对选中样品进行反应预做？').then(() => {
-    return reactionPre(preForm.value)
-  }).then(() => {
-    proxy.$modal.msgSuccess('操作成功')
-    preOpen.value = false
-    getList()
-  }).catch(() => { })
+  proxy.$modal
+    .confirm('是否确认对选中样品进行反应预做？')
+    .then(() => {
+      return reactionPre(preForm.value)
+    })
+    .then(() => {
+      proxy.$modal.msgSuccess('操作成功')
+      preOpen.value = false
+      getList()
+    })
+    .catch(() => {})
 }
 
 const dispenseOpen = ref(false)
@@ -1005,22 +1063,262 @@ function handlePrintDispense() {
   }
   // 暂时提供 Mock 数据供演示
   const mockData = [
-    { produceId: 1, holeNo: 'A01', orderId: '201806180', sampleId: 'SIE-PGI', templatePlateNo: 'JO614A', templateHoleNo: 'D01', templateVolume: '1.25', primer: 'SIE-PGEX-2', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 2, holeNo: 'A02', orderId: '201806180', sampleId: 'SIE-PGI', templatePlateNo: 'JO614A', templateHoleNo: 'D01', templateVolume: '1.25', primer: 'SIE-PGEX-2', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 3, holeNo: 'A03', orderId: '201806180', sampleId: '409R-3', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.5', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 4, holeNo: 'A04', orderId: '201806180', sampleId: '409R-2', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 5, holeNo: 'A05', orderId: '201806180', sampleId: '409R-1', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 6, holeNo: 'A06', orderId: '201806180', sampleId: '373R-5', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 7, holeNo: 'A07', orderId: '201806180', sampleId: '373R-4', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 8, holeNo: 'A08', orderId: '201806180', sampleId: '373R-3', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 9, holeNo: 'A09', orderId: '201806180', sampleId: '373R-2', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '3.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 10, holeNo: 'A10', orderId: '201806180', sampleId: '373R-1', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.0', primer: '146-2-W1F', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 11, holeNo: 'A11', orderId: '201806152', sampleId: 'EF-TU-', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '3.0', primer: 'T7TER', primerConcentration: '', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 12, holeNo: 'A12', orderId: '201806162', sampleId: 'S5-1-2', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.5', primer: 'U6', primerConcentration: '', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '3:7' },
-    { produceId: 13, holeNo: 'B01', orderId: '201806162', sampleId: 'S5-4-1', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '1.5', primer: 'U6', primerConcentration: '', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '3:7' },
-    { produceId: 14, holeNo: 'B02', orderId: '201806170', sampleId: '1-1-4', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '2.0', primer: 'M13F', primerConcentration: '', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 15, holeNo: 'B03', orderId: '201806170', sampleId: '5-2-3', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '3.0', primer: 'M13F', primerConcentration: '', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' },
-    { produceId: 16, holeNo: 'B04', orderId: '201806170', sampleId: 'PA', templatePlateNo: '-1', templateHoleNo: '-1', templateVolume: '3.0', primer: 'PET22BPAW', primerConcentration: '对应', primerVolume: '1', reagentVolume: '1', totalVolume: '5', betaine: '甜', ratio37: '' }
+    {
+      produceId: 1,
+      holeNo: 'A01',
+      orderId: '201806180',
+      sampleId: 'SIE-PGI',
+      templatePlateNo: 'JO614A',
+      templateHoleNo: 'D01',
+      templateVolume: '1.25',
+      primer: 'SIE-PGEX-2',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 2,
+      holeNo: 'A02',
+      orderId: '201806180',
+      sampleId: 'SIE-PGI',
+      templatePlateNo: 'JO614A',
+      templateHoleNo: 'D01',
+      templateVolume: '1.25',
+      primer: 'SIE-PGEX-2',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 3,
+      holeNo: 'A03',
+      orderId: '201806180',
+      sampleId: '409R-3',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.5',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 4,
+      holeNo: 'A04',
+      orderId: '201806180',
+      sampleId: '409R-2',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 5,
+      holeNo: 'A05',
+      orderId: '201806180',
+      sampleId: '409R-1',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 6,
+      holeNo: 'A06',
+      orderId: '201806180',
+      sampleId: '373R-5',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 7,
+      holeNo: 'A07',
+      orderId: '201806180',
+      sampleId: '373R-4',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 8,
+      holeNo: 'A08',
+      orderId: '201806180',
+      sampleId: '373R-3',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 9,
+      holeNo: 'A09',
+      orderId: '201806180',
+      sampleId: '373R-2',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '3.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 10,
+      holeNo: 'A10',
+      orderId: '201806180',
+      sampleId: '373R-1',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.0',
+      primer: '146-2-W1F',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 11,
+      holeNo: 'A11',
+      orderId: '201806152',
+      sampleId: 'EF-TU-',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '3.0',
+      primer: 'T7TER',
+      primerConcentration: '',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 12,
+      holeNo: 'A12',
+      orderId: '201806162',
+      sampleId: 'S5-1-2',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.5',
+      primer: 'U6',
+      primerConcentration: '',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: '3:7'
+    },
+    {
+      produceId: 13,
+      holeNo: 'B01',
+      orderId: '201806162',
+      sampleId: 'S5-4-1',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '1.5',
+      primer: 'U6',
+      primerConcentration: '',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: '3:7'
+    },
+    {
+      produceId: 14,
+      holeNo: 'B02',
+      orderId: '201806170',
+      sampleId: '1-1-4',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '2.0',
+      primer: 'M13F',
+      primerConcentration: '',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 15,
+      holeNo: 'B03',
+      orderId: '201806170',
+      sampleId: '5-2-3',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '3.0',
+      primer: 'M13F',
+      primerConcentration: '',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    },
+    {
+      produceId: 16,
+      holeNo: 'B04',
+      orderId: '201806170',
+      sampleId: 'PA',
+      templatePlateNo: '-1',
+      templateHoleNo: '-1',
+      templateVolume: '3.0',
+      primer: 'PET22BPAW',
+      primerConcentration: '对应',
+      primerVolume: '1',
+      reagentVolume: '1',
+      totalVolume: '5',
+      betaine: '甜',
+      ratio37: ''
+    }
   ]
   dispenseList.value = mockData
 }

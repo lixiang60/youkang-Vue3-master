@@ -9,7 +9,6 @@ const baseUrl = 'http://127.0.0.1:3564' // 后端接口
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
 
-
   const { VITE_APP_ENV } = env
   return {
     // 部署生产环境和开发环境下的URL。
@@ -53,12 +52,12 @@ export default defineConfig(({ mode, command }) => {
         '/dev-api': {
           target: baseUrl,
           changeOrigin: true,
-          rewrite: (p) => p.replace(/^\/dev-api/, '')
+          rewrite: p => p.replace(/^\/dev-api/, '')
         },
-         // spring doc proxy
-         '/v3/api-docs': {
+        // spring doc proxy
+        '/v3/api-docs': {
           target: baseUrl,
-          changeOrigin: true,
+          changeOrigin: true
         }
       }
     },
@@ -68,7 +67,7 @@ export default defineConfig(({ mode, command }) => {
           {
             postcssPlugin: 'internal:charset-removal',
             AtRule: {
-              charset: (atRule) => {
+              charset: atRule => {
                 if (atRule.name === 'charset') {
                   atRule.remove()
                 }

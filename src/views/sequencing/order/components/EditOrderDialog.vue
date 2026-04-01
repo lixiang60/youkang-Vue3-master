@@ -3,19 +3,19 @@
     title="修改"
     :model-value="modelValue"
     width="1000px"
-    @update:model-value="handleUpdateVisible"
     append-to-body
+    @update:model-value="handleUpdateVisible"
   >
     <!-- Use similar structure to Screenshot: grid placement -->
     <el-form ref="formRef" :model="form" :rules="rules" label-width="110px">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="订单号：">
-             <div style="display: flex; align-items: center; width: 100%">
-                <el-input v-model="form.orderId" readonly style="width: 230px;" />
-                <el-button class="ml10 pill-btn" icon="Camera" circle @click="handlePhotoUpload" title="补拍照" />
-                <el-button class="ml5 pill-btn" icon="Picture" circle @click="handleScreenshotUpload" title="补截图" />
-             </div>
+            <div style="display: flex; align-items: center; width: 100%">
+              <el-input v-model="form.orderId" readonly style="width: 230px" />
+              <el-button class="ml10 pill-btn" icon="Camera" circle title="补拍照" @click="handlePhotoUpload" />
+              <el-button class="ml5 pill-btn" icon="Picture" circle title="补截图" @click="handleScreenshotUpload" />
+            </div>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -100,13 +100,13 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="送样时间：">
-             <!-- Screenshot: 送样时间，使用时间选择器、或带秒 -->
-            <el-date-picker 
-               v-model="form.createTime" 
-               type="datetime" 
-               placeholder="选择时间" 
-               style="width: 100%" 
-               value-format="YYYY-MM-DD HH:mm:ss" 
+            <!-- Screenshot: 送样时间，使用时间选择器、或带秒 -->
+            <el-date-picker
+              v-model="form.createTime"
+              type="datetime"
+              placeholder="选择时间"
+              style="width: 100%"
+              value-format="YYYY-MM-DD HH:mm:ss"
             />
           </el-form-item>
         </el-col>
@@ -142,12 +142,7 @@
   </el-dialog>
 
   <!-- 嵌套的更新客户与课题组弹窗 -->
-  <el-dialog
-    title="更新客户与课题组"
-    v-model="groupDialogOpen"
-    width="600px"
-    append-to-body
-  >
+  <el-dialog v-model="groupDialogOpen" title="更新客户与课题组" width="600px" append-to-body>
     <div class="grid-table">
       <div class="grid-row border-top border-left border-right">
         <div class="grid-cell label-cell">订单号：</div>
@@ -169,18 +164,15 @@
         </div>
       </div>
     </div>
-    <div style="text-align: center; margin-top: 15px;">
-      <el-button type="default" style="border: 1px solid #ccc; background: #fafafa;" @click="submitGroupUpdate">更 新</el-button>
+    <div style="text-align: center; margin-top: 15px">
+      <el-button type="default" style="border: 1px solid #ccc; background: #fafafa" @click="submitGroupUpdate"
+        >更 新</el-button
+      >
     </div>
   </el-dialog>
 
   <!-- 嵌套的更新基因号弹窗 -->
-  <el-dialog
-    title="更新基因号"
-    v-model="genDialogOpen"
-    width="600px"
-    append-to-body
-  >
+  <el-dialog v-model="genDialogOpen" title="更新基因号" width="600px" append-to-body>
     <div class="grid-table">
       <div class="grid-row border-top border-left border-right">
         <div class="grid-cell label-cell">订单号：</div>
@@ -198,25 +190,15 @@
   </el-dialog>
 
   <!-- 嵌套的拍照附件补齐弹窗 -->
-  <el-dialog
-    title="补拍照附件"
-    v-model="photoUploadOpen"
-    width="450px"
-    append-to-body
-  >
-    <div style="display: flex; justify-content: center; padding: 20px;">
+  <el-dialog v-model="photoUploadOpen" title="补拍照附件" width="450px" append-to-body>
+    <div style="display: flex; justify-content: center; padding: 20px">
       <image-upload v-model="form.photoAttachment" :limit="1" />
     </div>
   </el-dialog>
 
   <!-- 嵌套的截图附件补齐弹窗 -->
-  <el-dialog
-    title="补截图附件"
-    v-model="screenshotUploadOpen"
-    width="450px"
-    append-to-body
-  >
-    <div style="display: flex; justify-content: center; padding: 20px;">
+  <el-dialog v-model="screenshotUploadOpen" title="补截图附件" width="450px" append-to-body>
+    <div style="display: flex; justify-content: center; padding: 20px">
       <file-upload v-model="form.sequencingTemplateAttachment" :limit="1" />
     </div>
   </el-dialog>
@@ -266,8 +248,7 @@ const form = ref({
   belongCompany: undefined
 })
 
-const rules = {
-}
+const rules = {}
 
 const groupDialogOpen = ref(false)
 const groupForm = ref({
@@ -284,19 +265,22 @@ const genForm = ref({
 const photoUploadOpen = ref(false)
 const screenshotUploadOpen = ref(false)
 
-watch(() => props.modelValue, (val) => {
-  if (val) {
-    reset()
-    if (props.orderRow && props.orderRow.orderId) {
-      console.log('EditOrderDialog Loading Data:', props.orderRow)
-      getOrder(props.orderRow.orderId).then(response => {
-        console.log('EditOrderDialog Final response Data:', response)
-        const data = response.data
-        form.value = { ...form.value, ...data }
-      })
+watch(
+  () => props.modelValue,
+  val => {
+    if (val) {
+      reset()
+      if (props.orderRow && props.orderRow.orderId) {
+        console.log('EditOrderDialog Loading Data:', props.orderRow)
+        getOrder(props.orderRow.orderId).then(response => {
+          console.log('EditOrderDialog Final response Data:', response)
+          const data = response.data
+          form.value = { ...form.value, ...data }
+        })
+      }
     }
   }
-})
+)
 
 function reset() {
   form.value = {
@@ -400,10 +384,18 @@ function submitForm() {
 .value-cell {
   flex: 1;
 }
-.border-top { border-top: 1px solid #b3d4fc; }
-.border-left { border-left: 1px solid #b3d4fc; }
-.border-right { border-right: 1px solid #b3d4fc; }
-.border-all { border: 1px solid #b3d4fc; }
+.border-top {
+  border-top: 1px solid #b3d4fc;
+}
+.border-left {
+  border-left: 1px solid #b3d4fc;
+}
+.border-right {
+  border-right: 1px solid #b3d4fc;
+}
+.border-all {
+  border: 1px solid #b3d4fc;
+}
 .inner-input :deep(.el-input__wrapper) {
   box-shadow: none !important;
   background: transparent;

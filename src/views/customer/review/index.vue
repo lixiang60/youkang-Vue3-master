@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -27,57 +27,42 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:review:remove']"
           type="danger"
           plain
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['customer:review:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Search"
-          @click="handleQuery"
-        >查询</el-button>
+        <el-button plain icon="Search" @click="handleQuery">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
+        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Key"
-          @click="handleReview"
-          v-hasPermi="['customer:review:audit']"
-        >审核</el-button>
+        <el-button v-hasPermi="['customer:review:audit']" type="warning" plain icon="Key" @click="handleReview"
+          >审核</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="FolderChecked"
-          @click="handleSave"
-          v-hasPermi="['customer:review:save']"
-        >暂存</el-button>
+        <el-button v-hasPermi="['customer:review:save']" type="success" plain icon="FolderChecked" @click="handleSave"
+          >暂存</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <el-table 
-      v-loading="loading" 
-      :data="dataList" 
-      @selection-change="handleSelectionChange"
+    <el-table
+      v-loading="loading"
+      :data="dataList"
       border
       stripe
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="50" align="center" fixed />
       <el-table-column label="客户ID" align="center" prop="customerId" width="80" fixed />
@@ -109,9 +94,9 @@
     <!-- 分页 -->
     <pagination
       v-show="total > 0"
-      :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
+      :total="total"
       @pagination="getList"
     />
   </div>
@@ -144,13 +129,15 @@ const { queryParams } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listReview(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listReview(queryParams.value)
+    .then(response => {
+      dataList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 搜索按钮操作 */
@@ -193,18 +180,22 @@ function handleSave() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除选中的客户数据？').then(function() {
-    return delReview(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  proxy.$modal
+    .confirm('是否确认删除选中的客户数据？')
+    .then(function () {
+      return delReview(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 onMounted(() => {
   // TODO: 等后端接口实现后再启用
   // getList()
-  
+
   // 临时模拟数据
   loading.value = false
   dataList.value = []

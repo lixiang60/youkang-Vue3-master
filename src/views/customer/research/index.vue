@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -26,51 +26,45 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['customer:research:add']"
-        >添加</el-button>
+        <el-button v-hasPermi="['customer:research:add']" type="success" plain icon="Plus" @click="handleAdd"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research:remove']"
           type="danger"
           plain
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['customer:research:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
+          v-hasPermi="['customer:research:batch']"
           type="primary"
           plain
           icon="Document"
           @click="handleBatchEdit"
-          v-hasPermi="['customer:research:batch']"
-        >批量编辑</el-button>
+          >批量编辑</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
     <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
       :loading="loading"
       :data="dataList"
       :columns="columns"
       :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
       @pagination="getList"
       @selection-change="handleSelectionChange"
     >
@@ -83,7 +77,7 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <base-dialog :title="title" v-model="open" width="800px">
+    <base-dialog v-model="open" :title="title" width="800px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="24">
@@ -153,7 +147,7 @@ const title = ref('')
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'id', width: 80, fixed: true, sortable: true, visible: true  },
+  { key: 'id', label: 'id', width: 80, fixed: true, sortable: true, visible: true },
   { key: 'customerId', label: '客户ID', width: 80, fixed: true, visible: true },
   { key: 'customerName', label: '客户姓名', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
   { key: 'region', label: '地区', width: 80, visible: true },
@@ -180,12 +174,8 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    customerId: [
-      { required: true, message: '客户不能为空', trigger: 'blur' }
-    ],
-    subjectGroupId: [
-      { required: true, message: '课题组不能为空', trigger: 'blur' }
-    ]
+    customerId: [{ required: true, message: '客户不能为空', trigger: 'blur' }],
+    subjectGroupId: [{ required: true, message: '课题组不能为空', trigger: 'blur' }]
   }
 })
 
@@ -194,13 +184,15 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listResearch(queryParams.value).then(response => {
-    dataList.value = response.data.records
-    total.value = response.data.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listResearch(queryParams.value)
+    .then(response => {
+      dataList.value = response.data.records
+      total.value = response.data.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 取消按钮 */
@@ -290,19 +282,27 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delResearch(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(function () {
+      return delResearch(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('customer/research/export', {
-    ...queryParams.value
-  }, `research_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'customer/research/export',
+    {
+      ...queryParams.value
+    },
+    `research_${new Date().getTime()}.xlsx`
+  )
 }
 
 onMounted(() => {
@@ -315,5 +315,4 @@ onMounted(() => {
     subjectGroupOptions.value = response.data.records
   })
 })
-
 </script>

@@ -11,30 +11,42 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="Message" @click="handleSendEmail"
-          :disabled="multiple">邮件发送</el-button>
+        <el-button size="small" type="success" plain icon="Message" :disabled="multiple" @click="handleSendEmail"
+          >邮件发送</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="CircleClose" @click="handleIgnoreEmail"
-          :disabled="multiple">邮件忽略</el-button>
+        <el-button size="small" type="warning" plain icon="CircleClose" :disabled="multiple" @click="handleIgnoreEmail"
+          >邮件忽略</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据列表页眉 -->
     <div class="table-header-bar">
-      <el-icon style="margin-right: 5px; color: #409EFF;">
+      <el-icon style="margin-right: 5px; color: #409eff">
         <List />
-      </el-icon> 数据列表
+      </el-icon>
+      数据列表
     </div>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 邮件发送备注对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog v-model="open" :title="title" width="500px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="well-form">
         <div class="form-row border-top border-bottom">
           <div class="form-label">操作备注：</div>
@@ -59,12 +71,7 @@
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
-import {
-  listEmailProduce,
-  addEmail,
-  updateEmail,
-  delEmail
-} from '@/api/sequencing/email'
+import { listEmailProduce, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
 
 const { proxy } = getCurrentInstance()
 
@@ -121,9 +128,7 @@ const data = reactive({
     sampleId: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
   }
 })
 
@@ -132,15 +137,17 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listEmailProduce(queryParams.value).then(response => {
-    const res = response.data || response
-    const finalData = (res.data && res.data.rows) ? res.data : res
-    dataList.value = finalData.rows || []
-    total.value = finalData.total || 0
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listEmailProduce(queryParams.value)
+    .then(response => {
+      const res = response.data || response
+      const finalData = res.data && res.data.rows ? res.data : res
+      dataList.value = finalData.rows || []
+      total.value = finalData.total || 0
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 function toggleSearchPanel() {
@@ -224,9 +231,13 @@ function handleDelete() {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('order/sample/template/produce/exportFailed', {
-    ...queryParams.value
-  }, `failed_samples_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'order/sample/template/produce/exportFailed',
+    {
+      ...queryParams.value
+    },
+    `failed_samples_${new Date().getTime()}.xlsx`
+  )
 }
 
 onMounted(() => {

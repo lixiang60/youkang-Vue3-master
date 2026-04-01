@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -26,123 +26,121 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['customer:research_group:add']"
-        >添加</el-button>
+        <el-button v-hasPermi="['customer:research_group:add']" type="success" plain icon="Plus" @click="handleAdd"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:edit']"
           type="primary"
           plain
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['customer:research_group:edit']"
-        >编辑</el-button>
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:remove']"
           type="danger"
           plain
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['customer:research_group:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
+          v-hasPermi="['customer:research_group:import']"
           type="success"
           plain
           icon="Upload"
           @click="handleImport"
-          v-hasPermi="['customer:research_group:import']"
-        >导入</el-button>
+          >导入</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:price']"
           type="warning"
           plain
           icon="Money"
           @click="handleSetPrice"
-          v-hasPermi="['customer:research_group:price']"
-        >设置价格</el-button>
+          >设置价格</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:reminder']"
           type="info"
           plain
           icon="Bell"
           @click="handleReminderSettings"
-          v-hasPermi="['customer:research_group:reminder']"
-        >提醒设置</el-button>
+          >提醒设置</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:prepayment']"
           type="warning"
           plain
           icon="Wallet"
           @click="handlePrepaymentSettings"
-          v-hasPermi="['customer:research_group:prepayment']"
-        >预付款设置</el-button>
+          >预付款设置</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:batch']"
           type="primary"
           plain
           icon="Document"
           @click="handleBatchEdit"
-          v-hasPermi="['customer:research_group:batch']"
-        >批量编辑</el-button>
+          >批量编辑</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['customer:research_group:label']" plain icon="Collection" @click="handleGeneLabel"
+          >基因标签</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          plain
-          icon="Collection"
-          @click="handleGeneLabel"
-          v-hasPermi="['customer:research_group:label']"
-        >基因标签</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
+          v-hasPermi="['customer:research_group:all_prices']"
           type="warning"
           plain
           icon="Box"
           @click="handleAllPrices"
-          v-hasPermi="['customer:research_group:all_prices']"
-        >所有价格</el-button>
+          >所有价格</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:research_group:blank_price']"
           type="success"
           plain
           icon="PriceTag"
           @click="handleBlankPrice"
-          v-hasPermi="['customer:research_group:blank_price']"
-        >空白价格</el-button>
+          >空白价格</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
     <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
       :loading="loading"
       :data="dataList"
       :columns="columns"
       :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
       @pagination="getList"
       @selection-change="handleSelectionChange"
     >
@@ -152,24 +150,26 @@
 
       <template #action="{ row }">
         <el-button
+          v-hasPermi="['customer:research_group:edit']"
           link
           type="primary"
           icon="Edit"
           @click="handleUpdate(row)"
-          v-hasPermi="['customer:research_group:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
         <el-button
+          v-hasPermi="['customer:research_group:remove']"
           link
           type="primary"
           icon="Delete"
           @click="handleDelete(row)"
-          v-hasPermi="['customer:research_group:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </template>
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <base-dialog :title="title" v-model="open" width="800px">
+    <base-dialog v-model="open" :title="title" width="800px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -251,7 +251,13 @@
 </template>
 
 <script setup name="Research_group">
-import { listResearch_group, getResearch_group, addResearch_group, updateResearch_group, delResearch_group } from '@/api/customer/research_group'
+import {
+  listResearch_group,
+  getResearch_group,
+  addResearch_group,
+  updateResearch_group,
+  delResearch_group
+} from '@/api/customer/research_group'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import BaseDialog from '@/components/BaseDialog/index.vue'
 
@@ -300,9 +306,7 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
   }
 })
 
@@ -311,13 +315,15 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listResearch_group(queryParams.value).then(response => {
-    dataList.value = response.data.rows
-    total.value = response.data.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listResearch_group(queryParams.value)
+    .then(response => {
+      dataList.value = response.data.rows
+      total.value = response.data.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 取消按钮 */
@@ -467,19 +473,27 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
-    return delResearch_group(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(function () {
+      return delResearch_group(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('customer/research_group/export', {
-    ...queryParams.value
-  }, `research_group_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'customer/research_group/export',
+    {
+      ...queryParams.value
+    },
+    `research_group_${new Date().getTime()}.xlsx`
+  )
 }
 
 onMounted(() => {

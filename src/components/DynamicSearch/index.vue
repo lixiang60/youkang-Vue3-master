@@ -7,31 +7,26 @@
             <template v-for="item in fields" :key="item.prop">
               <el-col :span="6">
                 <el-form-item :label="item.label" :prop="item.prop" style="width: 100%">
-                  <el-input 
-                    v-if="item.type === 'input'" 
-                    v-model="modelValue[item.prop]" 
-                    :placeholder="'请输入' + item.label" 
-                    clearable 
+                  <el-input
+                    v-if="item.type === 'input'"
+                    v-model="modelValue[item.prop]"
+                    :placeholder="'请输入' + item.label"
+                    clearable
                     @keyup.enter="handleSearch"
                   />
-                  <el-select 
-                    v-else-if="item.type === 'select'" 
-                    v-model="modelValue[item.prop]" 
-                    :placeholder="'请选择'" 
-                    clearable 
+                  <el-select
+                    v-else-if="item.type === 'select'"
+                    v-model="modelValue[item.prop]"
+                    :placeholder="'请选择'"
+                    clearable
                     style="width: 100%"
                   >
-                    <el-option 
-                      v-for="opt in item.options" 
-                      :key="opt.value" 
-                      :label="opt.label" 
-                      :value="opt.value" 
-                    />
+                    <el-option v-for="opt in item.options" :key="opt.value" :label="opt.label" :value="opt.value" />
                   </el-select>
                 </el-form-item>
               </el-col>
             </template>
-            <el-col :span="6" style="text-align: right; padding-top: 4px;">
+            <el-col :span="6" style="text-align: right; padding-top: 4px">
               <el-button type="primary" icon="Search" size="small" @click="handleSearch">查询</el-button>
               <el-button icon="Refresh" size="small" @click="handleReset">重置</el-button>
             </el-col>

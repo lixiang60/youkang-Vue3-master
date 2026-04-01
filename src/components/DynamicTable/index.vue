@@ -1,7 +1,7 @@
 <template>
   <el-table
-    v-bind="$attrs"
     v-loading="loading"
+    v-bind="$attrs"
     :data="data"
     :border="border"
     :stripe="stripe"

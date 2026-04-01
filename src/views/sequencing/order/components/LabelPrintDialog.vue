@@ -1,6 +1,11 @@
 <template>
-  <el-dialog title="标签打印" :model-value="modelValue" width="800px" @update:model-value="handleUpdateVisible"
-    append-to-body>
+  <el-dialog
+    title="标签打印"
+    :model-value="modelValue"
+    width="800px"
+    append-to-body
+    @update:model-value="handleUpdateVisible"
+  >
     <el-form ref="formRef" :model="form" label-width="100px" class="label-print-form">
       <el-row>
         <el-col :span="12">
@@ -44,11 +49,8 @@
       </el-row>
 
       <div class="print-action-area">
-        <el-button type="primary" icon="Printer" class="print-btn" @click="handlePrintAction">
-          标签打印
-        </el-button>
+        <el-button type="primary" icon="Printer" class="print-btn" @click="handlePrintAction"> 标签打印 </el-button>
       </div>
-
     </el-form>
 
     <el-dialog v-model="showPreview" title="标签预览" width="900px" append-to-body class="print-preview-dialog">
@@ -56,13 +58,13 @@
         <LabelSheet :labels="mockLabels" />
       </div>
       <template #footer>
-        <el-button type="primary" v-print="'#print-area'">打 印</el-button>
+        <el-button v-print="'#print-area'" type="primary">打 印</el-button>
         <el-button @click="showPreview = false">关 闭</el-button>
       </template>
     </el-dialog>
 
     <template #footer>
-      <div class="dialog-footer" style="text-align: center;">
+      <div class="dialog-footer" style="text-align: center">
         <el-button type="primary" @click="handleConfirm">确 定</el-button>
         <el-button @click="handleCancel">取 消</el-button>
       </div>
@@ -97,11 +99,14 @@ const form = reactive({
   orderType: 1
 })
 
-watch(() => props.modelValue, (val) => {
-  if (val) {
-    reset()
+watch(
+  () => props.modelValue,
+  val => {
+    if (val) {
+      reset()
+    }
   }
-})
+)
 
 function reset() {
   form.startOrder = ''
@@ -120,10 +125,10 @@ function handleUpdateVisible(val) {
 function handlePrintAction() {
   // Logic to print
   if (!form.startOrder && !form.endOrder) {
-    // For mock purpose, allow empty to just show something? 
+    // For mock purpose, allow empty to just show something?
     // Or just generate defaults.
     // ElMessage.warning('请输入订单号范围')
-    // return 
+    // return
   }
 
   // MOCK DATA GENERATION
@@ -134,8 +139,8 @@ function handlePrintAction() {
       id: '5875' + (541 + i),
       author: i % 2 === 0 ? '王强' : '李四',
       code: 'PLVX-LIMD1-' + (i < 10 ? '0' + i : i),
-      size: (1000 + i * 100),
-      qc: i % 3 === 0 ? 'A+' : (i % 3 === 1 ? 'sp' : 'B'),
+      size: 1000 + i * 100,
+      qc: i % 3 === 0 ? 'A+' : i % 3 === 1 ? 'sp' : 'B',
       date: '6/17'
     })
   }
@@ -150,7 +155,7 @@ function handlePrintAction() {
 }
 
 function handleConfirm() {
-  // Confirm might also print or just close? 
+  // Confirm might also print or just close?
   // Screenshot has "Label Print" button prominently inside.
   handlePrintAction()
   // emit('update:modelValue', false) // Don't close immediately if printing?

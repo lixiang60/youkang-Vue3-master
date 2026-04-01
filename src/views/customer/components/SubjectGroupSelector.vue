@@ -1,6 +1,6 @@
 <template>
-  <el-dialog title="选择课题组" v-model="visible" width="800px" append-to-body @close="cancel">
-    <el-form :model="queryParams" ref="queryRef" :inline="true">
+  <el-dialog v-model="visible" title="选择课题组" width="800px" append-to-body @close="cancel">
+    <el-form ref="queryRef" :model="queryParams" :inline="true">
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -16,18 +16,18 @@
       </el-form-item>
     </el-form>
 
-    <el-table 
+    <el-table
       ref="tableRef"
-      v-loading="loading" 
-      :data="dataList" 
+      v-loading="loading"
+      :data="dataList"
       highlight-current-row
+      border
+      stripe
+      style="width: 100%"
       @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"
       @row-click="handleRowClick"
       @row-dblclick="confirm"
-      border
-      stripe
-      style="width: 100%"
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="ID" align="center" prop="id" width="80" />
@@ -40,15 +40,15 @@
 
     <pagination
       v-show="total > 0"
-      :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
+      :total="total"
       @pagination="getList"
     />
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="primary" @click="confirm" :disabled="!currentRow">确 定</el-button>
+        <el-button type="primary" :disabled="!currentRow" @click="confirm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </template>
@@ -74,7 +74,7 @@ const emit = defineEmits(['update:modelValue', 'confirm'])
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: val => emit('update:modelValue', val)
 })
 
 const loading = ref(true)
@@ -98,7 +98,7 @@ function getList() {
     dataList.value = response.data.rows
     total.value = response.data.total
     loading.value = false
-    
+
     // Pre-select row if selectedId exists provided
     if (props.selectedId) {
       nextTick(() => {
@@ -153,9 +153,9 @@ function confirm() {
     emit('confirm', currentRow.value)
     visible.value = false
   } else if (props.selectedId) {
-     // If nothing selected but we have a selectedId prop, maybe we should return that? 
-     // But strictly speaking, the user must select something.
-     // Let's rely on currentRow.
+    // If nothing selected but we have a selectedId prop, maybe we should return that?
+    // But strictly speaking, the user must select something.
+    // Let's rely on currentRow.
   }
 }
 
@@ -164,9 +164,12 @@ function cancel() {
 }
 
 // Watch for visible changes to reload data
-watch(() => props.modelValue, (val) => {
-  if (val) {
-    getList()
+watch(
+  () => props.modelValue,
+  val => {
+    if (val) {
+      getList()
+    }
   }
-})
+)
 </script>

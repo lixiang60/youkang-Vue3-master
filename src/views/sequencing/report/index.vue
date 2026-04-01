@@ -11,18 +11,35 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Message" @click="handleReportStatus" :disabled="multiple"
-          v-hasPermi="['order:sample:reportStatus']">报告状态</el-button>
+        <el-button
+          v-hasPermi="['order:sample:reportStatus']"
+          size="small"
+          type="warning"
+          plain
+          icon="Message"
+          :disabled="multiple"
+          @click="handleReportStatus"
+          >报告状态</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleNotImplemented">清除孔号</el-button>
+        <el-button size="small" type="success" plain icon="TrendCharts" @click="handleNotImplemented"
+          >清除孔号</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="info" plain icon="Document" @click="handleDbtQuery">DBT</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Plus" @click="handleCapillary"
-          v-hasPermi="['order:sample:capillaryAdd']">毛细管添加</el-button>
+        <el-button
+          v-hasPermi="['order:sample:capillaryAdd']"
+          size="small"
+          type="primary"
+          plain
+          icon="Plus"
+          @click="handleCapillary"
+          >毛细管添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="info" plain icon="Monitor" @click="handleNotImplemented">订单量监控</el-button>
@@ -30,22 +47,31 @@
       <el-col :span="1.5">
         <el-button size="small" plain icon="Picture" @click="handleNotImplemented">图像设置</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 报告状态对话框 -->
     <el-dialog v-model="statusOpen" width="750px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
             <Message />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">设置报告状态</span>
+          <span style="font-weight: bold; font-size: 16px">设置报告状态</span>
         </div>
       </template>
       <el-form :model="statusForm" label-width="0" class="well-form">
@@ -53,9 +79,9 @@
         <div class="form-row border-top">
           <div class="form-label">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">
-              选中个数：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
-                selectedProduceIds.join(',') }}
+            <span style="font-size: 13px; color: #f56c6c">
+              选中个数：<span style="font-weight: bold">{{ selectedProduceIds.length }}</span
+              >，选中生产编号：{{ selectedProduceIds.join(',') }}
             </span>
           </div>
         </div>
@@ -77,16 +103,21 @@
           </div>
         </div>
         <!-- 异常原因 -->
-        <div class="form-row" style="height: 100px;">
-          <div class="form-label" style="height: 100%;">异常原因：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
-            <el-input v-model="statusForm.reportErrorReason" type="textarea" :rows="3" placeholder="请输入报告异常原因" />
+        <div class="form-row" style="height: 100px">
+          <div class="form-label" style="height: 100%">异常原因：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
+            <el-input
+              v-model="statusForm.reportErrorReason"
+              type="textarea"
+              :rows="3"
+              placeholder="请输入报告异常原因"
+            />
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 100px;">
-          <div class="form-label" style="height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+        <div class="form-row border-bottom" style="height: 100px">
+          <div class="form-label" style="height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
             <el-input v-model="statusForm.remark" type="textarea" :rows="3" placeholder="请输入备注内容" />
           </div>
         </div>
@@ -102,21 +133,21 @@
     <!-- 毛细管添加对话框 -->
     <el-dialog v-model="capillaryOpen" width="800px" append-to-body>
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #67C23A; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #67c23a; font-size: 20px">
             <CirclePlus />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">添加毛细管</span>
+          <span style="font-weight: bold; font-size: 16px">添加毛细管</span>
         </div>
       </template>
       <el-form :model="capillaryForm" label-width="0" class="well-form">
         <!-- 第一行：板号和机器号 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 100px;">板号：</div>
+          <div class="form-label" style="width: 100px">板号：</div>
           <div class="form-content">
             <el-input v-model="capillaryForm.plateNo" placeholder="请输入板号" />
           </div>
-          <div class="form-label" style="width: 100px; border-left: 1px solid #ebeef5;">机器号：</div>
+          <div class="form-label" style="width: 100px; border-left: 1px solid #ebeef5">机器号：</div>
           <div class="form-content">
             <el-select v-model="capillaryForm.machineNo" placeholder="请选择机器" style="width: 100%">
               <el-option label="3730-1" value="3730-1" />
@@ -126,11 +157,16 @@
           </div>
         </div>
         <!-- 第二行：备注 -->
-        <div class="form-row border-bottom" style="height: 150px;">
-          <div class="form-label" style="width: 100px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px;">
-            <el-input v-model="capillaryForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容"
-              style="height: 100%;" />
+        <div class="form-row border-bottom" style="height: 150px">
+          <div class="form-label" style="width: 100px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px">
+            <el-input
+              v-model="capillaryForm.remark"
+              type="textarea"
+              :rows="5"
+              placeholder="请输入备注内容"
+              style="height: 100%"
+            />
           </div>
         </div>
       </el-form>
@@ -143,7 +179,7 @@
     </el-dialog>
 
     <!-- DBT查询对话框 -->
-    <el-dialog title="测序DBT表" v-model="dbtOpen" width="1000px" append-to-body>
+    <el-dialog v-model="dbtOpen" title="测序DBT表" width="1000px" append-to-body>
       <el-form :inline="true" label-width="68px" @submit.prevent>
         <el-form-item label="板号">
           <el-input v-model="dbtQueryPlateNo" placeholder="请输入板号" clearable @keyup.enter="handlePrintDbt" />
@@ -152,7 +188,7 @@
           <el-button type="primary" icon="Search" @click="handlePrintDbt">查询</el-button>
         </el-form-item>
       </el-form>
-      <div v-if="dbtList.length > 0" class="report-container" id="printReportDBT">
+      <div v-if="dbtList.length > 0" id="printReportDBT" class="report-container">
         <table class="report-table">
           <thead>
             <tr>
@@ -183,7 +219,7 @@
       <el-empty v-else description="请输入板号查询数据" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" :disabled="dbtList.length === 0" v-print="'#printReportDBT'">打 印</el-button>
+          <el-button v-print="'#printReportDBT'" type="success" :disabled="dbtList.length === 0">打 印</el-button>
           <el-button type="danger" @click="dbtOpen = false">关 闭</el-button>
         </div>
       </template>
@@ -193,11 +229,7 @@
 
 <script setup name="Report">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
-import {
-  listReport,
-  updateReportStatus,
-  addCapillary
-} from '@/api/sequencing/report'
+import { listReport, updateReportStatus, addCapillary } from '@/api/sequencing/report'
 import { getSequencingBDT } from '@/api/sequencing/reaction'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
@@ -244,14 +276,16 @@ const searchFields = ref([
 // 统一 getList 处理
 function getList() {
   loading.value = true
-  listReport(queryParams.value).then(response => {
-    const res = response.data || response
-    dataList.value = res.rows || []
-    total.value = res.total || 0
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listReport(queryParams.value)
+    .then(response => {
+      const res = response.data || response
+      dataList.value = res.rows || []
+      total.value = res.total || 0
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 const data = reactive({

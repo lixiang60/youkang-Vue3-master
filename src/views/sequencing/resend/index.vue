@@ -19,18 +19,25 @@
       <el-col :span="1.5">
         <el-button type="danger" plain icon="SwitchButton" @click="handleReactionStop">反应停止</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
-
-
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -135,7 +142,7 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) { }
+  } catch (e) {}
 }
 
 // --- 3. Methods ---
@@ -143,13 +150,15 @@ if (savedColumns) {
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listResend(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listResend(queryParams.value)
+    .then(response => {
+      dataList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 搜索 & 操作 */
@@ -227,18 +236,26 @@ function submitForm() {
 
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
-    return delResend(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => { })
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(() => {
+      return delResend(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 function handleExport() {
-  proxy.download('sequencing/resend/export', {
-    ...queryParams.value
-  }, `resend_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'sequencing/resend/export',
+    {
+      ...queryParams.value
+    },
+    `resend_${new Date().getTime()}.xlsx`
+  )
 }
 
 /** 业务操作 */
@@ -264,10 +281,15 @@ onActivated(() => {
 })
 
 // --- 5. Watchers ---
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      if (col.key) cache[col.key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
 </script>

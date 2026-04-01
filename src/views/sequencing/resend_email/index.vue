@@ -1,10 +1,15 @@
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true" label-width="68px">
       <el-form-item label="名称" prop="name">
-        <el-input v-model="queryParams.name" placeholder="请输入名称" clearable style="width: 200px"
-          @keyup.enter="handleQuery" />
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入名称"
+          clearable
+          style="width: 200px"
+          @keyup.enter="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
@@ -23,16 +28,31 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="success" plain icon="Plus" @click="handleAdd"
-          v-hasPermi="['sequencing:resend_email:add']">新增</el-button>
+        <el-button v-hasPermi="['sequencing:resend_email:add']" type="success" plain icon="Plus" @click="handleAdd"
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['sequencing:resend_email:edit']">修改</el-button>
+        <el-button
+          v-hasPermi="['sequencing:resend_email:edit']"
+          type="primary"
+          plain
+          icon="Edit"
+          :disabled="single"
+          @click="handleUpdate"
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['sequencing:resend_email:remove']">删除</el-button>
+        <el-button
+          v-hasPermi="['sequencing:resend_email:remove']"
+          type="danger"
+          plain
+          icon="Delete"
+          :disabled="multiple"
+          @click="handleDelete"
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button plain icon="Search" @click="toggleSearchPanel">查询</el-button>
@@ -41,21 +61,34 @@
         <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="Download" @click="handleExport"
-          v-hasPermi="['sequencing:resend_email:export']">导出</el-button>
+        <el-button
+          v-hasPermi="['sequencing:resend_email:export']"
+          type="warning"
+          plain
+          icon="Download"
+          @click="handleExport"
+          >导出</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
-
-
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -91,7 +124,13 @@
 </template>
 
 <script setup name="Resend_email">
-import { listResend_email, getResend_email, addResend_email, updateResend_email, delResend_email } from '@/api/sequencing/resend_email'
+import {
+  listResend_email,
+  getResend_email,
+  addResend_email,
+  updateResend_email,
+  delResend_email
+} from '@/api/sequencing/resend_email'
 
 const searchRef = ref(null)
 const { proxy } = getCurrentInstance()
@@ -124,23 +163,26 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) { }
+  } catch (e) {}
 }
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      if (col.key) cache[col.key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
 
 // 检索配置
-const searchFields = ref([
-  { prop: 'name', label: '名称', type: 'input' }
-])
+const searchFields = ref([{ prop: 'name', label: '名称', type: 'input' }])
 
 function toggleSearchPanel() {
   searchRef.value?.toggleCollapse()
 }
-
 
 const data = reactive({
   form: {},
@@ -151,9 +193,7 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
   }
 })
 
@@ -162,13 +202,15 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listResend_email(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listResend_email(queryParams.value)
+    .then(response => {
+      dataList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 取消按钮 */
@@ -249,19 +291,27 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
-    return delResend_email(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => { })
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(function () {
+      return delResend_email(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/resend_email/export', {
-    ...queryParams.value
-  }, `resend_email_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'sequencing/resend_email/export',
+    {
+      ...queryParams.value
+    },
+    `resend_email_${new Date().getTime()}.xlsx`
+  )
 }
 
 onMounted(() => {

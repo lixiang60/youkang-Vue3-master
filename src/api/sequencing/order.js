@@ -52,7 +52,6 @@ export function delOrder(id) {
   })
 }
 
-
 // 导出订单管理
 export function exportOrder(query) {
   return request({
@@ -61,7 +60,6 @@ export function exportOrder(query) {
     params: query
   })
 }
-
 
 // 批量添加订单
 export function batchAddOrder(data) {
@@ -92,4 +90,3 @@ export function batchAddSampleByOrder(data) {
     data: data
   })
 }
-

@@ -1,6 +1,11 @@
 <template>
-  <el-dialog title="添加测序样品" :model-value="modelValue" width="900px" @update:model-value="handleUpdateVisible"
-    append-to-body>
+  <el-dialog
+    title="添加测序样品"
+    :model-value="modelValue"
+    width="900px"
+    append-to-body
+    @update:model-value="handleUpdateVisible"
+  >
     <!-- Order Info Section -->
     <el-form :model="orderInfo" label-width="100px" class="order-info-form">
       <el-row>
@@ -11,30 +16,38 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="客户ID：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerId : orderInfo.customerId"
-              readonly />
+            <el-input
+              :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerId : orderInfo.customerId"
+              readonly
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="客户姓名：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerName : orderInfo.customerName"
-              readonly />
+            <el-input
+              :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerName : orderInfo.customerName"
+              readonly
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="客户地址：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.address : orderInfo.customerAddress"
-              readonly />
+            <el-input
+              :value="orderInfo.customerInfo ? orderInfo.customerInfo.address : orderInfo.customerAddress"
+              readonly
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="客户等级：">
-            <el-input :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerLevel : orderInfo.customerLevel"
-              readonly />
+            <el-input
+              :value="orderInfo.customerInfo ? orderInfo.customerInfo.customerLevel : orderInfo.customerLevel"
+              readonly
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -117,7 +130,7 @@
     </el-form>
 
     <template #footer>
-      <div class="dialog-footer" style="text-align: center;">
+      <div class="dialog-footer" style="text-align: center">
         <el-button type="primary" @click="handleSubmit">确 定</el-button>
         <el-button @click="handleCancel">取 消</el-button>
       </div>
@@ -170,16 +183,19 @@ const rules = {
   // Add validation if needed, e.g. sampleId required?
 }
 
-watch(() => props.modelValue, (val) => {
-  console.log('Dialog Opening:', props)
-  if (val && props.orderId) {
-    console.log('Dialog Opening with Order ID:', props.orderId)
-    loadOrderInfo()
-    reset()
-  } else {
-    console.log('Dialog Opening but missing val or orderId', val, props.orderId)
+watch(
+  () => props.modelValue,
+  val => {
+    console.log('Dialog Opening:', props)
+    if (val && props.orderId) {
+      console.log('Dialog Opening with Order ID:', props.orderId)
+      loadOrderInfo()
+      reset()
+    } else {
+      console.log('Dialog Opening but missing val or orderId', val, props.orderId)
+    }
   }
-})
+)
 
 function loadOrderInfo() {
   if (props.orderRow && Object.keys(props.orderRow).length > 0) {
@@ -210,7 +226,7 @@ function handleCancel() {
 }
 
 function handleSubmit() {
-  formRef.value.validate((valid) => {
+  formRef.value.validate(valid => {
     if (valid) {
       const submitData = {
         ...form,

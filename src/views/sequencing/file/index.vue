@@ -11,31 +11,64 @@
         <el-button plain icon="Refresh" size="small" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success" plain icon="Plus" size="small" @click="handleAdd"
-          v-hasPermi="['sequencing:file:add']">新增</el-button>
+        <el-button v-hasPermi="['sequencing:file:add']" type="success" plain icon="Plus" size="small" @click="handleAdd"
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Edit" size="small" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['sequencing:file:edit']">修改</el-button>
+        <el-button
+          v-hasPermi="['sequencing:file:edit']"
+          type="primary"
+          plain
+          icon="Edit"
+          size="small"
+          :disabled="single"
+          @click="handleUpdate"
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="Download" size="small" @click="handleExport"
-          v-hasPermi="['sequencing:file:export']">导出</el-button>
+        <el-button
+          v-hasPermi="['sequencing:file:export']"
+          type="warning"
+          plain
+          icon="Download"
+          size="small"
+          @click="handleExport"
+          >导出</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="Delete" size="small" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['sequencing:file:remove']">删除</el-button>
+        <el-button
+          v-hasPermi="['sequencing:file:remove']"
+          type="danger"
+          plain
+          icon="Delete"
+          size="small"
+          :disabled="multiple"
+          @click="handleDelete"
+          >删除</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
-      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
-      :total="total" @selection-change="handleSelectionChange" />
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="well-form">
         <div class="form-row border-top">
           <div class="form-label">名称：</div>
@@ -106,7 +139,15 @@ const columns = ref([
 // 检索配置
 const searchFields = ref([
   { prop: 'name', label: '名称', type: 'input' },
-  { prop: 'status', label: '状态', type: 'select', options: [{ label: '正常', value: '0' }, { label: '停用', value: '1' }] }
+  {
+    prop: 'status',
+    label: '状态',
+    type: 'select',
+    options: [
+      { label: '正常', value: '0' },
+      { label: '停用', value: '1' }
+    ]
+  }
 ])
 
 // 列可见性缓存
@@ -119,13 +160,19 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) { }
+  } catch (e) {}
 }
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => { if (col.key) cache[col.key] = col.visible })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      if (col.key) cache[col.key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
 
 const data = reactive({
   form: {},
@@ -136,9 +183,7 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    name: [
-      { required: true, message: '名称不能为空', trigger: 'blur' }
-    ]
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
   }
 })
 
@@ -147,13 +192,15 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listFile(queryParams.value).then(response => {
-    dataList.value = response.rows
-    total.value = response.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listFile(queryParams.value)
+    .then(response => {
+      dataList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 function toggleSearchPanel() {
@@ -238,19 +285,27 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
-    return delFile(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => { })
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(function () {
+      return delFile(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('sequencing/file/export', {
-    ...queryParams.value
-  }, `file_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'sequencing/file/export',
+    {
+      ...queryParams.value
+    },
+    `file_${new Date().getTime()}.xlsx`
+  )
 }
 
 onMounted(() => {

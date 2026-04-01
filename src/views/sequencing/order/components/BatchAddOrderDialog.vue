@@ -1,12 +1,20 @@
 <template>
-  <el-dialog title="基因测序订单批量添加" :model-value="modelValue" width="800px" @update:model-value="handleUpdateVisible"
-    append-to-body>
+  <el-dialog
+    title="基因测序订单批量添加"
+    :model-value="modelValue"
+    width="800px"
+    append-to-body
+    @update:model-value="handleUpdateVisible"
+  >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" class="batch-add-form">
       <el-form-item label="客户选择：" prop="customerId">
         <el-select v-model="form.customerId" placeholder="请选择" filterable clearable style="width: 100%">
-          <el-option v-for="item in customerOptions" :key="item.customerId"
+          <el-option
+            v-for="item in customerOptions"
+            :key="item.customerId"
             :label="`${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
-            :value="item.customerId" />
+            :value="item.customerId"
+          />
         </el-select>
       </el-form-item>
 
@@ -33,9 +41,15 @@
 
       <el-form-item label="附件：" prop="attachment">
         <div class="upload-wrapper">
-          <el-input v-model="fileName" readonly placeholder="请选择文件" style="flex: 1; margin-right: 10px;" />
-          <el-upload ref="uploadRef" action="#" :show-file-list="false" :auto-upload="false"
-            :on-change="handleFileChange" accept=".xls,.xlsx">
+          <el-input v-model="fileName" readonly placeholder="请选择文件" style="flex: 1; margin-right: 10px" />
+          <el-upload
+            ref="uploadRef"
+            action="#"
+            :show-file-list="false"
+            :auto-upload="false"
+            :on-change="handleFileChange"
+            accept=".xls,.xlsx"
+          >
             <el-button>选择文件</el-button>
           </el-upload>
         </div>
@@ -47,7 +61,7 @@
     </el-form>
 
     <template #footer>
-      <div class="dialog-footer" style="text-align: center;">
+      <div class="dialog-footer" style="text-align: center">
         <el-button type="primary" @click="handleSubmit">确 定</el-button>
         <el-button @click="handleCancel">取 消</el-button>
       </div>
@@ -90,11 +104,14 @@ const rules = {
   attachment: [{ required: true, message: '请选择附件', trigger: 'change' }]
 }
 
-watch(() => props.modelValue, (val) => {
-  if (val) {
-    reset()
+watch(
+  () => props.modelValue,
+  val => {
+    if (val) {
+      reset()
+    }
   }
-})
+)
 
 function reset() {
   form.customerId = undefined
@@ -121,7 +138,7 @@ function handleCancel() {
 }
 
 function handleSubmit() {
-  formRef.value.validate((valid) => {
+  formRef.value.validate(valid => {
     if (valid) {
       if (!form.attachment) {
         ElMessage.error('请选择附件')

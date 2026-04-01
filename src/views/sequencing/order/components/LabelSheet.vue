@@ -1,23 +1,23 @@
 <template>
   <div class="label-sheet">
-     <div v-for="(label, index) in labels" :key="index" class="label-item">
-        <div class="label-top">
-           <span class="label-id">{{ label.id }}</span>
-           <span class="label-author">{{ label.author }}</span>
-        </div>
-        <div class="label-barcode">
-           <svg :id="'barcode-' + index"></svg>
-        </div>
-        <div class="label-code">
-           {{ label.code }}
-        </div>
-        <div class="label-info">
-           <span>{{ label.size }}</span>
-           <span :class="{'text-green': label.qc === 'A+', 'text-blue': label.qc === 'sp'}">{{ label.qc }}</span>
-           <span>{{ label.date }}</span>
-           <span class="label-status">质检</span>
-        </div>
-     </div>
+    <div v-for="(label, index) in labels" :key="index" class="label-item">
+      <div class="label-top">
+        <span class="label-id">{{ label.id }}</span>
+        <span class="label-author">{{ label.author }}</span>
+      </div>
+      <div class="label-barcode">
+        <svg :id="'barcode-' + index"></svg>
+      </div>
+      <div class="label-code">
+        {{ label.code }}
+      </div>
+      <div class="label-info">
+        <span>{{ label.size }}</span>
+        <span :class="{ 'text-green': label.qc === 'A+', 'text-blue': label.qc === 'sp' }">{{ label.qc }}</span>
+        <span>{{ label.date }}</span>
+        <span class="label-status">质检</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -35,17 +35,17 @@ const props = defineProps({
 function generateBarcodes() {
   nextTick(() => {
     props.labels.forEach((label, index) => {
-       try {
-         JsBarcode('#barcode-' + index, label.code, {
-           format: "CODE128",
-           displayValue: false,
-           height: 25,
-           margin: 0,
-           width: 1.5
-         })
-       } catch (e) {
-         console.warn('Barcode gen failed', e)
-       }
+      try {
+        JsBarcode('#barcode-' + index, label.code, {
+          format: 'CODE128',
+          displayValue: false,
+          height: 25,
+          margin: 0,
+          width: 1.5
+        })
+      } catch (e) {
+        console.warn('Barcode gen failed', e)
+      }
     })
   })
 }
@@ -54,9 +54,13 @@ onMounted(() => {
   generateBarcodes()
 })
 
-watch(() => props.labels, () => {
+watch(
+  () => props.labels,
+  () => {
     generateBarcodes()
-}, { deep: true })
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
@@ -107,9 +111,17 @@ watch(() => props.labels, () => {
   margin-top: 2px;
 }
 
-.text-green { color: green; font-weight: bold; }
-.text-blue { color: blue; font-weight: bold; }
-.label-status { font-weight: bold; }
+.text-green {
+  color: green;
+  font-weight: bold;
+}
+.text-blue {
+  color: blue;
+  font-weight: bold;
+}
+.label-status {
+  font-weight: bold;
+}
 
 @media print {
   .label-sheet {

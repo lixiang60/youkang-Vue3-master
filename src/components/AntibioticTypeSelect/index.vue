@@ -4,15 +4,10 @@
     placeholder="请选择抗生素类型"
     clearable
     filterable
-    @update:model-value="handleChange"
     style="width: 100%"
+    @update:model-value="handleChange"
   >
-    <el-option
-      v-for="item in options"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value"
-    />
+    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
   </el-select>
 </template>
 

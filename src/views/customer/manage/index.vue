@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" :inline="true">
       <el-form-item label="客户名称" prop="customerName">
         <el-input
           v-model="queryParams.customerName"
@@ -35,81 +35,58 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['customer:manage:add']"
-        >添加</el-button>
+        <el-button v-hasPermi="['customer:manage:add']" type="primary" plain icon="Plus" @click="handleAdd"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['customer:manage:edit']"
           type="success"
           plain
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['customer:manage:edit']"
-        >修改设置</el-button>
+          >修改设置</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button plain icon="Edit" @click="handleEdit">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          plain
-          icon="Edit"
-          @click="handleEdit"
-        >编辑</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
+          v-hasPermi="['customer:manage:remove']"
           type="danger"
           plain
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['customer:manage:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
+        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="ShoppingCart"
-          @click="handlePurchase"
-        >购买其他</el-button>
+        <el-button plain icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Star"
-          @click="handleTransferPoints"
-        >转至积分</el-button>
+        <el-button type="warning" plain icon="Star" @click="handleTransferPoints">转至积分</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Setting"
-          @click="handleContinueSetting"
-        >继续设置</el-button>
+        <el-button plain icon="Setting" @click="handleContinueSetting">继续设置</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
     <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
       :loading="loading"
       :data="dataList"
       :columns="columns"
       :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
       @pagination="getList"
       @selection-change="handleSelectionChange"
     >
@@ -118,27 +95,17 @@
       </template>
 
       <template #action="{ row }">
-        <el-button
-          link
-          type="primary"
-          icon="Edit"
-          @click="handleUpdate(row)"
-          v-hasPermi="['customer:manage:edit']"
-        >修改</el-button>
-        <el-button
-          link
-          type="primary"
-          icon="Delete"
-          @click="handleDelete(row)"
-          v-hasPermi="['customer:manage:remove']"
-        >删除</el-button>
+        <el-button v-hasPermi="['customer:manage:edit']" link type="primary" icon="Edit" @click="handleUpdate(row)"
+          >修改</el-button
+        >
+        <el-button v-hasPermi="['customer:manage:remove']" link type="primary" icon="Delete" @click="handleDelete(row)"
+          >删除</el-button
+        >
       </template>
     </dynamic-table>
 
-
-
     <!-- 添加或修改对话框 -->
-    <base-dialog :title="title" v-model="open" width="900px">
+    <base-dialog v-model="open" :title="title" width="900px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -147,7 +114,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-             <el-form-item label="所属公司：" prop="company">
+            <el-form-item label="所属公司：" prop="company">
               <el-select v-model="form.company" placeholder="请选择所属公司" style="width: 100%">
                 <el-option label="杭州有康" value="杭州有康" />
                 <el-option label="北京分公司" value="北京分公司" />
@@ -179,7 +146,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-             <el-form-item label="手机：" prop="phone">
+            <el-form-item label="手机：" prop="phone">
               <el-input v-model="form.phone" placeholder="请输入手机号码" maxlength="11">
                 <template #suffix>
                   <el-icon><More /></el-icon>
@@ -328,15 +295,9 @@ const data = reactive({
     status: undefined
   },
   rules: {
-    customerName: [
-      { required: true, message: '客户名称不能为空', trigger: 'blur' }
-    ],
-    phone: [
-      { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
-    ],
-    email: [
-      { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-    ]
+    customerName: [{ required: true, message: '客户名称不能为空', trigger: 'blur' }],
+    phone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }],
+    email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }]
   }
 })
 
@@ -345,13 +306,15 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listManage(queryParams.value).then(response => {
-    dataList.value = response.data.rows
-    total.value = response.data.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listManage(queryParams.value)
+    .then(response => {
+      dataList.value = response.data.rows
+      total.value = response.data.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 取消按钮 */
@@ -480,19 +443,27 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除选中的客户数据？').then(function() {
-    return delManage(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  proxy.$modal
+    .confirm('是否确认删除选中的客户数据？')
+    .then(function () {
+      return delManage(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('customer/manage/export', {
-    ...queryParams.value
-  }, `customer_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'customer/manage/export',
+    {
+      ...queryParams.value
+    },
+    `customer_${new Date().getTime()}.xlsx`
+  )
 }
 
 /** 打开课题组选择弹窗 */
@@ -510,4 +481,3 @@ onMounted(() => {
   getList()
 })
 </script>
-

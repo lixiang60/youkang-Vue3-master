@@ -6,19 +6,20 @@
       </el-tab-pane>
       <el-tab-pane label="字段信息" name="columnInfo">
         <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
-          <el-table-column label="序号" type="index" min-width="5%" class-name="allowDrag"/>
-          <el-table-column label="字段列名" prop="columnName" min-width="10%" :show-overflow-tooltip="true" class-name="allowDrag"/>
+          <el-table-column label="序号" type="index" min-width="5%" class-name="allowDrag" />
+          <el-table-column
+            label="字段列名"
+            prop="columnName"
+            min-width="10%"
+            :show-overflow-tooltip="true"
+            class-name="allowDrag"
+          />
           <el-table-column label="字段描述" min-width="10%">
             <template #default="scope">
               <el-input v-model="scope.row.columnComment"></el-input>
             </template>
           </el-table-column>
-          <el-table-column
-            label="物理类型"
-            prop="columnType"
-            min-width="10%"
-            :show-overflow-tooltip="true"
-          />
+          <el-table-column label="物理类型" prop="columnType" min-width="10%" :show-overflow-tooltip="true" />
           <el-table-column label="Java类型" min-width="11%">
             <template #default="scope">
               <el-select v-model="scope.row.javaType">
@@ -40,22 +41,22 @@
 
           <el-table-column label="插入" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isInsert"></el-checkbox>
+              <el-checkbox v-model="scope.row.isInsert" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="编辑" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isEdit"></el-checkbox>
+              <el-checkbox v-model="scope.row.isEdit" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="列表" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isList"></el-checkbox>
+              <el-checkbox v-model="scope.row.isList" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isQuery"></el-checkbox>
+              <el-checkbox v-model="scope.row.isQuery" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询方式" min-width="10%">
@@ -74,7 +75,7 @@
           </el-table-column>
           <el-table-column label="必填" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isRequired"></el-checkbox>
+              <el-checkbox v-model="scope.row.isRequired" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="显示类型" min-width="12%">
@@ -99,10 +100,11 @@
                   v-for="dict in dictOptions"
                   :key="dict.dictType"
                   :label="dict.dictName"
-                  :value="dict.dictType">
+                  :value="dict.dictType"
+                >
                   <span style="float: left">{{ dict.dictName }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ dict.dictType }}</span>
-              </el-option>
+                </el-option>
               </el-select>
             </template>
           </el-table-column>
@@ -113,7 +115,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
-      <div style="text-align: center;margin-left:-100px;margin-top:10px;">
+      <div style="text-align: center; margin-left: -100px; margin-top: 10px">
         <el-button type="primary" @click="submitForm()">提交</el-button>
         <el-button @click="close()">返回</el-button>
       </div>
@@ -122,17 +124,17 @@
 </template>
 
 <script setup name="GenEdit">
-import { getGenTable, updateGenTable } from "@/api/tool/gen"
-import { optionselect as getDictOptionselect } from "@/api/system/dict/type"
-import basicInfoForm from "./basicInfoForm"
-import genInfoForm from "./genInfoForm"
+import { getGenTable, updateGenTable } from '@/api/tool/gen'
+import { optionselect as getDictOptionselect } from '@/api/system/dict/type'
+import basicInfoForm from './basicInfoForm'
+import genInfoForm from './genInfoForm'
 import Sortable from 'sortablejs'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()
 
-const activeName = ref("columnInfo")
-const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px")
+const activeName = ref('columnInfo')
+const tableHeight = ref(document.documentElement.scrollHeight - 245 + 'px')
 const tables = ref([])
 const columns = ref([])
 const dictOptions = ref([])
@@ -160,7 +162,7 @@ function submitForm() {
         }
       })
     } else {
-      proxy.$modal.msgError("表单校验未通过，请重新检查提交内容")
+      proxy.$modal.msgError('表单校验未通过，请重新检查提交内容')
     }
   })
 }
@@ -174,11 +176,11 @@ function getFormPromise(form) {
 }
 
 function close() {
-  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } }
+  const obj = { path: '/tool/gen', query: { t: Date.now(), pageNum: route.query.pageNum } }
   proxy.$tab.closeOpenPage(obj)
 }
 
-(() => {
+;(() => {
   const tableId = route.params && route.params.tableId
   if (tableId) {
     // 获取表详细信息
@@ -198,8 +200,8 @@ function close() {
 onMounted(() => {
   const element = document.querySelector('.el-table__body > tbody')
   Sortable.create(element, {
-    handle: ".allowDrag",
-    onEnd: (evt) => {
+    handle: '.allowDrag',
+    onEnd: evt => {
       const targetRow = columns.value.splice(evt.oldIndex, 1)[0]
       columns.value.splice(evt.newIndex, 0, targetRow)
       for (const index in columns.value) {

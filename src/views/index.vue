@@ -13,7 +13,7 @@
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="24" :lg="12">
         <el-card class="update-log">
-          <template v-slot:header>
+          <template #header>
             <div class="clearfix">
               <span>更新日志</span>
             </div>
@@ -60,7 +60,7 @@ const version = ref('1.0.0')
     margin: 0;
   }
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'open sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 13px;
   color: #676a6c;
   overflow-x: hidden;
@@ -100,4 +100,3 @@ const version = ref('1.0.0')
   }
 }
 </style>
-

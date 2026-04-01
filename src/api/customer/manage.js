@@ -51,4 +51,3 @@ export function exportManage(query) {
     params: query
   })
 }
-    

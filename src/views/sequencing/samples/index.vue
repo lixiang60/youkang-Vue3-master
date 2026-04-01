@@ -5,7 +5,9 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate">编辑</el-button>
+        <el-button size="small" type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
@@ -14,21 +16,25 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="EditPen" @click="handleOriginalConcentration">原浓度</el-button>
+        <el-button size="small" type="primary" plain icon="EditPen" @click="handleOriginalConcentration"
+          >原浓度</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" plain icon="DocumentCopy" @click="handleBatchEdit">批量编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple"
-          @click="handleDelete">删除</el-button>
+        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          >删除</el-button
+        >
       </el-col>
 
       <!-- 批量清理下拉 -->
       <el-col :span="1.5">
         <el-dropdown trigger="click">
-          <el-button size="small" type="danger" plain icon="Brush">数据清理<el-icon
-              class="el-icon--right"><arrow-down /></el-icon></el-button>
+          <el-button size="small" type="danger" plain icon="Brush"
+            >数据清理<el-icon class="el-icon--right"><arrow-down /></el-icon
+          ></el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item icon="CircleClose" @click="handleClearWellNo">清除孔号</el-dropdown-item>
@@ -43,8 +49,9 @@
       <!-- 流程操作下拉 -->
       <el-col :span="1.5">
         <el-dropdown trigger="click">
-          <el-button size="small" type="success" plain icon="Operation">流程操作<el-icon
-              class="el-icon--right"><arrow-down /></el-icon></el-button>
+          <el-button size="small" type="success" plain icon="Operation"
+            >流程操作<el-icon class="el-icon--right"><arrow-down /></el-icon
+          ></el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item icon="Promotion" @click.stop="handleShowReturnDialog">安排返还</el-dropdown-item>
@@ -63,8 +70,9 @@
       <!-- 报表/监控下拉 -->
       <el-col :span="1.5">
         <el-dropdown trigger="click">
-          <el-button size="small" type="info" plain icon="Monitor">统计/监控<el-icon
-              class="el-icon--right"><arrow-down /></el-icon></el-button>
+          <el-button size="small" type="info" plain icon="Monitor"
+            >统计/监控<el-icon class="el-icon--right"><arrow-down /></el-icon
+          ></el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item icon="DataLine" @click="handleWeeklyReport">周报</el-dropdown-item>
@@ -75,16 +83,25 @@
         </el-dropdown>
       </el-col>
 
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList"
-      :columns="columns" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
-      @pagination="getList" @selection-change="handleSelectionChange" />
+    <dynamic-table
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      v-loading="loading"
+      size="small"
+      :header-cell-style="{ fontSize: '12px' }"
+      :data="dataList"
+      :columns="columns"
+      :total="total"
+      @pagination="getList"
+      @selection-change="handleSelectionChange"
+    />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" width="1000px" append-to-body top="10vh">
+    <el-dialog v-model="open" :title="title" width="1000px" append-to-body top="10vh">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -123,7 +140,6 @@
           </el-col>
         </el-row>
         <el-row :gutter="20">
-
           <el-col :span="12">
             <el-form-item label="样品编号：" prop="sampleId">
               <el-input v-model="form.sampleId" placeholder="请输入样品编号" />
@@ -233,32 +249,42 @@
     <!-- 设置原浓度对话框 (仿制截图样式) -->
     <el-dialog v-model="concOpen" width="750px" append-to-body top="10vh">
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #409EFF; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
             <Edit />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">设置原浓度</span>
+          <span style="font-weight: bold; font-size: 16px">设置原浓度</span>
         </div>
       </template>
-      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form"
-        style="min-height: 350px;">
+      <el-form
+        ref="concFormRef"
+        :model="concForm"
+        :rules="concRules"
+        label-width="0"
+        class="well-form"
+        style="min-height: 350px"
+      >
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
-              :
-              '未选择'
-              }}</span>
+            <span style="font-size: 14px; color: #333">{{
+              selectedProduceIds.length > 0 ? selectedProduceIds.join(', ') : '未选择'
+            }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">原浓度：</div>
+          <div class="form-label" style="width: 140px">原浓度：</div>
           <div class="form-content">
-            <el-form-item prop="originConcentration" label-width="0" style="margin-bottom: 0;">
-              <el-select v-model="concForm.originConcentration" placeholder="请选择或输入原浓度" filterable allow-create
-                style="width: 280px">
+            <el-form-item prop="originConcentration" label-width="0" style="margin-bottom: 0">
+              <el-select
+                v-model="concForm.originConcentration"
+                placeholder="请选择或输入原浓度"
+                filterable
+                allow-create
+                style="width: 280px"
+              >
                 <el-option label="0.3" value="0.3" />
                 <el-option label="0.5" value="0.5" />
                 <el-option label="0.7" value="0.7" />
@@ -268,7 +294,7 @@
                 <el-option label="3.0" value="3.0" />
                 <el-option label="5.0" value="5.0" />
                 <template #prefix>
-                  <el-icon style="color: #E6A23C;">
+                  <el-icon style="color: #e6a23c">
                     <WarningFilled />
                   </el-icon>
                 </template>
@@ -277,9 +303,9 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 180px;">
-          <div class="form-label" style="width: 140px; height: 100%;">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center;">
+        <div class="form-row border-bottom" style="height: 180px">
+          <div class="form-label" style="width: 140px; height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
             <el-input v-model="concForm.remark" type="textarea" :rows="6" placeholder="请输入备注内容" />
           </div>
         </div>
@@ -295,37 +321,43 @@
     <!-- 安排样品返还对话框 (Doc 2.9 对接) -->
     <el-dialog v-model="returnOpen" width="700px" append-to-body top="10vh">
       <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0;">
-          <el-icon style="margin-right: 8px; color: #E6A23C; font-size: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
             <EditPen />
           </el-icon>
-          <span style="font-weight: bold; font-size: 16px;">安排样品返还</span>
+          <span style="font-weight: bold; font-size: 16px">安排样品返还</span>
         </div>
       </template>
-      <el-form ref="returnFormRef" :model="returnForm" :rules="returnRules" label-width="0" class="well-form"
-        style="min-height: 350px;">
+      <el-form
+        ref="returnFormRef"
+        :model="returnForm"
+        :rules="returnRules"
+        label-width="0"
+        class="well-form"
+        style="min-height: 350px"
+      >
         <!-- 生产编号 -->
         <div class="form-row border-top">
-          <div class="form-label" style="width: 140px;">生产编号：</div>
+          <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">
-              选中数量：<span style="font-weight: bold;">{{ selectedProduceIds.length }}</span>，选中生产编号：{{
-                selectedProduceIds.join(',') }}
+            <span style="font-size: 13px; color: #f56c6c">
+              选中数量：<span style="font-weight: bold">{{ selectedProduceIds.length }}</span
+              >，选中生产编号：{{ selectedProduceIds.join(',') }}
             </span>
           </div>
         </div>
         <!-- 订单号 -->
         <div class="form-row">
-          <div class="form-label" style="width: 140px;">订单号：</div>
+          <div class="form-label" style="width: 140px">订单号：</div>
           <div class="form-content">
-            <span style="font-size: 13px; color: #F56C6C;">{{ returnForm.orderId }}</span>
+            <span style="font-size: 13px; color: #f56c6c">{{ returnForm.orderId }}</span>
           </div>
         </div>
         <!-- 返回类型 -->
         <div class="form-row border-bottom">
-          <div class="form-label" style="width: 140px;">返回类型：</div>
+          <div class="form-label" style="width: 140px">返回类型：</div>
           <div class="form-content">
-            <el-form-item prop="reimburseType" label-width="0" style="margin-bottom: 0;">
+            <el-form-item prop="reimburseType" label-width="0" style="margin-bottom: 0">
               <el-select v-model="returnForm.reimburseType" placeholder="请选择" style="width: 250px">
                 <el-option label="安排返质粒" value="安排返质粒" />
                 <el-option label="安排返菌液" value="安排返菌液" />
@@ -342,7 +374,7 @@
                 <el-option label="安排返还硅胶垫" value="安排返还硅胶垫" />
                 <el-option label="安排返质粒菌液引物" value="安排返质粒菌液引物" />
                 <template #prefix>
-                  <el-icon style="color: #F56C6C;">
+                  <el-icon style="color: #f56c6c">
                     <WarningFilled />
                   </el-icon>
                 </template>
@@ -491,7 +523,7 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) { }
+  } catch (e) {}
 }
 
 // --- 3. Computed ---
@@ -502,13 +534,15 @@ const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceI
 /** 查询列表 */
 function getList() {
   loading.value = true
-  listSamples(queryParams.value).then(response => {
-    dataList.value = response.data.rows
-    total.value = response.data.total
-    loading.value = false
-  }).catch(() => {
-    loading.value = false
-  })
+  listSamples(queryParams.value)
+    .then(response => {
+      dataList.value = response.data.rows
+      total.value = response.data.total
+      loading.value = false
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 /** 搜索 & 操作 */
@@ -608,18 +642,26 @@ function submitForm() {
 
 function handleDelete(row) {
   const idList = row.produceId || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(() => {
-    return delSamples(idList)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => { })
+  proxy.$modal
+    .confirm('是否确认删除编号为"' + idList + '"的数据项？')
+    .then(() => {
+      return delSamples(idList)
+    })
+    .then(() => {
+      getList()
+      proxy.$modal.msgSuccess('删除成功')
+    })
+    .catch(() => {})
 }
 
 function handleExport() {
-  proxy.download('order/sample/export', {
-    ...queryParams.value
-  }, `samples_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'order/sample/export',
+    {
+      ...queryParams.value
+    },
+    `samples_${new Date().getTime()}.xlsx`
+  )
 }
 
 /** 业务操作 - 原浓度设置 */
@@ -684,21 +726,51 @@ function submitReturnForm() {
 }
 
 /** 占位操作集锦 */
-function handleClearWellNo() { proxy.$modal.msg('功能开发中...') }
-function handleClearConcentration() { proxy.$modal.msg('功能开发中...') }
-function handleClearTemplate() { proxy.$modal.msg('功能开发中...') }
-function handleClearReport() { proxy.$modal.msg('功能开发中...') }
-function handleWeeklyReport() { proxy.$modal.msg('功能开发中...') }
-function handleSelfProvidedPrimer() { proxy.$modal.msg('功能开发中...') }
-function handleTemplateVolumeMonitor() { proxy.$modal.msg('功能开发中...') }
-function handleBatchEdit() { proxy.$modal.msg('功能开发中...') }
-function handleAddTest() { proxy.$modal.msg('功能开发中...') }
-function handleLinkPrimer() { proxy.$modal.msg('功能开发中...') }
-function handleAddTestTemplate() { proxy.$modal.msg('功能开发中...') }
-function handleSupplementLabel() { proxy.$modal.msg('功能开发中...') }
-function handleReEnable() { proxy.$modal.msg('功能开发中...') }
-function handleAddPrimer() { proxy.$modal.msg('功能开发中...') }
-function handleSampleInfo() { proxy.$modal.msg('功能开发中...') }
+function handleClearWellNo() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleClearConcentration() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleClearTemplate() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleClearReport() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleWeeklyReport() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleSelfProvidedPrimer() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleTemplateVolumeMonitor() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleBatchEdit() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleAddTest() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleLinkPrimer() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleAddTestTemplate() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleSupplementLabel() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleReEnable() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleAddPrimer() {
+  proxy.$modal.msg('功能开发中...')
+}
+function handleSampleInfo() {
+  proxy.$modal.msg('功能开发中...')
+}
 
 // --- 5. Lifecycle Hooks ---
 onMounted(() => {
@@ -710,15 +782,18 @@ onActivated(() => {
 })
 
 // --- 6. Watchers ---
-watch(columns, (newVal) => {
-  const cache = {}
-  newVal.forEach(col => {
-    const key = col.key || col.prop || col.type
-    if (key) cache[key] = col.visible
-  })
-  localStorage.setItem(cacheKey, JSON.stringify(cache))
-}, { deep: true })
-
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key) cache[key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
