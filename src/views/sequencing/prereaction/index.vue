@@ -61,7 +61,7 @@
           <div class="form-label">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #F56C6C; font-weight: bold;">{{ ids.length
-                }}</span>，选中生产编号：{{ ids.join(', ') }}</span>
+            }}</span>，选中生产编号：{{ ids.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -118,7 +118,8 @@
         <div class="form-row border-top">
           <div class="form-label">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">1</span>，选中生产编号：{{ holeForm.produceId }}</span>
+            <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">1</span>，选中生产编号：{{
+              holeForm.produceId }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -175,7 +176,7 @@
           <el-button type="primary" icon="Search" @click="handlePrintBdt">查询</el-button>
         </el-form-item>
       </el-form>
-      
+
       <div v-if="bdtList.length > 0" class="report-container">
         <table class="report-table">
           <thead>
@@ -255,9 +256,9 @@
 
 <script setup name="Prereaction">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
-import { 
-  listPrereaction, 
-  reactionPreSendBack 
+import {
+  listPrereaction,
+  reactionPreSendBack
 } from '@/api/sequencing/prereaction'
 import {
   updateReactionPlate,
@@ -476,7 +477,7 @@ function handleInsufficient() {
   }).then(() => {
     proxy.$modal.msgSuccess('操作成功')
     getList()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 const sendBackOpen = ref(false)
@@ -504,6 +505,10 @@ function submitSendBack() {
 }
 
 onMounted(() => {
+  getList()
+})
+
+onActivated(() => {
   getList()
 })
 </script>

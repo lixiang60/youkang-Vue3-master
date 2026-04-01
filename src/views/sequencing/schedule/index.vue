@@ -141,7 +141,7 @@
           <div class="form-label">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #F56C6C; font-weight: bold;">{{ selectedRows.length
-            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -213,7 +213,7 @@
           <div class="form-label">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">{{ selectedRows.length
-            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row">
@@ -298,7 +298,7 @@
           <div class="form-label" style="width: 140px;">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #F56C6C; font-weight: bold;">{{ selectedRows.length
-            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <div class="form-row border-bottom" style="height: 180px;">
@@ -827,16 +827,10 @@ onMounted(() => {
   getList()
 })
 
-// onActivated(() => {
-//   getList()
-// })
-
-// 监听路由变化，确保菜单点击时强制刷新
-watch(() => route.path, (newPath) => {
-  if (newPath === '/sequencing/schedule') {
-    getList()
-  }
+onActivated(() => {
+  getList()
 })
+
 </script>
 
 <style scoped>

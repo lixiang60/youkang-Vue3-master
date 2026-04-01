@@ -11,17 +11,21 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="Message" @click="handleSendEmail" :disabled="multiple">邮件发送</el-button>
+        <el-button size="small" type="success" plain icon="Message" @click="handleSendEmail"
+          :disabled="multiple">邮件发送</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="CircleClose" @click="handleIgnoreEmail" :disabled="multiple">邮件忽略</el-button>
+        <el-button size="small" type="warning" plain icon="CircleClose" @click="handleIgnoreEmail"
+          :disabled="multiple">邮件忽略</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <!-- 数据列表页眉 -->
     <div class="table-header-bar">
-      <el-icon style="margin-right: 5px; color: #409EFF;"><List /></el-icon> 数据列表
+      <el-icon style="margin-right: 5px; color: #409EFF;">
+        <List />
+      </el-icon> 数据列表
     </div>
 
     <!-- 数据表格 -->
@@ -55,10 +59,10 @@
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
-import { 
+import {
   listEmailProduce,
-  addEmail, 
-  updateEmail, 
+  addEmail,
+  updateEmail,
   delEmail
 } from '@/api/sequencing/email'
 
@@ -226,6 +230,10 @@ function handleExport() {
 }
 
 onMounted(() => {
+  getList()
+})
+
+onActivated(() => {
   getList()
 })
 </script>

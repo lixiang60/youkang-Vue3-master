@@ -249,7 +249,7 @@
             <span style="font-size: 14px; color: #333;">{{ selectedProduceIds.length > 0 ? selectedProduceIds.join(', ')
               :
               '未选择'
-            }}</span>
+              }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
@@ -699,7 +699,7 @@ function submitReturnForm() {
         produceIdList: selectedProduceIds.value,
         reimburseType: returnForm.reimburseType
       }
-      
+
       arrangeReturn(data).then(response => {
         proxy.$modal.msgSuccess('安排成功')
         returnOpen.value = false
@@ -719,6 +719,10 @@ function handleReEnable() { proxy.$modal.msg('功能开发中...') }
 function handleAddPrimer() { proxy.$modal.msg('功能开发中...') }
 function handleSampleInfo() { proxy.$modal.msg('功能开发中...') }
 onMounted(() => {
+  getList()
+})
+
+onActivated(() => {
   getList()
 })
 </script>

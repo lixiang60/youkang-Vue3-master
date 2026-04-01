@@ -300,6 +300,9 @@ function handleReturnLabel() { proxy.$modal.msg('返还标签生成开发中...'
 onMounted(() => {
   getList()
 })
+onActivated(() => {
+  getList()
+})
 </script>
 
 <style scoped>

@@ -156,7 +156,7 @@
           <div class="form-label" style="width: 140px;">生产编号：</div>
           <div class="form-content">
             <span style="font-size: 13px;">选中数量：<span style="color: #409EFF; font-weight: bold;">{{ selectedRows.length
-                }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
+            }}</span>，选中生产编号：{{ selectedProduceIds.join(', ') }}</span>
           </div>
         </div>
         <!-- 原浓度输入 -->
@@ -956,15 +956,8 @@ onMounted(() => {
   getList()
 })
 
-// onActivated(() => {
-//   getList()
-// })
-
-// 监听路由变化，确保菜单点击时强制刷新
-watch(() => route.path, (newPath) => {
-  if (newPath === '/sequencing/production') {
-    getList()
-  }
+onActivated(() => {
+  getList()
 })
 </script>
 

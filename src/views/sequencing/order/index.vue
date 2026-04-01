@@ -547,6 +547,10 @@ onMounted(() => {
     customerOptions.value = response.data.records
   })
 })
+
+onActivated(() => {
+  getList()
+})
 </script>
 
 

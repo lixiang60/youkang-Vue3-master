@@ -5,80 +5,38 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['sequencing:primer:edit']"
-        >编辑</el-button>
+        <el-button type="primary" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['sequencing:primer:edit']">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['sequencing:primer:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['sequencing:primer:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Search"
-          @click="toggleSearchPanel"
-        >查询</el-button>
+        <el-button plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Refresh"
-          @click="handleRefresh"
-        >刷新</el-button>
+        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Upload"
-          @click="handleImport"
-          v-hasPermi="['sequencing:primer:import']"
-        >导入</el-button>
+        <el-button type="success" plain icon="Upload" @click="handleImport"
+          v-hasPermi="['sequencing:primer:import']">导入</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Collection"
-          @click="handlePrimerTubeLabel"
-        >引物管标签</el-button>
+        <el-button plain icon="Collection" @click="handlePrimerTubeLabel">引物管标签</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          plain
-          icon="Picture"
-          @click="handleImageSettings"
-        >图像设置</el-button>
+        <el-button plain icon="Picture" @click="handleImageSettings">图像设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!-- 数据表格 -->
-    <dynamic-table
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-      size="small"
-      :header-cell-style="{ fontSize: '12px' }"
-      v-loading="loading" 
-      :data="dataList" 
-      :columns="columns"
-      :total="total"
-      @selection-change="handleSelectionChange"
-    />
+    <dynamic-table v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList"
+      size="small" :header-cell-style="{ fontSize: '12px' }" v-loading="loading" :data="dataList" :columns="columns"
+      :total="total" @selection-change="handleSelectionChange" />
 
-    
+
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="600px" append-to-body>
@@ -167,7 +125,7 @@ if (savedColumns) {
       const key = col.key || col.prop || col.type
       if (key && cache[key] !== undefined) col.visible = cache[key]
     })
-  } catch (e) {}
+  } catch (e) { }
 }
 watch(columns, (newVal) => {
   const cache = {}
@@ -294,12 +252,12 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const idList = row.id || ids.value
-  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除编号为"' + idList + '"的数据项？').then(function () {
     return delPrimer(idList)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 /** 导出按钮操作 */
@@ -316,12 +274,9 @@ function handleImageSettings() { proxy.$modal.msg('功能开发中...') }
 function handleEditPlateWell() { proxy.$modal.msg('功能开发中...') }
 
 onMounted(() => {
-  // TODO: 等后端接口实现后再启用
-  // getList()
-  
-  // 临时模拟数据
-  loading.value = false
-  dataList.value = []
-  total.value = 0
+  getList()
+})
+onActivated(() => {
+  getList()
 })
 </script>

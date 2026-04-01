@@ -1032,6 +1032,10 @@ function handleNotImplemented() {
 onMounted(() => {
   getList()
 })
+
+onActivated(() => {
+  getList()
+})
 </script>
 
 <style scoped>

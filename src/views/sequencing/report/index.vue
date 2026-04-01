@@ -73,7 +73,7 @@
         <div class="form-row">
           <div class="form-label">原浓度：</div>
           <div class="form-content">
-             <el-input v-model="statusForm.originConcentration" placeholder="请输入原浓度" style="width: 250px" />
+            <el-input v-model="statusForm.originConcentration" placeholder="请输入原浓度" style="width: 250px" />
           </div>
         </div>
         <!-- 异常原因 -->
@@ -156,13 +156,26 @@
         <table class="report-table">
           <thead>
             <tr>
-              <th>生产编号</th><th>订单号</th><th>样品编号</th><th>板号</th><th>孔号</th><th>引物</th><th>报告状态</th><th>备注</th>
+              <th>生产编号</th>
+              <th>订单号</th>
+              <th>样品编号</th>
+              <th>板号</th>
+              <th>孔号</th>
+              <th>引物</th>
+              <th>报告状态</th>
+              <th>备注</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in dbtList" :key="item.produceId">
-              <td>{{ item.produceId }}</td><td>{{ item.orderId }}</td><td>{{ item.sampleId }}</td><td>{{ item.plateNo }}</td>
-              <td>{{ item.holeNo }}</td><td>{{ item.primer }}</td><td>{{ item.reportStatus }}</td><td>{{ item.remark }}</td>
+              <td>{{ item.produceId }}</td>
+              <td>{{ item.orderId }}</td>
+              <td>{{ item.sampleId }}</td>
+              <td>{{ item.plateNo }}</td>
+              <td>{{ item.holeNo }}</td>
+              <td>{{ item.primer }}</td>
+              <td>{{ item.reportStatus }}</td>
+              <td>{{ item.remark }}</td>
             </tr>
           </tbody>
         </table>
@@ -180,10 +193,10 @@
 
 <script setup name="Report">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
-import { 
-  listReport, 
-  updateReportStatus, 
-  addCapillary 
+import {
+  listReport,
+  updateReportStatus,
+  addCapillary
 } from '@/api/sequencing/report'
 import { getSequencingBDT } from '@/api/sequencing/reaction'
 import DynamicTable from '@/components/DynamicTable/index.vue'
@@ -345,6 +358,10 @@ function handleNotImplemented() {
 }
 
 onMounted(() => {
+  getList()
+})
+
+onActivated(() => {
   getList()
 })
 </script>

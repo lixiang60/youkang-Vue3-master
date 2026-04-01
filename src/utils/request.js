@@ -36,10 +36,11 @@ service.interceptors.request.use(config => {
     config.params = {}
     config.url = url
   }
-  if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+  const methods = ['post', 'put', 'get', 'delete']
+  if (!isRepeatSubmit && methods.includes(config.method.toLowerCase())) {
     const requestObj = {
       url: config.url,
-      data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
+      data: config.data ? (typeof config.data === 'object' ? JSON.stringify(config.data) : config.data) : '',
       time: new Date().getTime()
     }
     const requestSize = Object.keys(JSON.stringify(requestObj)).length // 请求数据大小
@@ -48,20 +49,20 @@ service.interceptors.request.use(config => {
       console.warn(`[${config.url}]: ` + '请求数据大小超出允许的5M限制，无法进行防重复提交验证。')
       return config
     }
-    const sessionObj = cache.session.getJSON('sessionObj')
+    const requestKey = `sessionObj:${config.url}`
+    const sessionObj = cache.session.getJSON(requestKey)
     if (sessionObj === undefined || sessionObj === null || sessionObj === '') {
-      cache.session.setJSON('sessionObj', requestObj)
+      cache.session.setJSON(requestKey, requestObj)
     } else {
-      const s_url = sessionObj.url                // 请求地址
       const s_data = sessionObj.data              // 请求数据
       const s_time = sessionObj.time              // 请求时间
       const interval = 1000                       // 间隔时间(ms)，小于此时间视为重复提交
-      if (s_data === requestObj.data && requestObj.time - s_time < interval && s_url === requestObj.url) {
+      if (s_data === requestObj.data && requestObj.time - s_time < interval) {
         const message = '数据正在处理，请勿重复提交'
-        console.warn(`[${s_url}]: ` + message)
+        console.warn(`[${config.url}]: ` + message)
         return Promise.reject(new Error(message))
       } else {
-        cache.session.setJSON('sessionObj', requestObj)
+        cache.session.setJSON(requestKey, requestObj)
       }
     }
   }
