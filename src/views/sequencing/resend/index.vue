@@ -5,19 +5,19 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="Key" @click="handleAudit">审核</el-button>
+        <el-button size="small" type="warning" plain icon="Key" @click="handleAudit">审核</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="DocumentAdd" @click="handleAddPlateNo">添加板号</el-button>
+        <el-button size="small" plain icon="DocumentAdd" @click="handleAddPlateNo">添加板号</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="SwitchButton" @click="handleReactionStop">反应停止</el-button>
+        <el-button size="small" type="danger" plain icon="SwitchButton" @click="handleReactionStop">反应停止</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
     </el-row>
@@ -37,35 +37,40 @@
     />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" prop="name">
+    <el-dialog v-model="open" :title="title" width="600px" append-to-body>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="0" class="well-form">
+        <div class="form-row border-top">
+          <div class="form-label">名称：</div>
+          <div class="form-content">
+            <el-form-item prop="name" label-width="0">
               <el-input v-model="form.name" placeholder="请输入名称" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态" prop="status">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">状态：</div>
+          <div class="form-content">
+            <el-form-item prop="status" label-width="0">
               <el-radio-group v-model="form.status">
                 <el-radio label="0">正常</el-radio>
                 <el-radio label="1">停用</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          </div>
+        </div>
+        <div class="form-row border-bottom" style="height: 120px">
+          <div class="form-label" style="height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%">
+            <el-form-item prop="remark" label-width="0" style="height: 100%">
+              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入内容" />
             </el-form-item>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="success" @click="submitForm">确 定</el-button>
+          <el-button type="danger" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -297,3 +302,5 @@ watch(
   { deep: true }
 )
 </script>
+
+<style scoped></style>

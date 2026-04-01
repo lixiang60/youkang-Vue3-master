@@ -1,0 +1,68 @@
+/**
+ * 有康科技 - 全局公共业务样式
+ */
+
+// 数据列表页眉
+.table-header-bar {
+  background: #f5f7fa;
+  padding: 10px;
+  border: 1px solid #dcdfe6;
+  border-bottom: none;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  color: #333;
+}
+
+// 全局表格边框统一
+.el-table {
+  border: 1px solid #dcdfe6;
+}
+
+// Premium 类表格表单布局 (用于 Dialog 内)
+.well-form {
+  border: 1px solid #dcdfe6;
+  
+  .el-form-item {
+    margin-bottom: 0px !important;
+  }
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ebeef5;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.border-top {
+    border-top: 1px solid #ebeef5;
+  }
+
+  &.border-bottom {
+    border-bottom: 1px solid #ebeef5;
+  }
+}
+
+.form-label {
+  width: 120px;
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  font-size: 13px;
+  border-right: 1px solid #ebeef5;
+  background-color: #f8f9fa;
+  color: #606266;
+}
+
+.form-content {
+  flex: 1;
+  padding: 10px 15px;
+}

@@ -74,34 +74,37 @@
     />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="模板排版号" prop="templateNumber">
+    <el-dialog v-model="open" :title="title" width="600px" append-to-body>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="0" class="well-form">
+        <div class="form-row border-top">
+          <div class="form-label">模板排版号：</div>
+          <div class="form-content">
+            <el-form-item prop="templateNumber" label-width="0">
               <el-input v-model="form.templateNumber" placeholder="请输入模板排版号" />
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="订单号" prop="orderId">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">订单号：</div>
+          <div class="form-content">
+            <el-form-item prop="orderId" label-width="0">
               <el-input v-model="form.orderId" placeholder="请输入订单号" />
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          </div>
+        </div>
+        <div class="form-row border-bottom" style="height: 120px">
+          <div class="form-label" style="height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%">
+            <el-form-item prop="remark" label-width="0" style="height: 100%">
+              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入内容" />
             </el-form-item>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="success" @click="submitForm">确 定</el-button>
+          <el-button type="danger" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -116,40 +119,23 @@ import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 const cacheKey = 'sequencing_template_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { key: 'templateNumber', label: '模板排版号', width: 120, fixed: true, sortable: true, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'sampleId', label: '样品编号', width: 120, fixed: true, visible: true },
-  { key: 'sampleType', label: '样品类型', width: 80, visible: true },
-  { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
-  { key: 'carrierName', label: '载体名称', width: 100, visible: true },
-  { key: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
-  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
-  { key: 'testResult', label: '是否测通', width: 80, visible: true },
-  { key: 'originConcentration', label: '原浓度', width: 80, visible: true },
-  { key: 'templatePlateNo', label: '模板板号', width: 80, visible: true },
-  { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
-  { key: 'performance', label: '完成情况', width: 100, visible: true },
-  { key: 'returnState', label: '返回状态', width: 80, visible: true },
-  { key: 'flowName', label: '流程名称', width: 120, visible: true },
-  { key: 'createUser', label: '创建人', width: 100, visible: true },
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
+  { key: 'templateNumber', label: '模板排版号', width: 150, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', width: 160, visible: true },
+  { key: 'plateType', label: '板子类型', width: 100, visible: true },
+  { key: 'plateLayout', label: '板孔布局', width: 100, visible: true },
+  { key: 'createTime', label: '创建时间', width: 160, visible: true }
 ])
 
 const searchFields = ref([
-  { prop: 'orderId', label: '订单号', type: 'input' },
-  { prop: 'sampleId', label: '样品编号', type: 'input' },
-  { prop: 'customerName', label: '客户姓名', type: 'input' }
+  { prop: 'templateNumber', label: '模板排版号', type: 'input' },
+  { prop: 'orderId', label: '订单号', type: 'input' }
 ])
 
-// --- 2. State & Forms ---
+// --- 2. State ---
 const searchRef = ref(null)
 const dataList = ref([])
 const total = ref(0)
@@ -166,10 +152,8 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    orderId: undefined,
-    sampleId: undefined,
-    customerName: undefined,
-    returnState: undefined
+    templateNumber: undefined,
+    orderId: undefined
   },
   rules: {
     templateNumber: [{ required: true, message: '模板排版号不能为空', trigger: 'blur' }]
@@ -197,8 +181,8 @@ function getList() {
   loading.value = true
   listTemplate(queryParams.value)
     .then(response => {
-      dataList.value = response.data.rows
-      total.value = response.data.total
+      dataList.value = response.rows
+      total.value = response.total
       loading.value = false
     })
     .catch(() => {
@@ -330,9 +314,4 @@ watch(
 )
 </script>
 
-<style scoped>
-:deep(.el-table .el-table__header-wrapper th) {
-  font-size: 12px !important;
-  color: #606266 !important;
-}
-</style>
+<style scoped></style>

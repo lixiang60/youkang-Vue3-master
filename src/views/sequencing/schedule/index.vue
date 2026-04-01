@@ -971,42 +971,6 @@ watch(
   line-height: 1.2;
 }
 
-.form-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.form-label {
-  width: 140px;
-  background-color: #f8f9fa;
-  padding: 10px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  font-weight: bold;
-  font-size: 13px;
-  border-right: 1px solid #ebeef5;
-}
-
-.form-content {
-  flex: 1;
-  padding: 10px 15px;
-}
-
-.border-top {
-  border-top: 1px solid #ebeef5;
-}
-
-.border-bottom {
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.well-form .el-form-item) {
-  margin-bottom: 0px;
-}
-
 .well-pos-blue {
   color: blue;
   font-weight: bold;

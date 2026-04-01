@@ -6,18 +6,31 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['sequencing:primer:add']"
+          size="small"
+          type="success"
+          plain
+          icon="Plus"
+          @click="handleAdd"
+          >新增</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           v-hasPermi="['sequencing:primer:edit']"
+          size="small"
           type="primary"
           plain
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          >编辑</el-button
+          >修改</el-button
         >
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['sequencing:primer:remove']"
+          size="small"
           type="danger"
           plain
           icon="Delete"
@@ -27,21 +40,21 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['sequencing:primer:import']" type="success" plain icon="Upload" @click="handleImport"
-          >导入</el-button
+        <el-button
+          v-hasPermi="['sequencing:primer:export']"
+          size="small"
+          type="warning"
+          plain
+          icon="Download"
+          @click="handleExport"
+          >导出</el-button
         >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Collection" @click="handlePrimerTubeLabel">引物管标签</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Picture" @click="handleImageSettings">图像设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
     </el-row>
@@ -62,40 +75,36 @@
 
     <!-- 添加或修改对话框 -->
     <el-dialog v-model="open" :title="title" width="600px" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="primer_id：" prop="id">
-              <el-input v-model="form.id" placeholder="请输入primer_id" />
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="0" class="well-form">
+        <div class="form-row border-top">
+          <div class="form-label">引物名称：</div>
+          <div class="form-content">
+            <el-form-item prop="primerName" label-width="0">
+              <el-input v-model="form.primerName" placeholder="请输入引物名称" />
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="引物名称：" prop="name">
-              <el-input v-model="form.name" placeholder="请输入引物名称" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">引物序列：</div>
+          <div class="form-content">
+            <el-form-item prop="primerSequence" label-width="0">
+              <el-input v-model="form.primerSequence" placeholder="请输入引物序列" />
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="引物类别：" prop="type">
-              <el-input v-model="form.type" placeholder="请输入引物类别" />
+          </div>
+        </div>
+        <div class="form-row border-bottom" style="height: 120px">
+          <div class="form-label" style="height: 100%">备注：</div>
+          <div class="form-content" style="height: 100%">
+            <el-form-item prop="remark" label-width="0" style="height: 100%">
+              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入内容" />
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item>
-              <el-button type="info" plain icon="Edit" @click="handleEditPlateWell">编辑板号孔号</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="success" @click="submitForm">确 定</el-button>
+          <el-button type="danger" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -110,34 +119,22 @@ import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 const cacheKey = 'sequencing_primer_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'primer_id', width: 100, fixed: true, sortable: true, visible: true },
-  { key: 'name', label: '引物名称', width: 120, fixed: true, visible: true },
-  { key: 'type', label: '引物类别', width: 80, visible: true },
-  { key: 'researchGroupId', label: '课题组id', width: 80, visible: false },
-  { key: 'researchGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'customerId', label: '客户id', width: 80, visible: false },
-  { key: 'customerName', label: '客户名', width: 100, showOverflowTooltip: true, visible: true },
-  { key: 'plateNo', label: '板号', width: 80, visible: true },
-  { key: 'wellNo', label: '孔号', width: 80, visible: true },
-  { key: 'layoutType', label: '排版方式', width: 100, visible: true },
+  { key: 'primerName', label: '引物名称', width: 150, fixed: true, sortable: true, visible: true },
+  { key: 'primerSequence', label: '引物序列', width: 200, visible: true },
   { key: 'status', label: '状态', width: 80, visible: true },
-  { key: 'createTime', label: '添加时间', width: 160, visible: true },
-  { key: 'createBy', label: '添加人', width: 100, visible: true },
-  { key: 'layoutBy', label: '排版人', width: 100, visible: true },
-  { key: 'clearBy', label: '清板人', width: 100, visible: true }
+  { key: 'createTime', label: '创建时间', width: 160, visible: true }
 ])
 
 const searchFields = ref([
-  { prop: 'name', label: '引物名称', type: 'input' },
-  { prop: 'customerName', label: '客户名', type: 'input' }
+  { prop: 'primerName', label: '引物名称', type: 'input' },
+  { prop: 'primerSequence', label: '引物序列', type: 'input' }
 ])
 
-// --- 2. State & Forms ---
+// --- 2. State ---
 const searchRef = ref(null)
 const dataList = ref([])
 const total = ref(0)
@@ -154,11 +151,11 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
-    status: undefined
+    primerName: undefined,
+    primerSequence: undefined
   },
   rules: {
-    name: [{ required: true, message: '引物名称不能为空', trigger: 'blur' }]
+    primerName: [{ required: true, message: '引物名称不能为空', trigger: 'blur' }]
   }
 })
 
@@ -217,9 +214,8 @@ function handleSelectionChange(selection) {
 function reset() {
   form.value = {
     id: undefined,
-    name: undefined,
-    type: undefined,
-    status: '0',
+    primerName: undefined,
+    primerSequence: undefined,
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -290,20 +286,6 @@ function handleExport() {
   )
 }
 
-/** 占位操作 */
-function handleImport() {
-  proxy.$modal.msg('功能开发中...')
-}
-function handlePrimerTubeLabel() {
-  proxy.$modal.msg('功能开发中...')
-}
-function handleImageSettings() {
-  proxy.$modal.msg('功能开发中...')
-}
-function handleEditPlateWell() {
-  proxy.$modal.msg('功能开发中...')
-}
-
 // --- 4. Lifecycle Hooks ---
 let isInitialActivated = true
 onMounted(() => {
@@ -330,3 +312,5 @@ watch(
   { deep: true }
 )
 </script>
+
+<style scoped></style>

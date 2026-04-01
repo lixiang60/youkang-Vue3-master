@@ -49,14 +49,6 @@
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
-    <!-- 数据列表页眉 -->
-    <div class="table-header-bar">
-      <el-icon style="margin-right: 5px; color: #409eff">
-        <List />
-      </el-icon>
-      数据列表
-    </div>
-
     <!-- 数据表格 -->
     <dynamic-table
       v-model:page="queryParams.pageNum"
@@ -380,61 +372,4 @@ onActivated(() => {
 })
 </script>
 
-<style scoped>
-.table-header-bar {
-  background: #f5f7fa;
-  padding: 10px;
-  border: 1px solid #dcdfe6;
-  border-bottom: none;
-  font-weight: bold;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-  color: #333;
-}
-
-:deep(.el-table) {
-  border: 1px solid #dcdfe6;
-}
-
-.well-form {
-  border: 1px solid #dcdfe6;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.form-label {
-  width: 120px;
-  padding: 10px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  font-weight: bold;
-  font-size: 13px;
-  border-right: 1px solid #ebeef5;
-  background-color: #f8f9fa;
-}
-
-.form-content {
-  flex: 1;
-  padding: 10px 15px;
-}
-
-.border-top {
-  border-top: 1px solid #ebeef5;
-}
-
-.border-bottom {
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.well-form .el-form-item) {
-  margin-bottom: 0px;
-}
-</style>
+<style scoped></style>

@@ -23,14 +23,6 @@
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
 
-    <!-- 数据列表页眉 -->
-    <div class="table-header-bar">
-      <el-icon style="margin-right: 5px; color: #409eff">
-        <List />
-      </el-icon>
-      数据列表
-    </div>
-
     <!-- 数据表格 -->
     <dynamic-table
       v-model:page="queryParams.pageNum"
