@@ -50,9 +50,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确定</el-button>
-          <el-button @click="cancel">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -61,6 +61,7 @@
 
 <script setup name="Email">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
+import { Check, Close } from '@element-plus/icons-vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import { listEmailProduce, addEmail, updateEmail, delEmail } from '@/api/sequencing/email'
