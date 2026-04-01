@@ -105,9 +105,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitForm">确定</el-button>
-          <el-button type="danger" @click="cancel">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -116,6 +116,7 @@
 
 <script setup name="Resend_email">
 import { ref, reactive, toRefs, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
+import { Check, Close } from '@element-plus/icons-vue'
 import {
   listResend_email,
   getResend_email,
