@@ -120,7 +120,9 @@
             <div class="form-content">
               <el-input v-model="form.phone" placeholder="请输入手机号码" maxlength="11">
                 <template #suffix>
-                  <el-icon><More /></el-icon>
+                  <el-icon>
+                    <More />
+                  </el-icon>
                 </template>
               </el-input>
             </div>
@@ -186,8 +188,8 @@
       </div>
       <template #footer>
         <div class="dialog-footer" style="text-align: center">
-          <el-button type="primary" :icon="Check" @click="submitForm">确 定</el-button>
-          <el-button :icon="Close" @click="cancel">取 消</el-button>
+          <el-button type="success" :icon="Check" @click="submitForm">确 定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
