@@ -141,9 +141,9 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="handleSubmit">确 定</el-button>
-          <el-button type="danger" @click="handleCancel">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="handleSubmit">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="handleCancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -216,8 +216,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitConc">确 定</el-button>
-          <el-button type="danger" @click="concOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitConc">确定</el-button>
+          <el-button type="danger" @click="concOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -283,9 +283,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitPlate">确 定</el-button>
-          <el-button type="danger" @click="plateOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitPlate">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="plateOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -353,9 +353,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitHole">确 定</el-button>
-          <el-button type="danger" @click="holeOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitHole">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="holeOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -411,8 +411,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitStatus">确 定</el-button>
-          <el-button type="danger" @click="statusOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitStatus">确定</el-button>
+          <el-button type="danger" @click="statusOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -447,9 +447,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitStop">确 定</el-button>
-          <el-button type="danger" @click="stopOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitStop">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="stopOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -485,8 +485,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitPreReaction">确 定</el-button>
-          <el-button type="danger" @click="preOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitPreReaction">确定</el-button>
+          <el-button type="danger" @click="preOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -521,9 +521,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitInsufficient">确 定</el-button>
-          <el-button type="danger" @click="insufficientOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitInsufficient">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="insufficientOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -657,9 +657,11 @@
       <el-empty v-else description="请输入板号查询数据" />
 
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#printDispense'" type="success" :disabled="dispenseList.length === 0">打 印</el-button>
-          <el-button type="danger" @click="dispenseOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#printDispense'" type="success" :icon="Printer" :disabled="dispenseList.length === 0"
+            >打 印</el-button
+          >
+          <el-button type="danger" :icon="Close" @click="dispenseOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -668,6 +670,7 @@
 
 <script setup name="Reaction">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
+import { Check, Close, Printer } from '@element-plus/icons-vue'
 import {
   listReactionProduce,
   updateReactionOriginConcentration,

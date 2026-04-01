@@ -239,9 +239,9 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitForm">确 定</el-button>
-          <el-button type="danger" @click="cancel">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -311,9 +311,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitConcForm">确 定</el-button>
-          <el-button type="danger" @click="concOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitConcForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="concOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -384,9 +384,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitReturnForm">确 定</el-button>
-          <el-button type="danger" @click="returnOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitReturnForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="returnOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -399,6 +399,7 @@ import { listSamples, getSamples, addSamples, updateSamples, delSamples, arrange
 import { updateProduceOriginConcentration } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import { Check, Close, ArrowDown } from '@element-plus/icons-vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()

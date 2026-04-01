@@ -58,15 +58,15 @@
         <LabelSheet :labels="mockLabels" />
       </div>
       <template #footer>
-        <el-button v-print="'#print-area'" type="primary">打 印</el-button>
-        <el-button @click="showPreview = false">关 闭</el-button>
+        <el-button v-print="'#print-area'" type="success" :icon="Printer">打 印</el-button>
+        <el-button type="danger" :icon="Close" @click="showPreview = false">关 闭</el-button>
       </template>
     </el-dialog>
 
     <template #footer>
       <div class="dialog-footer" style="text-align: center">
-        <el-button type="primary" @click="handleConfirm">确 定</el-button>
-        <el-button @click="handleCancel">取 消</el-button>
+        <el-button type="success" :icon="Check" @click="handleConfirm">确定</el-button>
+        <el-button type="danger" :icon="Close" @click="handleCancel">取消</el-button>
       </div>
     </template>
   </el-dialog>
@@ -76,6 +76,7 @@
 import { ref, reactive, watch } from 'vue'
 import { printOrderLabel } from '@/api/sequencing/order'
 import { ElMessage } from 'element-plus'
+import { Check, Close, Printer } from '@element-plus/icons-vue'
 
 import LabelSheet from './LabelSheet.vue'
 

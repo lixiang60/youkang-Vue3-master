@@ -106,8 +106,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitForm">确 定</el-button>
-          <el-button type="danger" @click="cancel">取 消</el-button>
+          <el-button type="success" @click="submitForm">确定</el-button>
+          <el-button type="danger" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>

@@ -81,9 +81,9 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitForm">确 定</el-button>
-          <el-button type="danger" @click="cancel">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -133,9 +133,9 @@
         </div>
       </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="proceedToStatusConfig">确 定</el-button>
-          <el-button type="danger" @click="statusConfirmOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="proceedToStatusConfig">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="statusConfirmOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -176,9 +176,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitStatus">确 定</el-button>
-          <el-button type="danger" @click="statusOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitStatus">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="statusOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -272,9 +272,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitConc">确 定</el-button>
-          <el-button type="danger" @click="concOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitConc">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="concOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -319,9 +319,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="pcrOpen = false">确 定</el-button>
-          <el-button type="danger" @click="pcrOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="pcrOpen = false">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="pcrOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -353,9 +353,9 @@
         </el-row>
       </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#pcrPrintArea'" type="success">立即打印</el-button>
-          <el-button type="danger" @click="pcrReportOpen = false">关 闭</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#pcrPrintArea'" type="success" :icon="Printer">立即打印</el-button>
+          <el-button type="danger" :icon="Close" @click="pcrReportOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -397,9 +397,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitResample">确 定</el-button>
-          <el-button type="danger" @click="resampleOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitResample">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="resampleOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -444,9 +444,9 @@
         </table>
       </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#resamplePrintArea'" type="success">立即打印</el-button>
-          <el-button type="danger" @click="resampleReportOpen = false">关 闭</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#resamplePrintArea'" type="success" :icon="Printer">立即打印</el-button>
+          <el-button type="danger" :icon="Close" @click="resampleReportOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -512,21 +512,14 @@
               <span>备注：</span>
               <el-input v-model="quickForm.remark" placeholder="备注内容" style="width: 100%" />
             </div>
-            <el-button
-              type="primary"
-              icon="Search"
-              class="premium-btn premium-btn-confirm"
-              style="height: 32.5px"
-              @click="handleBatchSubmit"
-              >提 交</el-button
-            >
+            <el-button type="success" :icon="Check" style="height: 32.5px" @click="handleBatchSubmit">提 交</el-button>
           </div>
         </div>
       </div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="imageSettingOpen = false">确 定</el-button>
-          <el-button type="danger" @click="imageSettingOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="imageSettingOpen = false">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="imageSettingOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -536,6 +529,7 @@
 <script setup name="Production">
 import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
+import { Check, Close } from '@element-plus/icons-vue'
 import {
   listProduceList,
   getProduction,

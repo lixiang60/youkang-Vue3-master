@@ -95,8 +95,8 @@
       </div>
       <template #footer>
         <div class="dialog-footer" style="text-align: center">
-          <el-button type="success" :icon="Check" @click="submitForm">{{ form.id ? '修 改' : '添 加' }}</el-button>
-          <el-button type="danger" :icon="Close" @click="cancel">取 消</el-button>
+          <el-button type="success" :icon="Check" @click="submitForm">{{ form.id ? '修改' : '添加' }}</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>

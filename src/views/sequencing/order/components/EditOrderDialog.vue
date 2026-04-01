@@ -135,8 +135,8 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer" style="text-align: center">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="handleUpdateVisible(false)">取 消</el-button>
+        <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+        <el-button type="danger" :icon="Close" @click="handleUpdateVisible(false)">取消</el-button>
       </div>
     </template>
   </el-dialog>
@@ -165,9 +165,7 @@
       </div>
     </div>
     <div style="text-align: center; margin-top: 15px">
-      <el-button type="default" style="border: 1px solid #ccc; background: #fafafa" @click="submitGroupUpdate"
-        >更 新</el-button
-      >
+      <el-button type="success" :icon="Check" @click="submitGroupUpdate">更新</el-button>
     </div>
   </el-dialog>
 
@@ -207,6 +205,7 @@
 <script setup>
 import { ref, watch, getCurrentInstance } from 'vue'
 import { getOrder, updateOrder } from '@/api/sequencing/order'
+import { Check, Close, Camera, Picture, Plus } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 

@@ -71,8 +71,8 @@
 
     <template #footer>
       <div class="dialog-footer" style="text-align: center">
-        <el-button type="primary" @click="handleSubmit">确 定</el-button>
-        <el-button @click="handleCancel">取 消</el-button>
+        <el-button type="success" :icon="Check" @click="handleSubmit">确定</el-button>
+        <el-button type="danger" :icon="Close" @click="handleCancel">取消</el-button>
       </div>
     </template>
   </el-dialog>
@@ -84,6 +84,7 @@ import { importSamples } from '@/api/sequencing/samples'
 import { batchAddSampleByOrder } from '@/api/sequencing/order'
 import { ElMessage } from 'element-plus'
 import Editor from '@/components/Editor/index.vue'
+import { Check, Close } from '@element-plus/icons-vue'
 
 const props = defineProps({
   modelValue: {

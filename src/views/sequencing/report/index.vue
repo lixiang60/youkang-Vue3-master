@@ -124,8 +124,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitStatus">确 定</el-button>
-          <el-button type="danger" @click="statusOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitStatus">确定</el-button>
+          <el-button type="danger" @click="statusOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -172,8 +172,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitCapillary">确 定</el-button>
-          <el-button type="danger" @click="capillaryOpen = false">取 消</el-button>
+          <el-button type="success" @click="submitCapillary">确定</el-button>
+          <el-button type="danger" @click="capillaryOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>

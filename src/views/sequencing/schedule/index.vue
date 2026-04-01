@@ -85,7 +85,7 @@
                 <SuccessFilled />
               </el-icon>
             </template>
-            确 定
+            确定
           </el-button>
           <el-button class="premium-btn premium-btn-cancel" @click="cancel">
             <template #icon>
@@ -93,7 +93,7 @@
                 <CircleCloseFilled />
               </el-icon>
             </template>
-            取 消
+            取消
           </el-button>
         </div>
       </template>
@@ -151,7 +151,7 @@
                 <SuccessFilled />
               </el-icon>
             </template>
-            确 定
+            确定
           </el-button>
           <el-button class="premium-btn premium-btn-cancel" @click="openConfirmPlate = false">
             <template #icon>
@@ -159,7 +159,7 @@
                 <CircleCloseFilled />
               </el-icon>
             </template>
-            取 消
+            取消
           </el-button>
         </div>
       </template>
@@ -225,7 +225,7 @@
                 <SuccessFilled />
               </el-icon>
             </template>
-            确 定
+            确定
           </el-button>
           <el-button class="premium-btn premium-btn-cancel" @click="openPlate = false">
             <template #icon>
@@ -233,7 +233,7 @@
                 <CircleCloseFilled />
               </el-icon>
             </template>
-            取 消
+            取消
           </el-button>
         </div>
       </template>
@@ -312,7 +312,7 @@
                 <SuccessFilled />
               </el-icon>
             </template>
-            确 定
+            确定
           </el-button>
           <el-button class="premium-btn premium-btn-cancel" @click="openWell = false">
             <template #icon>
@@ -320,7 +320,7 @@
                 <CircleCloseFilled />
               </el-icon>
             </template>
-            取 消
+            取消
           </el-button>
         </div>
       </template>
@@ -361,7 +361,7 @@
                 <SuccessFilled />
               </el-icon>
             </template>
-            确 定
+            确定
           </el-button>
           <el-button class="premium-btn premium-btn-cancel" @click="openIgnore = false">
             <template #icon>
@@ -369,7 +369,7 @@
                 <CircleCloseFilled />
               </el-icon>
             </template>
-            取 消
+            取消
           </el-button>
         </div>
       </template>
@@ -400,8 +400,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="success" @click="submitBDTForm">确 定</el-button>
-          <el-button type="danger" @click="openBDT = false">取 消</el-button>
+          <el-button type="success" @click="submitBDTForm">确定</el-button>
+          <el-button type="danger" @click="openBDT = false">取消</el-button>
         </div>
       </template>
     </el-dialog>

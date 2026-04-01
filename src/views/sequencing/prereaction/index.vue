@@ -150,9 +150,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitPlate">确 定</el-button>
-          <el-button type="danger" @click="plateOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitPlate">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="plateOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -215,9 +215,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitHole">确 定</el-button>
-          <el-button type="danger" @click="holeOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitHole">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="holeOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -264,9 +264,11 @@
       <el-empty v-else description="请输入板号查询数据" />
 
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#printPrereactionBDT'" type="success" :disabled="bdtList.length === 0">打 印</el-button>
-          <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#printPrereactionBDT'" type="success" :icon="Printer" :disabled="bdtList.length === 0"
+            >打 印</el-button
+          >
+          <el-button type="danger" :icon="Close" @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -301,9 +303,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitSendBack">确 定</el-button>
-          <el-button type="danger" @click="sendBackOpen = false">取 消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitSendBack">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="sendBackOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -313,6 +315,7 @@
 <script setup name="Prereaction">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import { listPrereaction, reactionPreSendBack } from '@/api/sequencing/prereaction'
+import { Check, Close, Printer } from '@element-plus/icons-vue'
 import {
   updateReactionPlate,
   updateReactionHoleNo,

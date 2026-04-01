@@ -21,7 +21,7 @@ description: 工具与编辑器行为规范
 - **优先使用element原生样式**：优先使用element原生类，样式保持代码简洁，截图只是layout实现
 - **禁止随意添加私有样式**：在 Vue 组件中，**杜绝**无理由添加与全局视觉设计不一致的随意样式定义。绝大多数基础样式（边距、颜色、字体、按钮样式）应引用全局系统。
 - **图标使用规范**：所有图标必须使用 `element-plus/icons-vue` 库，并推荐采用组件导入方式（如 `:icon="Search"`），以保持样式规范及类型安全。
-- **对话框按钮规范**：确定按钮统一使用 `type="success" :icon="Check"`，取消按钮统一使用 `type="danger" :icon="Close"`。底部容器需使用 `<div class="dialog-footer" style="text-align: center">`。
+- **对话框按钮规范**：确定按钮统一使用 `type="success" :icon="Check"`，标签为 `确定`（无空格）；取消按钮统一使用 `type="danger" :icon="Close"`，标签为 `取消`（无空格）。底部容器需使用 `<div class="dialog-footer" style="text-align: center">`。
 - **Scoped 约束**：由于是公共/后台系统，组件内部自定义样式必须使用 `<style scoped>`，防止样式污染全局或其他组件。
 
 ## 2. 页面样式代码结构风格
