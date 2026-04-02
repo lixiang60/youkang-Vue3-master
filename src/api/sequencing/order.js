@@ -107,3 +107,12 @@ export function getOrderWithSamples(orderId) {
     method: 'get'
   })
 }
+
+// 范围查询订单及样品
+export function getOrderWithSamplesRange(data) {
+  return request({
+    url: '/order/info/withSamples/queryByRange',
+    method: 'post',
+    data: data
+  })
+}

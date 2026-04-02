@@ -138,7 +138,9 @@
       @success="getList"
     />
 
-    <label-print-dialog v-model="labelPrintVisible" />
+    <label-print-dialog v-model="labelPrintVisible" :order-range="currentOrderRange" />
+    <order-monitor-dialog v-model="orderMonitorVisible" />
+    <internal-operation-dialog v-model="internalOpVisible" :order-id="currentOrderId" />
   </div>
 </template>
 
@@ -155,6 +157,8 @@ import BatchAddSampleDialog from './components/BatchAddSampleDialog.vue'
 import LabelPrintDialog from './components/LabelPrintDialog.vue'
 import OrderDialog from './components/OrderDialog.vue'
 import EditOrderDialog from './components/EditOrderDialog.vue'
+import OrderMonitorDialog from './components/OrderMonitorDialog.vue'
+import InternalOperationDialog from './components/InternalOperationDialog.vue'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { parseTime } from '../../../utils/ruoyi.js'
 
@@ -219,6 +223,8 @@ const batchAddVisible = ref(false)
 const sampleDialogVisible = ref(false)
 const batchSampleVisible = ref(false)
 const labelPrintVisible = ref(false)
+const orderMonitorVisible = ref(false)
+const internalOpVisible = ref(false)
 
 // 当前操作状态
 const currentOrderId = ref(null)
@@ -266,6 +272,15 @@ const searchFields = computed(() => [
     }))
   }
 ])
+
+const currentOrderRange = computed(() => {
+  if (ids.value.length === 0) return { start: '', end: '' }
+  const sorted = [...ids.value].sort()
+  return {
+    start: String(sorted[0]),
+    end: String(sorted[sorted.length - 1])
+  }
+})
 
 // --- 4. Methods ---
 
@@ -447,13 +462,18 @@ function autoParseTemplate(rawContent) {
 
 /** 占位操作 */
 function handleInternalOperation() {
-  proxy.$modal.msg('功能开发中...')
+  if (ids.value.length !== 1) {
+    proxy.$modal.msgWarning('请选择一条订单数据')
+    return
+  }
+  currentOrderId.value = String(ids.value[0])
+  internalOpVisible.value = true
 }
 function handleDailyReport() {
   proxy.$modal.msg('功能开发中...')
 }
 function handleOrderMonitor() {
-  proxy.$modal.msg('功能开发中...')
+  orderMonitorVisible.value = true
 }
 function handleTransfer() {
   proxy.$modal.msg('功能开发中...')

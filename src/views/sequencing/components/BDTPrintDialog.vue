@@ -16,9 +16,8 @@
               <el-radio label="BDT表">BDT表</el-radio>
               <el-radio label="模板BDT表">模板BDT表</el-radio>
             </el-radio-group>
-            <!-- 标签预览入口直接打开图形化界面 -->
-            <el-button type="success" :icon="Printer" style="border-radius: 20px" @click="handleOpenGridPreview">
-              标签预览
+            <el-button type="default" plain class="print-list-btn" @click="handleOpenGridPreview">
+              <el-icon><Printer /></el-icon> 标签预览
             </el-button>
           </div>
         </div>

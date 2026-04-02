@@ -1,21 +1,34 @@
 <template>
   <div class="label-sheet">
     <div v-for="(label, index) in labels" :key="index" class="label-item">
-      <div class="label-top">
-        <span class="label-id">{{ label.id }}</span>
-        <span class="label-author">{{ label.author }}</span>
-      </div>
-      <div class="label-barcode">
-        <svg :id="'barcode-' + index"></svg>
-      </div>
-      <div class="label-code">
-        {{ label.code }}
-      </div>
-      <div class="label-info">
-        <span>{{ label.size }}</span>
-        <span :class="{ 'text-green': label.qc === 'A+', 'text-blue': label.qc === 'sp' }">{{ label.qc }}</span>
-        <span>{{ label.date }}</span>
-        <span class="label-status">质检</span>
+      <div v-if="label.id" class="label-content">
+        <!-- Left: Vertical Barcode -->
+        <div class="label-barcode-side">
+          <svg :id="'barcode-' + index" class="vertical-barcode"></svg>
+        </div>
+
+        <!-- Right: Data Content -->
+        <div class="label-data-side">
+          <div class="data-row row-top">
+            <span class="label-id">{{ label.id }}</span>
+            <span class="label-author">{{ label.author }}</span>
+          </div>
+          <div class="data-row row-mid">
+            <div class="label-code-tag">
+              {{ label.code }}
+            </div>
+          </div>
+          <div class="data-row row-bottom">
+            <div class="bottom-left">
+              <span>{{ label.size }}</span>
+              <span :class="['qc-tag', { 'text-green': label.qc === 'A+', 'text-blue': label.qc === 'sp' }]">{{
+                label.qc
+              }}</span>
+              <span>{{ label.date }}</span>
+            </div>
+            <span class="label-status">质检</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -35,16 +48,18 @@ const props = defineProps({
 function generateBarcodes() {
   nextTick(() => {
     props.labels.forEach((label, index) => {
-      try {
-        JsBarcode('#barcode-' + index, label.code, {
-          format: 'CODE128',
-          displayValue: false,
-          height: 25,
-          margin: 0,
-          width: 1.5
-        })
-      } catch (e) {
-        console.warn('Barcode gen failed', e)
+      if (label.code) {
+        try {
+          JsBarcode('#barcode-' + index, label.code, {
+            format: 'CODE128',
+            displayValue: false,
+            height: 40, // Height is actually width in vertical mode
+            margin: 0,
+            width: 1.0
+          })
+        } catch (e) {
+          console.warn('Barcode gen failed', e)
+        }
       }
     })
   })
@@ -73,51 +88,91 @@ watch(
 }
 
 .label-item {
-  width: 33%; /* 3 columns approx */
-  padding: 5px;
+  width: 20%; /* 5 labels per row */
+  padding: 4px;
   box-sizing: border-box;
   font-family: Arial, sans-serif;
-  font-size: 12px;
-  margin-bottom: 10px;
   page-break-inside: avoid;
+  background: #fff;
 }
 
-.label-top {
+.label-content {
+  display: flex;
+  height: 55px; /* Adjust height based on content */
+  align-items: center;
+  overflow: hidden;
+}
+
+.label-barcode-side {
+  width: 25px; /* Width for rotated barcode */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.vertical-barcode {
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.label-data-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 4px;
+  height: 100%;
+}
+
+.data-row {
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
+  align-items: center;
 }
 
-.label-barcode {
-  text-align: left; /* Screenshot shows barcode aligned left/center? actually fills width */
-  height: 30px;
-  overflow: hidden;
+.row-top {
+  font-weight: bold;
+  font-size: 13px;
+  line-height: normal;
+}
+
+.row-mid {
   margin: 2px 0;
 }
 
-.label-code {
-  background-color: yellow;
+.label-code-tag {
+  width: 100%;
+  background-color: #ffff00;
   font-weight: bold;
-  padding: 2px 0;
+  padding: 1px 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 10px;
+  color: #000;
+  text-align: left;
 }
 
-.label-info {
+.row-bottom {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.bottom-left {
   display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  margin-top: 2px;
+  gap: 5px;
+}
+
+.qc-tag {
+  font-weight: bold;
 }
 
 .text-green {
-  color: green;
-  font-weight: bold;
+  color: #008000;
 }
 .text-blue {
-  color: blue;
-  font-weight: bold;
+  color: #0000ff;
 }
 .label-status {
   font-weight: bold;
@@ -128,7 +183,7 @@ watch(
     padding: 0;
   }
   .label-item {
-    border: none; /* remove borders if present */
+    padding: 2px;
   }
 }
 </style>
