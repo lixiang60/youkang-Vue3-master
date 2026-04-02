@@ -17,7 +17,7 @@
         v-bind="col"
         :prop="col.key || col.prop"
         :align="col.align || 'center'"
-        :width="col.width || defaultWidth"
+        :width="col.width || 'auto'"
       >
         <!-- 自定义列模板 (Slot) -->
         <template v-if="col.slot" #default="scope">

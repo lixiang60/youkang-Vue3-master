@@ -106,7 +106,15 @@
     />
 
     <!-- 修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
+    <el-dialog v-model="open" width="900px" append-to-body top="8vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">{{ title }}</span>
+        </div>
+      </template>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -201,16 +209,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 180px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px">
-            <el-input
-              v-model="concForm.remark"
-              type="textarea"
-              :rows="6"
-              placeholder="请输入备注内容"
-              style="height: 100%"
-            />
+            <el-input v-model="concForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -291,7 +293,7 @@
     </el-dialog>
 
     <!-- 添加孔号对话框 (仿制截图样式) -->
-    <el-dialog v-model="holeOpen" width="600px" append-to-body>
+    <el-dialog v-model="holeOpen" width="750px" append-to-body top="10vh">
       <template #header>
         <div style="display: flex; align-items: center; padding: 10px 0">
           <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">

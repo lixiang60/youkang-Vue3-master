@@ -101,7 +101,15 @@
     />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="1000px" append-to-body top="10vh">
+    <el-dialog v-model="open" width="900px" append-to-body top="8vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">{{ title }}</span>
+        </div>
+      </template>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -256,14 +264,7 @@
           <span style="font-weight: bold; font-size: 16px">设置原浓度</span>
         </div>
       </template>
-      <el-form
-        ref="concFormRef"
-        :model="concForm"
-        :rules="concRules"
-        label-width="0"
-        class="well-form"
-        style="min-height: 350px"
-      >
+      <el-form ref="concFormRef" :model="concForm" :rules="concRules" label-width="0" class="well-form">
         <!-- 生产编号展示 -->
         <div class="form-row border-top">
           <div class="form-label" style="width: 140px">生产编号：</div>
@@ -319,7 +320,7 @@
     </el-dialog>
 
     <!-- 安排样品返还对话框 (Doc 2.9 对接) -->
-    <el-dialog v-model="returnOpen" width="700px" append-to-body top="10vh">
+    <el-dialog v-model="returnOpen" width="750px" append-to-body top="10vh">
       <template #header>
         <div style="display: flex; align-items: center; padding: 10px 0">
           <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
@@ -328,14 +329,7 @@
           <span style="font-weight: bold; font-size: 16px">安排样品返还</span>
         </div>
       </template>
-      <el-form
-        ref="returnFormRef"
-        :model="returnForm"
-        :rules="returnRules"
-        label-width="0"
-        class="well-form"
-        style="min-height: 350px"
-      >
+      <el-form ref="returnFormRef" :model="returnForm" :rules="returnRules" label-width="0" class="well-form">
         <!-- 生产编号 -->
         <div class="form-row border-top">
           <div class="form-label" style="width: 140px">生产编号：</div>
@@ -390,6 +384,106 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 加测反应对话框 (Doc 4.19 对接) -->
+    <el-dialog v-model="addTestOpen" width="750px" append-to-body top="10vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <Edit />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px; color: #1e40af">加测反应</span>
+        </div>
+      </template>
+      <el-form ref="addTestFormRef" :model="addTestForm" :rules="addTestRules" label-width="0" class="well-form">
+        <!-- 生产编号 -->
+        <div class="form-row border-top">
+          <div class="form-label" style="width: 140px">生产编号：</div>
+          <div class="form-content">
+            <span style="font-size: 14px; color: #f56c6c; font-weight: bold">
+              选中数量：1，选中生产编号：{{ addTestForm.produceId }}
+            </span>
+          </div>
+        </div>
+        <!-- 规则判断 -->
+        <div class="form-row">
+          <div class="form-label" style="width: 140px">规则判断：</div>
+          <div class="form-content">
+            <span style="font-size: 14px; color: #333">自备引物生产编号：{{ addTestForm.produceId }};</span>
+          </div>
+        </div>
+        <!-- 引物名称 & 引物浓度 -->
+        <div class="form-row" style="padding: 0">
+          <div style="display: flex; flex: 1; border-right: 1px solid #ebeef5">
+            <div class="form-label" style="width: 140px">引物名称：</div>
+            <div class="form-content">
+              <el-form-item prop="primer">
+                <el-input v-model="addTestForm.primer" placeholder="请输入引物名称" />
+              </el-form-item>
+            </div>
+          </div>
+          <div style="display: flex; flex: 1">
+            <div class="form-label" style="width: 140px">引物浓度：</div>
+            <div class="form-content">
+              <el-form-item prop="primerConcentration">
+                <el-input v-model="addTestForm.primerConcentration" placeholder="请输入引物浓度" />
+              </el-form-item>
+            </div>
+          </div>
+        </div>
+        <!-- 引物序列 & 测实生产实验室 -->
+        <div class="form-row" style="padding: 0">
+          <div style="display: flex; flex: 1; border-right: 1px solid #ebeef5">
+            <div class="form-label" style="width: 140px">引物序列：</div>
+            <div class="form-content">
+              <el-form-item prop="seq">
+                <el-input v-model="addTestForm.seq" placeholder="请输入引物序列" />
+              </el-form-item>
+            </div>
+          </div>
+          <div style="display: flex; flex: 1">
+            <div class="form-label" style="width: 140px">测实生产实验室：</div>
+            <div class="form-content">
+              <el-form-item prop="testLab">
+                <el-select v-model="addTestForm.testLab" style="width: 100%">
+                  <el-option label="杭州有康" value="杭州有康" />
+                </el-select>
+              </el-form-item>
+            </div>
+          </div>
+        </div>
+        <!-- 合成生产实验室 (占位) -->
+        <div class="form-row" style="padding: 0">
+          <div style="display: flex; flex: 1; border-right: 1px solid #ebeef5">
+            <div class="form-label" style="width: 140px; height: 43px"></div>
+            <div class="form-content"></div>
+          </div>
+          <div style="display: flex; flex: 1">
+            <div class="form-label" style="width: 140px">合成生产实验室：</div>
+            <div class="form-content">
+              <el-form-item prop="syntLab">
+                <el-select v-model="addTestForm.syntLab" style="width: 100%">
+                  <el-option label="杭州有康" value="杭州有康" />
+                </el-select>
+              </el-form-item>
+            </div>
+          </div>
+        </div>
+        <!-- 备注 -->
+        <div class="form-row border-bottom" style="height: 180px">
+          <div class="form-label" style="width: 140px; height: 100%; display: flex; align-items: center">备注：</div>
+          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
+            <el-input v-model="addTestForm.remark" type="textarea" :rows="6" placeholder="请输入备注内容" />
+          </div>
+        </div>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitAddTestForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="addTestOpen = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -404,7 +498,8 @@ import {
   arrangeReturn,
   clearHole,
   clearTemplate,
-  clearReport
+  clearReport,
+  addTest
 } from '@/api/sequencing/samples'
 import { updateProduceOriginConcentration } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
@@ -524,6 +619,23 @@ const returnForm = reactive({
   orderId: '',
   reimburseType: ''
 })
+
+const addTestOpen = ref(false)
+const addTestForm = reactive({
+  produceId: undefined,
+  orderId: undefined,
+  primer: '',
+  primerConcentration: '',
+  seq: '',
+  remark: '',
+  testLab: '杭州有康',
+  syntLab: '杭州有康'
+})
+
+const addTestRules = {
+  primer: [{ required: true, message: '请输入引物名称', trigger: 'blur' }],
+  seq: [{ required: true, message: '请输入引物序列', trigger: 'blur' }]
+}
 
 // 初始化列显隐缓存
 const savedColumns = localStorage.getItem(cacheKey)
@@ -793,7 +905,40 @@ function handleBatchEdit() {
   proxy.$modal.msg('功能开发中...')
 }
 function handleAddTest() {
-  proxy.$modal.msg('功能开发中...')
+  if (selectedRows.value.length !== 1) {
+    proxy.$modal.msgWarning('请先选择一条数据进行操作！')
+    return
+  }
+  const row = selectedRows.value[0]
+  addTestForm.produceId = row.produceId
+  addTestForm.orderId = row.orderId
+  addTestForm.primer = row.primer || ''
+  addTestForm.primerConcentration = row.primerConcentration || ''
+  addTestForm.seq = row.seq || ''
+  addTestForm.remark = ''
+  addTestForm.testLab = row.produceCompany || '杭州有康'
+  addTestForm.syntLab = row.belongCompany || '杭州有康'
+  addTestOpen.value = true
+}
+
+function submitAddTestForm() {
+  proxy.$refs['addTestFormRef'].validate(valid => {
+    if (valid) {
+      const data = {
+        produceId: addTestForm.produceId,
+        orderId: addTestForm.orderId,
+        primer: addTestForm.primer,
+        seq: addTestForm.seq,
+        primerConcentration: addTestForm.primerConcentration,
+        remark: addTestForm.remark
+      }
+      addTest(data).then(() => {
+        proxy.$modal.msgSuccess('加测成功')
+        addTestOpen.value = false
+        getList()
+      })
+    }
+  })
 }
 function handleLinkPrimer() {
   proxy.$modal.msg('功能开发中...')
