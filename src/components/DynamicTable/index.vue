@@ -17,8 +17,8 @@
         v-bind="col"
         :prop="col.key || col.prop"
         :align="col.align || 'center'"
-        :width="col.width"
-        :min-width="col.minWidth"
+        :width="null"
+        :min-width="col.width || col.minWidth"
       >
         <!-- 自定义列模板 (Slot) -->
         <template v-if="col.slot" #default="scope">
