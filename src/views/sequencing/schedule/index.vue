@@ -305,86 +305,15 @@
       </template>
     </el-dialog>
 
-    <!-- 模板BDT表打印对话框 (图1) -->
-    <el-dialog v-model="openBDT" title="模板BDT表打印" width="600px" append-to-body top="10vh">
-      <el-form ref="bdtFormRef" :model="bdtForm" label-width="0" class="well-form">
-        <div class="form-row border-top">
-          <div class="form-label" style="width: 120px">板号：</div>
-          <div class="form-content">
-            <el-input v-model="bdtForm.plateNo" placeholder="请输入板号" style="width: 250px" />
-          </div>
-        </div>
-        <div class="form-row border-bottom">
-          <div class="form-label" style="width: 120px"></div>
-          <div class="form-content" style="display: flex; justify-content: center">
-            <el-button type="success" :icon="Printer" style="height: 32px" @click="handleLabelPrint">
-              标签打印
-            </el-button>
-          </div>
-        </div>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer" style="text-align: center">
-          <el-button type="success" :icon="Check" @click="submitBDTForm">确定</el-button>
-          <el-button type="danger" :icon="Close" @click="openBDT = false">取消</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- 报表打印弹窗 (图2) -->
-    <el-dialog v-model="openReport" title="报表排版打印" width="1120px" append-to-body top="5vh">
-      <div id="printArea" class="report-print-wrap">
-        <div class="report-header">
-          <div class="meta-row" style="font-weight: bold; font-family: 'SimSun', serif">
-            <span>模板版号：{{ bdtForm.plateNo }} 操作人：{{ reportMeta.user }}</span>
-            <span style="flex: 1; text-align: center">
-              加急<span class="checkbox-mock"></span> 试做<span class="checkbox-mock"></span>
-            </span>
-            <span>打印时间：{{ reportMeta.time }} 第 1 页 共 1 页</span>
-          </div>
-        </div>
-
-        <table class="bdt-report-table">
-          <tbody>
-            <tr v-for="r in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']" :key="r">
-              <td v-for="c in 12" :key="c" class="well-cell-bdt">
-                <div v-if="getWellData(r, c).sampleId" class="well-cell-inner">
-                  <div class="cell-row-top">
-                    <span class="well-pos-blue">{{ r }}{{ c < 10 ? '0' + c : c }}</span>
-                    <span class="well-status-small">{{ getWellData(r, c).returnState || '成功' }}</span>
-                  </div>
-                  <div class="cell-row-order">{{ getWellData(r, c).produceId }}</div>
-                  <div class="cell-row-mid-bold">{{ getWellData(r, c).sampleId }}</div>
-                  <div class="cell-row-meta">{{ getWellData(r, c).fragmentSize }}</div>
-                  <div class="cell-row-bottom-blue">
-                    {{ getWellData(r, c).customerName }} {{ getWellData(r, c).templateNumber }}
-                  </div>
-                </div>
-                <div v-else class="well-cell-inner">
-                  <div class="cell-row-top">
-                    <span class="well-pos-blue" style="color: #ccc">{{ r }}{{ c < 10 ? '0' + c : c }}</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <template #footer>
-        <div class="dialog-footer" style="text-align: center">
-          <el-button v-print="'#printArea'" type="success" :icon="Printer">打印</el-button>
-          <el-button type="danger" :icon="Close" @click="openReport = false">关闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    <!-- 模板BDT表查询打印公共组件 -->
+    <BDTPrintDialog v-model="openBDT" title="模板BDT打印" :fetch-api="templateBDT" />
   </div>
 </template>
 
 <script setup name="Schedule">
-import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
+import { ref, reactive, toRefs, computed, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
-import { Check, Close, Printer } from '@element-plus/icons-vue'
-import useUserStore from '@/store/modules/user'
+import { Check, Close } from '@element-plus/icons-vue'
 import {
   listLayoutTemplate,
   updateTemplateNo,
@@ -397,11 +326,11 @@ import {
 } from '@/api/sequencing/schedule'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import BDTPrintDialog from '../components/BDTPrintDialog.vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', 'sys_yes_no')
-const userStore = useUserStore()
 const route = useRoute()
 const cacheKey = 'sequencing_schedule_columns_visible'
 
@@ -467,7 +396,6 @@ const openPlate = ref(false)
 const openWell = ref(false)
 const openIgnore = ref(false)
 const openBDT = ref(false)
-const openReport = ref(false)
 
 // 表单数据
 const plateForm = ref({
@@ -489,16 +417,6 @@ const wellForm = reactive({
 
 const ignoreForm = reactive({
   remark: ''
-})
-
-const bdtForm = reactive({
-  plateNo: ''
-})
-
-const reportData = ref([])
-const reportMeta = reactive({
-  user: 'ADMIN',
-  time: ''
 })
 
 const data = reactive({
@@ -756,42 +674,7 @@ function submitIgnoreForm() {
 
 /** 业务操作 - BDT 报表与打印 */
 function handleTemplateBDT() {
-  bdtForm.plateNo = ''
   openBDT.value = true
-}
-
-function submitBDTForm() {
-  if (!bdtForm.plateNo) {
-    proxy.$modal.msgWarning('请输入板号')
-    return
-  }
-  handleLabelPrint()
-}
-
-function handleLabelPrint() {
-  if (!bdtForm.plateNo) {
-    proxy.$modal.msgWarning('请输入板号')
-    return
-  }
-  proxy.$modal.loading('数据加载中...')
-  templateBDT({ templateNo: bdtForm.plateNo })
-    .then(response => {
-      proxy.$modal.closeLoading()
-      reportData.value = response.data || []
-      reportMeta.time = proxy.parseTime(new Date(), '{y}/{m}/{d}')
-      reportMeta.user = userStore.name || 'ADMIN'
-      openReport.value = true
-    })
-    .catch(() => {
-      proxy.$modal.closeLoading()
-    })
-}
-
-/** 辅助方法 */
-function getWellData(r, c) {
-  const pos1 = r + c
-  const pos2 = r + (c < 10 ? '0' + c : c)
-  return reportData.value.find(item => item.templateHoleNo === pos1 || item.templateHoleNo === pos2) || {}
 }
 
 // --- 5. Lifecycle ---

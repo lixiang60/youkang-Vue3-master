@@ -171,11 +171,9 @@
         <div class="form-row border-top">
           <div class="form-label">生产编号：</div>
           <div class="form-content">
-            <span style="font-size: 13px"
-              >选中数量：<span style="color: #409eff; font-weight: bold">1</span>，选中生产编号：{{
-                holeForm.produceId
-              }}</span
-            >
+            <span style="font-size: 13px">
+              选中数量：<span style="color: #409eff; font-weight: bold">1</span>，选中生产编号：{{ holeForm.produceId }}
+            </span>
           </div>
         </div>
         <div class="form-row">
@@ -222,67 +220,11 @@
       </template>
     </el-dialog>
 
-    <!-- BDT查询对话框 -->
-    <el-dialog v-model="bdtOpen" width="1000px" append-to-body top="5vh">
-      <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0">
-          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
-            <Document />
-          </el-icon>
-          <span style="font-weight: bold; font-size: 16px">测序 BDT 表查询</span>
-        </div>
-      </template>
-      <el-form :inline="true" label-width="68px" @submit.prevent>
-        <el-form-item label="板号">
-          <el-input v-model="bdtQueryPlateNo" placeholder="请输入板号" clearable @keyup.enter="handlePrintBdt" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="Search" @click="handlePrintBdt">查询</el-button>
-        </el-form-item>
-      </el-form>
+    <!-- 测序 BDT 表查询打印公共组件 -->
+    <BDTPrintDialog v-model="bdtOpen" :fetch-api="getSequencingBDT" />
 
-      <div v-if="bdtList.length > 0" id="printPrereactionBDT" class="report-container">
-        <table class="report-table">
-          <thead>
-            <tr>
-              <th>生产编号</th>
-              <th>板号</th>
-              <th>孔号</th>
-              <th>客户姓名</th>
-              <th>样品编号</th>
-              <th>载体</th>
-              <th>引物</th>
-              <th>备注</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in bdtList" :key="item.produceId">
-              <td>{{ item.produceId }}</td>
-              <td>{{ item.plateNo }}</td>
-              <td>{{ item.holeNo }}</td>
-              <td>{{ item.customerName }}</td>
-              <td>{{ item.sampleId }}</td>
-              <td>{{ item.carrierName }}</td>
-              <td>{{ item.primer }}</td>
-              <td>{{ item.remark }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <el-empty v-else description="请输入板号查询数据" />
-
-      <template #footer>
-        <div class="dialog-footer" style="text-align: center">
-          <el-button v-print="'#printPrereactionBDT'" type="success" :icon="Printer" :disabled="bdtList.length === 0"
-            >打 印</el-button
-          >
-          <el-button type="danger" :icon="Close" @click="bdtOpen = false">关 闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- 退回理由对话框 (仿制截图样式) -->
-    <el-dialog v-model="sendBackOpen" width="750px" append-to-body>
+    <!-- 退回理由对话框 -->
+    <el-dialog v-model="sendBackOpen" title="反应预做退回设置" width="750px" append-to-body>
       <template #header>
         <div style="display: flex; align-items: center; padding: 10px 0">
           <el-icon style="margin-right: 8px; color: #f56c6c; font-size: 20px">
@@ -292,7 +234,6 @@
         </div>
       </template>
       <el-form :model="sendBackForm" label-width="0" class="well-form">
-        <!-- 生产编号 -->
         <div class="form-row border-top">
           <div class="form-label" style="width: 140px">生产编号：</div>
           <div class="form-content">
@@ -302,10 +243,9 @@
             </span>
           </div>
         </div>
-        <!-- 退回理由 -->
         <div class="form-row border-bottom">
-          <div class="form-label" style="width: 140px; height: 100%">退回理由：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
+          <div class="form-label" style="width: 140px">退回理由：</div>
+          <div class="form-content">
             <el-input v-model="sendBackForm.remark" type="textarea" :rows="4" placeholder="请输入退回原因" />
           </div>
         </div>
@@ -323,7 +263,7 @@
 <script setup name="Prereaction">
 import { ref, reactive, toRefs, computed, watch, onMounted, getCurrentInstance } from 'vue'
 import { listPrereaction, reactionPreSendBack } from '@/api/sequencing/prereaction'
-import { Check, Close, Printer } from '@element-plus/icons-vue'
+import { Check, Close } from '@element-plus/icons-vue'
 import {
   updateReactionPlate,
   updateReactionHoleNo,
@@ -332,6 +272,7 @@ import {
 } from '@/api/sequencing/reaction'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import BDTPrintDialog from '../components/BDTPrintDialog.vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
@@ -394,16 +335,27 @@ const searchRef = ref(null)
 const selectedRows = ref([])
 
 const bdtOpen = ref(false)
-const bdtQueryPlateNo = ref('')
-const bdtList = ref([])
-
 const plateOpen = ref(false)
-const plateForm = ref({})
-
 const holeOpen = ref(false)
-const holeForm = ref({})
-
 const sendBackOpen = ref(false)
+
+const plateForm = ref({
+  produceIdList: [],
+  plateNo: undefined,
+  machineType: '192',
+  layout: '横排',
+  remark: undefined
+})
+
+const holeForm = ref({
+  produceId: undefined,
+  plateNo: undefined,
+  holeNo: undefined,
+  machineType: '192',
+  layout: '横排',
+  remark: ''
+})
+
 const sendBackForm = ref({
   produceIdList: [],
   remark: ''
@@ -548,16 +500,7 @@ function submitHole() {
 }
 
 function handleBdtQuery() {
-  bdtQueryPlateNo.value = ''
-  bdtList.value = []
   bdtOpen.value = true
-}
-
-function handlePrintBdt() {
-  if (!bdtQueryPlateNo.value) return proxy.$modal.msgError('请输入板号')
-  getSequencingBDT({ plateNo: bdtQueryPlateNo.value }).then(response => {
-    bdtList.value = response.data || []
-  })
 }
 
 function handleInsufficient() {
@@ -626,9 +569,8 @@ onActivated(() => {
 }
 
 .form-label {
-  width: 140px;
+  width: 100px;
   padding: 10px;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -655,7 +597,38 @@ onActivated(() => {
   margin-bottom: 0px;
 }
 
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #dfe6ec;
+  padding: 8px;
+  text-align: center;
+}
+
 .report-table th {
   background-color: #f8f8f9;
+}
+
+.report-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.print-action-area {
+  text-align: center;
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.print-btn {
+  padding: 10px 40px;
+  font-weight: bold;
+  border-radius: 4px;
 }
 </style>

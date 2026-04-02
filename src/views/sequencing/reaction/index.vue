@@ -517,83 +517,8 @@
       </template>
     </el-dialog>
 
-    <!-- BDT查询对话框 -->
-    <el-dialog v-model="bdtOpen" width="1000px" append-to-body top="5vh">
-      <template #header>
-        <div style="display: flex; align-items: center; padding: 10px 0">
-          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
-            <Document />
-          </el-icon>
-          <span style="font-weight: bold; font-size: 16px">测序 BDT 表查询</span>
-        </div>
-      </template>
-      <el-form :model="bdtQuery" label-width="0" class="well-form">
-        <div class="form-row border-top">
-          <div class="form-label" style="width: 120px">板号：</div>
-          <div class="form-content">
-            <el-input v-model="bdtQuery.plateNo" placeholder="请输入板号" style="width: 250px" />
-          </div>
-        </div>
-        <div class="form-row border-bottom">
-          <div class="form-label" style="width: 120px">报表类型：</div>
-          <div class="form-content" style="display: flex; align-items: center; justify-content: space-between">
-            <el-radio-group v-model="bdtQuery.reportType">
-              <el-radio label="BDT表">BDT表</el-radio>
-              <el-radio label="模板BDT表">模板BDT表</el-radio>
-            </el-radio-group>
-            <div style="display: flex; gap: 10px">
-              <el-button type="primary" icon="Search" @click="handlePrintBdt">查 询</el-button>
-              <el-button type="success" icon="Printer" @click="handleNotImplemented">标签打印</el-button>
-            </div>
-          </div>
-        </div>
-      </el-form>
-
-      <div v-if="bdtList.length > 0" id="printBDT" class="report-container">
-        <div
-          class="print-header"
-          style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 18px; display: none"
-        >
-          测序BDT表
-        </div>
-        <table class="report-table">
-          <thead>
-            <tr>
-              <th>{{ bdtQuery.reportType === 'BDT表' ? '生产编号' : '模板板号' }}</th>
-              <th>板号</th>
-              <th>孔号</th>
-              <th>客户姓名</th>
-              <th>{{ bdtQuery.reportType === 'BDT表' ? '样品编号' : '孔号' }}</th>
-              <th>载体</th>
-              <th>引物</th>
-              <th>备注</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in bdtList" :key="item.id">
-              <td>{{ bdtQuery.reportType === 'BDT表' ? item.produceId : item.templatePlateNo }}</td>
-              <td>{{ item.plateNo }}</td>
-              <td>{{ item.holeNo }}</td>
-              <td>{{ item.customerName }}</td>
-              <td>{{ bdtQuery.reportType === 'BDT表' ? item.sampleId : item.templateHoleNo }}</td>
-              <td>{{ item.carrierName }}</td>
-              <td>{{ item.primer }}</td>
-              <td>{{ item.remark }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <el-empty v-else description="请输入板号查询数据" />
-
-      <template #footer>
-        <div class="dialog-footer" style="text-align: center">
-          <el-button v-print="'#printBDT'" type="success" :icon="Printer" :disabled="bdtList.length === 0"
-            >打 印</el-button
-          >
-          <el-button type="danger" :icon="Close" @click="bdtOpen = false">关 闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    <!-- BDT查询弹窗公共组件 -->
+    <BDTPrintDialog v-model="bdtOpen" :fetch-api="getSequencingBDT" />
 
     <!-- 机器分装表对话框 -->
     <el-dialog v-model="dispenseOpen" width="1000px" append-to-body top="5vh">
@@ -692,6 +617,7 @@ import { updateReportStatus } from '@/api/sequencing/report'
 import { getProduction, updateProduction } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import BDTPrintDialog from '../components/BDTPrintDialog.vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
@@ -760,11 +686,6 @@ const holeOpen = ref(false)
 const holeForm = ref({})
 
 const bdtOpen = ref(false)
-const bdtList = ref([])
-const bdtQuery = ref({
-  plateNo: undefined,
-  reportType: 'BDT表'
-})
 
 const dispenseOpen = ref(false)
 const dispenseList = ref([])
@@ -931,6 +852,11 @@ function submitPlate() {
   })
 }
 
+/** 测序BDT查询打印 */
+function handleBdtQuery() {
+  bdtOpen.value = true
+}
+
 function handleAddHole() {
   const row = selectedRows.value[0]
   const savedMachine = localStorage.getItem('reaction_machine_type') || '192'
@@ -980,22 +906,6 @@ function submitStatus() {
     proxy.$modal.msgSuccess('设置成功')
     statusOpen.value = false
     getList()
-  })
-}
-
-function handleBdtQuery() {
-  bdtQuery.value.plateNo = undefined
-  bdtList.value = []
-  bdtOpen.value = true
-}
-
-function handlePrintBdt() {
-  if (!bdtQuery.value.plateNo) {
-    proxy.$modal.msgWarning('请输入板号查询')
-    return
-  }
-  getSequencingBDT({ plateNo: bdtQuery.value.plateNo }).then(response => {
-    bdtList.value = response.data || []
   })
 }
 
