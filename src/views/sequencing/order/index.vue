@@ -164,21 +164,21 @@ const cacheKey = 'sequencing_order_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单编号', width: 150, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单编号', minWidth: 160, fixed: true, sortable: true, visible: true },
   { key: 'customerId', label: '客户ID', width: 80, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'groupId', label: '课题组ID', width: 80, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'customerAddress', label: '客户地址', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'groupId', label: '课题组ID', visible: true },
   { key: 'groupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
   { key: 'genNo', label: '基因编号', width: 100, visible: true },
-  { key: 'generation', label: '代数', width: 60, visible: true },
+  { key: 'generation', label: '代数', visible: true },
   { key: 'orderType', label: '订单类型', width: 100, visible: true },
-  { key: 'isAsync', label: '是否同步', width: 80, visible: false },
+  { key: 'isAsync', label: '是否同步', visible: true },
   { key: 'belongCompany', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'produceCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: false },
-  { key: 'createBy', label: '创建人', width: 100, visible: false },
+  { key: 'produceCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: true },
+  { key: 'createBy', label: '创建人', width: 100, visible: true },
   { key: 'createTime', label: '创建时间', width: 160, slot: 'createTime', visible: true },
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
+  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
 const editorOptions = ref({
