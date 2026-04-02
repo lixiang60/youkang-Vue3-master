@@ -395,7 +395,17 @@
 
 <script setup name="Samples">
 import { ref, reactive, toRefs, computed, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
-import { listSamples, getSamples, addSamples, updateSamples, delSamples, arrangeReturn } from '@/api/sequencing/samples'
+import {
+  listSamples,
+  getSamples,
+  addSamples,
+  updateSamples,
+  delSamples,
+  arrangeReturn,
+  clearHole,
+  clearTemplate,
+  clearReport
+} from '@/api/sequencing/samples'
 import { updateProduceOriginConcentration } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
@@ -727,17 +737,48 @@ function submitReturnForm() {
 }
 
 /** 占位操作集锦 */
+/** 批量清理数据 */
 function handleClearWellNo() {
-  proxy.$modal.msg('功能开发中...')
+  if (!selectedProduceIds.value.length) return proxy.$modal.msgWarning('请选择需要操作的样品')
+  proxy.$modal
+    .confirm('确认清除选中样品的孔号吗？')
+    .then(() => {
+      clearHole({ produceIdList: selectedProduceIds.value, remark: '手动清除孔号' }).then(() => {
+        proxy.$modal.msgSuccess('清除成功')
+        getList()
+      })
+    })
+    .catch(() => {})
 }
+
 function handleClearConcentration() {
   proxy.$modal.msg('功能开发中...')
 }
+
 function handleClearTemplate() {
-  proxy.$modal.msg('功能开发中...')
+  if (!selectedProduceIds.value.length) return proxy.$modal.msgWarning('请选择需要操作的样品')
+  proxy.$modal
+    .confirm('确认清除选中样品的模板信息吗？')
+    .then(() => {
+      clearTemplate({ produceIdList: selectedProduceIds.value, remark: '手动清除模板' }).then(() => {
+        proxy.$modal.msgSuccess('清除成功')
+        getList()
+      })
+    })
+    .catch(() => {})
 }
+
 function handleClearReport() {
-  proxy.$modal.msg('功能开发中...')
+  if (!selectedProduceIds.value.length) return proxy.$modal.msgWarning('请选择需要操作的样品')
+  proxy.$modal
+    .confirm('确认清除选中样品的报告状态吗？')
+    .then(() => {
+      clearReport({ produceIdList: selectedProduceIds.value, remark: '手动清除报告' }).then(() => {
+        proxy.$modal.msgSuccess('清除成功')
+        getList()
+      })
+    })
+    .catch(() => {})
 }
 function handleWeeklyReport() {
   proxy.$modal.msg('功能开发中...')

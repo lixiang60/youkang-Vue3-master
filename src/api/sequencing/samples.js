@@ -72,3 +72,30 @@ export function arrangeReturn(data) {
     data: data
   })
 }
+
+// 清除孔号
+export function clearHole(data) {
+  return request({
+    url: '/order/sample/reactionProduce/clearHole',
+    method: 'post',
+    data: data
+  })
+}
+
+// 清除模板
+export function clearTemplate(data) {
+  return request({
+    url: '/order/sample/template/clearTemplate',
+    method: 'post',
+    data: data
+  })
+}
+
+// 清除报告
+export function clearReport(data) {
+  return request({
+    url: '/order/sample/reportStatus/clearReport',
+    method: 'post',
+    data: data
+  })
+}
