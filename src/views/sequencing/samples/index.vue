@@ -419,7 +419,8 @@ const cacheKey = 'sequencing_samples_columns_visible'
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
   { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { key: 'orderHistory', label: '历史订单', width: 120, visible: true },
+  { key: 'produceId', label: '生产编号', width: 120, fixed: true, visible: false },
+  { key: 'orderHistory', label: '历史订单', width: 160, visible: true },
   { key: 'sampleId', label: '样品编号', width: 120, fixed: true, visible: true },
   { key: 'sampleType', label: '样品类型', width: 80, visible: true },
   { key: 'samplePosition', label: '样品位置', width: 80, visible: true },
@@ -448,7 +449,7 @@ const columns = ref([
   { key: 'layout', label: '排版方式', width: 80, visible: true },
   { key: 'createUser', label: '创建人', width: 100, visible: true },
   { key: 'createTime', label: '完成时间', width: 160, visible: true },
-  { key: 'produceId', label: '生产编号', width: 120, visible: false },
+
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
@@ -843,17 +844,63 @@ watch(
 </script>
 
 <style scoped>
+/* 页面容器 */
+.app-container {
+  padding: 16px;
+}
+
+/* 搜索区域 */
+:deep(.dynamic-search) {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+}
+
+/* 工具栏 */
+:deep(.el-row.mb8) {
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+}
+
+/* 表格容器 */
+:deep(.el-table) {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* 表头样式 */
+:deep(.el-table th.el-table__cell) {
+  background-color: #f5f7fa !important;
+  color: #303133;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 0;
+}
+
+/* 表格单元格 */
+:deep(.el-table td.el-table__cell) {
+  font-size: 13px;
+  color: #606266;
+  padding: 8px 0;
+}
+
+/* 斑马纹 */
+:deep(.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell) {
+  background: #fafafa;
+}
+
+/* 悬停高亮 */
+:deep(.el-table__body tr:hover > td.el-table__cell) {
+  background-color: #ecf5ff !important;
+}
+
+/* 对话框表单样式 */
 :deep(.well-form .el-form-item) {
   margin-bottom: 0px;
-}
-
-:deep(.el-table--small .el-table__header-wrapper th) {
-  padding: 4px 0 !important;
-}
-
-:deep(.el-table--small .cell) {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-  font-size: 12px;
 }
 </style>

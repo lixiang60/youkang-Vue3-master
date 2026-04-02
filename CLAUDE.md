@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 本文件为 Claude Code (claude.ai/code) 提供项目指导。
 
 ## 项目概述
@@ -33,7 +35,23 @@ yarn build:stage
 # 交互式代码生成器
 yarn generate
 # 或: node scripts/generate.js
+
+# 代码检查与格式化
+yarn lint:fix    # ESLint 自动修复
+yarn format      # Prettier 格式化
 ```
+
+## 代码风格
+
+项目使用 Prettier 和 ESLint 进行代码规范：
+
+- **分号**: 不使用分号 (`semi: false`)
+- **引号**: 使用单引号 (`singleQuote: true`)
+- **行宽**: 120 字符
+- **尾逗号**: 不使用 (`trailingComma: 'none'`)
+- **箭头函数参数**: 单参数省略括号 (`arrowParens: 'avoid'`)
+
+Pre-commit 钩子（husky + lint-staged）会自动对 `.js` 和 `.vue` 文件执行 ESLint 修复和 Prettier 格式化。
 
 ## 架构说明
 

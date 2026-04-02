@@ -17,7 +17,8 @@
         v-bind="col"
         :prop="col.key || col.prop"
         :align="col.align || 'center'"
-        :width="col.width || defaultWidth"
+        :width="col.width"
+        :min-width="col.minWidth"
       >
         <!-- 自定义列模板 (Slot) -->
         <template v-if="col.slot" #default="scope">
@@ -106,3 +107,25 @@ function handlePagination(val) {
   emit('pagination', val)
 }
 </script>
+
+<style scoped>
+:deep(.el-table) {
+  font-size: 12px;
+}
+
+:deep(.el-table .cell) {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: #f5f7fa;
+  font-weight: 500;
+  color: #606266;
+  font-size: 12px;
+}
+
+:deep(.el-table .el-table__body-wrapper .el-table__cell) {
+  padding: 4px 0;
+}
+</style>

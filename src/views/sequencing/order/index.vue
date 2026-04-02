@@ -156,6 +156,7 @@ import LabelPrintDialog from './components/LabelPrintDialog.vue'
 import OrderDialog from './components/OrderDialog.vue'
 import EditOrderDialog from './components/EditOrderDialog.vue'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { parseTime } from '../../../utils/ruoyi.js'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
@@ -163,22 +164,22 @@ const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', '
 const cacheKey = 'sequencing_order_columns_visible'
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单编号', width: 150, fixed: true, sortable: true, visible: true },
-  { key: 'customerId', label: '客户ID', width: 80, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'groupId', label: '课题组ID', width: 80, visible: true },
-  { key: 'groupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'genNo', label: '基因编号', width: 100, visible: true },
-  { key: 'generation', label: '代数', width: 60, visible: true },
-  { key: 'orderType', label: '订单类型', width: 100, visible: true },
-  { key: 'isAsync', label: '是否同步', width: 80, visible: false },
-  { key: 'belongCompany', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'produceCompany', label: '生产公司', width: 120, showOverflowTooltip: true, visible: false },
-  { key: 'createBy', label: '创建人', width: 100, visible: false },
-  { key: 'createTime', label: '创建时间', width: 160, slot: 'createTime', visible: true },
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'orderId', label: '订单编号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { key: 'customerId', label: '客户ID', minWidth: 80, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 100, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'customerAddress', label: '客户地址', minWidth: 150, showOverflowTooltip: true, visible: false },
+  { key: 'groupId', label: '课题组ID', minWidth: 80, visible: true },
+  { key: 'groupName', label: '课题组', minWidth: 120, showOverflowTooltip: true, visible: true },
+  { key: 'genNo', label: '基因编号', minWidth: 100, visible: true },
+  { key: 'generation', label: '代数', minWidth: 60, visible: true },
+  { key: 'orderType', label: '订单类型', minWidth: 100, visible: true },
+  { key: 'isAsync', label: '是否同步', minWidth: 80, visible: false },
+  { key: 'belongCompany', label: '所属公司', minWidth: 120, showOverflowTooltip: true, visible: true },
+  { key: 'produceCompany', label: '生产公司', minWidth: 120, showOverflowTooltip: true, visible: false },
+  { key: 'createBy', label: '创建人', minWidth: 100, visible: false },
+  { key: 'createTime', label: '创建时间', minWidth: 160, slot: 'createTime', visible: true },
+  { key: 'remark', label: '备注', minWidth: 100, showOverflowTooltip: true, visible: false }
 ])
 
 const editorOptions = ref({
