@@ -58,7 +58,15 @@
     />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
+    <el-dialog v-model="open" width="900px" append-to-body top="8vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">{{ title }}</span>
+        </div>
+      </template>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -89,7 +97,15 @@
     </el-dialog>
 
     <!-- 步骤1：确认生产编号对话框 (仿制截图样式) -->
-    <el-dialog v-model="statusConfirmOpen" title="样品备注" width="800px" append-to-body>
+    <el-dialog v-model="statusConfirmOpen" width="900px" append-to-body top="8vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <List />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">样品备注确认</span>
+        </div>
+      </template>
       <div style="border: 1px solid #dcdfe6; border-radius: 4px">
         <div
           style="
@@ -141,7 +157,15 @@
     </el-dialog>
 
     <!-- 步骤2：设置模板状态对话框 (仿制截图样式) -->
-    <el-dialog v-model="statusOpen" title="设置模板" width="750px" append-to-body>
+    <el-dialog v-model="statusOpen" width="750px" append-to-body top="10vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #67c23a; font-size: 20px">
+            <Finished />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">设置模板状态</span>
+        </div>
+      </template>
       <el-form :model="statusForm" label-width="120px" class="well-form">
         <!-- 生产编号 -->
         <div class="form-row border-top">
@@ -361,7 +385,7 @@
     </el-dialog>
 
     <!-- 重抽操作表设置对话框 -->
-    <el-dialog v-model="resampleOpen" title="重抽操作表" width="800px" append-to-body>
+    <el-dialog v-model="resampleOpen" width="750px" append-to-body top="10vh">
       <template #header>
         <div style="display: flex; align-items: center">
           <el-icon style="margin-right: 8px; color: #409eff">
@@ -533,6 +557,9 @@ import { Check, Close } from '@element-plus/icons-vue'
 import {
   listProduceList,
   getProduction,
+  addProduction,
+  updateProduction,
+  delProduction,
   updateProduceTempStatus,
   updateProduceOriginConcentration,
   sendBackProduce,

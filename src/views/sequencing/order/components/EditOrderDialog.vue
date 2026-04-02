@@ -1,11 +1,19 @@
 <template>
   <el-dialog
-    title="修改"
     :model-value="modelValue"
     width="1000px"
     append-to-body
+    top="5vh"
     @update:model-value="handleUpdateVisible"
   >
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <EditPen />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">{{ title }}</span>
+      </div>
+    </template>
     <!-- Use similar structure to Screenshot: grid placement -->
     <el-form ref="formRef" :model="form" :rules="rules" label-width="110px">
       <el-row :gutter="20">

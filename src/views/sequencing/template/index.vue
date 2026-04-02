@@ -74,7 +74,15 @@
     />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="600px" append-to-body>
+    <el-dialog v-model="open" width="750px" append-to-body top="10vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">{{ title }}</span>
+        </div>
+      </template>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0" class="well-form">
         <div class="form-row border-top">
           <div class="form-label">模板排版号：</div>
@@ -92,10 +100,10 @@
             </el-form-item>
           </div>
         </div>
-        <div class="form-row border-bottom" style="height: 120px">
-          <div class="form-label" style="height: 100%">备注：</div>
-          <div class="form-content" style="height: 100%">
-            <el-form-item prop="remark" label-width="0" style="height: 100%">
+        <div class="form-row border-bottom">
+          <div class="form-label">备注：</div>
+          <div class="form-content">
+            <el-form-item prop="remark" label-width="0">
               <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入内容" />
             </el-form-item>
           </div>

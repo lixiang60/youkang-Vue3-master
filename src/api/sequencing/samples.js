@@ -99,3 +99,12 @@ export function clearReport(data) {
     data: data
   })
 }
+
+// 加测
+export function addTest(data) {
+  return request({
+    url: '/order/sample/addTest',
+    method: 'post',
+    data: data
+  })
+}
