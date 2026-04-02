@@ -271,16 +271,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px">
-            <el-input
-              v-model="plateForm.remark"
-              type="textarea"
-              :rows="5"
-              placeholder="请输入备注内容"
-              style="height: 100%"
-            />
+            <el-input v-model="plateForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -341,16 +335,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px">
-            <el-input
-              v-model="holeForm.remark"
-              type="textarea"
-              :rows="5"
-              placeholder="请输入备注内容"
-              style="height: 100%"
-            />
+            <el-input v-model="holeForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -404,10 +392,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="statusForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
+            <el-input v-model="statusForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -441,10 +429,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="stopForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
+            <el-input v-model="stopForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -478,10 +466,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="preForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
+            <el-input v-model="preForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -515,10 +503,10 @@
           </div>
         </div>
         <!-- 备注 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="insufficientForm.remark" type="textarea" :rows="5" placeholder="请输入备注内容" />
+            <el-input v-model="insufficientForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
           </div>
         </div>
       </el-form>
@@ -530,8 +518,16 @@
       </template>
     </el-dialog>
 
-    <!-- DBT查询对话框 -->
-    <el-dialog v-model="bdtOpen" title="测序BDT表" width="1000px" append-to-body>
+    <!-- BDT查询对话框 -->
+    <el-dialog v-model="bdtOpen" width="1000px" append-to-body top="5vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <Document />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">测序 BDT 表查询</span>
+        </div>
+      </template>
       <el-form :model="bdtQuery" label-width="0" class="well-form">
         <div class="form-row border-top">
           <div class="form-label" style="width: 120px">板号：</div>
@@ -599,7 +595,15 @@
     </el-dialog>
 
     <!-- 机器分装表对话框 -->
-    <el-dialog v-model="dispenseOpen" title="测序机器分装表打印" width="1000px" append-to-body>
+    <el-dialog v-model="dispenseOpen" width="1000px" append-to-body top="5vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <Grid />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">测序机器分装表打印</span>
+        </div>
+      </template>
       <el-form :model="dispenseQuery" label-width="0" class="well-form">
         <div class="form-row border-top border-bottom">
           <div class="form-label" style="width: 120px">板号：</div>
@@ -688,20 +692,9 @@ import { getProduction, updateProduction } from '@/api/sequencing/production'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
-const searchRef = ref(null)
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
-
-const dataList = ref([])
-const open = ref(false)
-const loading = ref(true)
-const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const title = ref('')
-const selectedRows = ref([])
-const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
+const cacheKey = 'sequencing_reaction_columns_visible'
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
@@ -719,30 +712,6 @@ const columns = ref([
   { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
 ])
 
-// 缓存列设置
-const cacheKey = 'sequencing_reaction_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) {}
-}
-watch(
-  columns,
-  newVal => {
-    const cache = {}
-    newVal.forEach(col => {
-      if (col.key) cache[col.key] = col.visible
-    })
-    localStorage.setItem(cacheKey, JSON.stringify(cache))
-  },
-  { deep: true }
-)
-
 // 检索配置
 const searchFields = ref([
   { prop: 'templateNo', label: '板号', type: 'input' },
@@ -751,9 +720,56 @@ const searchFields = ref([
   { prop: 'sampleId', label: '样品编号', type: 'input' }
 ])
 
-function toggleSearchPanel() {
-  searchRef.value?.toggleCollapse()
+const concRules = {
+  originConcentration: [{ required: true, message: '请选择或输入原浓度', trigger: 'change' }]
 }
+
+// --- 2. State ---
+const dataList = ref([])
+const open = ref(false)
+const loading = ref(true)
+const showSearch = ref(true)
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const total = ref(0)
+const title = ref('')
+const selectedRows = ref([])
+const searchRef = ref(null)
+
+const concOpen = ref(false)
+const concForm = ref({})
+
+const statusOpen = ref(false)
+const statusForm = ref({})
+
+const stopOpen = ref(false)
+const stopForm = ref({})
+
+const insufficientOpen = ref(false)
+const insufficientForm = ref({})
+
+const preOpen = ref(false)
+const preForm = ref({})
+
+const plateOpen = ref(false)
+const plateForm = ref({})
+
+const holeOpen = ref(false)
+const holeForm = ref({})
+
+const bdtOpen = ref(false)
+const bdtList = ref([])
+const bdtQuery = ref({
+  plateNo: undefined,
+  reportType: 'BDT表'
+})
+
+const dispenseOpen = ref(false)
+const dispenseList = ref([])
+const dispenseQuery = ref({
+  plateNo: undefined
+})
 
 const data = reactive({
   form: {},
@@ -771,6 +787,35 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data)
 
+// --- 3. Computed ---
+const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceId))
+
+// --- 4. Watchers ---
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      if (col.key) cache[col.key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
+
+// --- 4. Methods ---
 /** 查询列表 */
 function getList() {
   loading.value = true
@@ -841,21 +886,6 @@ function reset() {
   }
 }
 
-// 业务方法
-const concOpen = ref(false)
-const concForm = ref({})
-const statusOpen = ref(false)
-const statusForm = ref({})
-const stopOpen = ref(false)
-const stopForm = ref({})
-const insufficientOpen = ref(false)
-const insufficientForm = ref({})
-const preOpen = ref(false)
-const preForm = ref({})
-const concRules = {
-  originConcentration: [{ required: true, message: '请选择或输入原浓度', trigger: 'change' }]
-}
-
 function handleOriginConcentration() {
   concForm.value = {
     produceIdList: ids.value,
@@ -877,8 +907,6 @@ function submitConc() {
   })
 }
 
-const plateOpen = ref(false)
-const plateForm = ref({})
 function handleAddPlate() {
   const savedMachine = localStorage.getItem('reaction_machine_type') || '192'
   const savedLayout = localStorage.getItem('reaction_layout_type') || '横排'
@@ -902,8 +930,6 @@ function submitPlate() {
   })
 }
 
-const holeOpen = ref(false)
-const holeForm = ref({})
 function handleAddHole() {
   const row = selectedRows.value[0]
   const savedMachine = localStorage.getItem('reaction_machine_type') || '192'
@@ -931,10 +957,6 @@ function submitHole() {
 
 /** 报告状态按钮操作 */
 function handleReportStatus() {
-  if (multiple.value) {
-    proxy.$modal.msgWarning('请选择需要设置状态的样品')
-    return
-  }
   const savedStatus = localStorage.getItem('reaction_report_status')
   statusForm.value = {
     produceIdList: ids.value,
@@ -960,13 +982,6 @@ function submitStatus() {
   })
 }
 
-const bdtOpen = ref(false)
-const bdtList = ref([])
-const bdtQuery = ref({
-  plateNo: undefined,
-  reportType: 'BDT表'
-})
-
 function handleBdtQuery() {
   bdtQuery.value.plateNo = undefined
   bdtList.value = []
@@ -984,10 +999,6 @@ function handlePrintBdt() {
 }
 
 function handleStop() {
-  if (multiple.value) {
-    proxy.$modal.msgWarning('请选择需要停止反应的样品')
-    return
-  }
   stopForm.value = {
     produceIdList: ids.value,
     remark: undefined
@@ -1004,10 +1015,6 @@ function submitStop() {
 }
 
 function handleInsufficient() {
-  if (multiple.value) {
-    proxy.$modal.msgWarning('请选择样品不足的记录')
-    return
-  }
   insufficientForm.value = {
     produceIdList: ids.value,
     remark: undefined
@@ -1024,10 +1031,6 @@ function submitInsufficient() {
 }
 
 function handlePreReaction() {
-  if (multiple.value) {
-    proxy.$modal.msgWarning('请选择需要反应预做的记录')
-    return
-  }
   preForm.value = {
     produceIdList: ids.value,
     remark: undefined
@@ -1049,12 +1052,6 @@ function submitPreReaction() {
     .catch(() => {})
 }
 
-const dispenseOpen = ref(false)
-const dispenseList = ref([])
-const dispenseQuery = ref({
-  plateNo: undefined
-})
-
 function handleDispense() {
   dispenseQuery.value.plateNo = undefined
   dispenseList.value = []
@@ -1066,266 +1063,8 @@ function handlePrintDispense() {
     proxy.$modal.msgWarning('请输入板号查询')
     return
   }
-  // 暂时提供 Mock 数据供演示
-  const mockData = [
-    {
-      produceId: 1,
-      holeNo: 'A01',
-      orderId: '201806180',
-      sampleId: 'SIE-PGI',
-      templatePlateNo: 'JO614A',
-      templateHoleNo: 'D01',
-      templateVolume: '1.25',
-      primer: 'SIE-PGEX-2',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 2,
-      holeNo: 'A02',
-      orderId: '201806180',
-      sampleId: 'SIE-PGI',
-      templatePlateNo: 'JO614A',
-      templateHoleNo: 'D01',
-      templateVolume: '1.25',
-      primer: 'SIE-PGEX-2',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 3,
-      holeNo: 'A03',
-      orderId: '201806180',
-      sampleId: '409R-3',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.5',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 4,
-      holeNo: 'A04',
-      orderId: '201806180',
-      sampleId: '409R-2',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 5,
-      holeNo: 'A05',
-      orderId: '201806180',
-      sampleId: '409R-1',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 6,
-      holeNo: 'A06',
-      orderId: '201806180',
-      sampleId: '373R-5',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 7,
-      holeNo: 'A07',
-      orderId: '201806180',
-      sampleId: '373R-4',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 8,
-      holeNo: 'A08',
-      orderId: '201806180',
-      sampleId: '373R-3',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 9,
-      holeNo: 'A09',
-      orderId: '201806180',
-      sampleId: '373R-2',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '3.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 10,
-      holeNo: 'A10',
-      orderId: '201806180',
-      sampleId: '373R-1',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.0',
-      primer: '146-2-W1F',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 11,
-      holeNo: 'A11',
-      orderId: '201806152',
-      sampleId: 'EF-TU-',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '3.0',
-      primer: 'T7TER',
-      primerConcentration: '',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 12,
-      holeNo: 'A12',
-      orderId: '201806162',
-      sampleId: 'S5-1-2',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.5',
-      primer: 'U6',
-      primerConcentration: '',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: '3:7'
-    },
-    {
-      produceId: 13,
-      holeNo: 'B01',
-      orderId: '201806162',
-      sampleId: 'S5-4-1',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '1.5',
-      primer: 'U6',
-      primerConcentration: '',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: '3:7'
-    },
-    {
-      produceId: 14,
-      holeNo: 'B02',
-      orderId: '201806170',
-      sampleId: '1-1-4',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '2.0',
-      primer: 'M13F',
-      primerConcentration: '',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 15,
-      holeNo: 'B03',
-      orderId: '201806170',
-      sampleId: '5-2-3',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '3.0',
-      primer: 'M13F',
-      primerConcentration: '',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    },
-    {
-      produceId: 16,
-      holeNo: 'B04',
-      orderId: '201806170',
-      sampleId: 'PA',
-      templatePlateNo: '-1',
-      templateHoleNo: '-1',
-      templateVolume: '3.0',
-      primer: 'PET22BPAW',
-      primerConcentration: '对应',
-      primerVolume: '1',
-      reagentVolume: '1',
-      totalVolume: '5',
-      betaine: '甜',
-      ratio37: ''
-    }
-  ]
-  dispenseList.value = mockData
+  // TODO: 后端接口对接
+  dispenseList.value = []
 }
 
 function handleNotImplemented() {

@@ -142,10 +142,10 @@
             </el-radio-group>
           </div>
         </div>
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="height: 100%">备注：</div>
           <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="plateForm.remark" type="textarea" :rows="5" placeholder="添加备注信息..." />
+            <el-input v-model="plateForm.remark" type="textarea" :rows="4" placeholder="添加备注信息..." />
           </div>
         </div>
       </el-form>
@@ -207,10 +207,10 @@
             </el-form-item>
           </div>
         </div>
-        <div class="form-row border-bottom" style="height: 150px">
-          <div class="form-label" style="height: 100%">备注：</div>
-          <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="holeForm.remark" type="textarea" :rows="5" placeholder="添加备注信息..." />
+        <div class="form-row border-bottom">
+          <div class="form-label">备注：</div>
+          <div class="form-content" style="padding: 10px">
+            <el-input v-model="holeForm.remark" type="textarea" :rows="4" placeholder="添加备注信息..." />
           </div>
         </div>
       </el-form>
@@ -223,7 +223,15 @@
     </el-dialog>
 
     <!-- BDT查询对话框 -->
-    <el-dialog v-model="bdtOpen" title="测序BDT表" width="1000px" append-to-body>
+    <el-dialog v-model="bdtOpen" width="1000px" append-to-body top="5vh">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <Document />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">测序 BDT 表查询</span>
+        </div>
+      </template>
       <el-form :inline="true" label-width="68px" @submit.prevent>
         <el-form-item label="板号">
           <el-input v-model="bdtQueryPlateNo" placeholder="请输入板号" clearable @keyup.enter="handlePrintBdt" />
@@ -233,7 +241,7 @@
         </el-form-item>
       </el-form>
 
-      <div v-if="bdtList.length > 0" class="report-container">
+      <div v-if="bdtList.length > 0" id="printPrereactionBDT" class="report-container">
         <table class="report-table">
           <thead>
             <tr>
@@ -295,10 +303,10 @@
           </div>
         </div>
         <!-- 退回理由 -->
-        <div class="form-row border-bottom" style="height: 150px">
+        <div class="form-row border-bottom">
           <div class="form-label" style="width: 140px; height: 100%">退回理由：</div>
           <div class="form-content" style="height: 100%; padding: 10px; display: flex; align-items: center">
-            <el-input v-model="sendBackForm.remark" type="textarea" :rows="5" placeholder="请输入退回原因" />
+            <el-input v-model="sendBackForm.remark" type="textarea" :rows="4" placeholder="请输入退回原因" />
           </div>
         </div>
       </el-form>
@@ -325,17 +333,9 @@ import {
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
+// --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
-
-const dataList = ref([])
-const loading = ref(true)
-const showSearch = ref(true)
-const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
-const total = ref(0)
-const searchRef = ref(null)
-const selectedRows = ref([])
+const cacheKey = 'sequencing_prereaction_columns_visible'
 
 // 列配置
 const columns = ref([
@@ -364,6 +364,14 @@ const columns = ref([
   { key: 'createBy', label: '添加人', width: 100, visible: true }
 ])
 
+// 检索配置
+const searchFields = ref([
+  { prop: 'plateNo', label: '板号', type: 'input' },
+  { prop: 'orderId', label: '订单号', type: 'input' },
+  { prop: 'customerName', label: '客户姓名', type: 'input' },
+  { prop: 'sampleId', label: '样品编号', type: 'input' }
+])
+
 const plateRules = {
   plateNo: [{ required: true, message: '请输入板号', trigger: 'blur' }],
   layout: [{ required: true, message: '请选择排版方式', trigger: 'change' }]
@@ -374,37 +382,32 @@ const holeRules = {
   holeNo: [{ required: true, message: '请输入孔号', trigger: 'blur' }]
 }
 
-// 检索配置
-const searchFields = ref([
-  { prop: 'plateNo', label: '板号', type: 'input' },
-  { prop: 'orderId', label: '订单号', type: 'input' },
-  { prop: 'customerName', label: '客户姓名', type: 'input' },
-  { prop: 'sampleId', label: '样品编号', type: 'input' }
-])
+// --- 2. State ---
+const dataList = ref([])
+const loading = ref(true)
+const showSearch = ref(true)
+const ids = ref([])
+const single = ref(true)
+const multiple = ref(true)
+const total = ref(0)
+const searchRef = ref(null)
+const selectedRows = ref([])
 
-// 列可见性缓存
-const cacheKey = 'sequencing_prereaction_columns_visible'
-const savedColumns = localStorage.getItem(cacheKey)
-if (savedColumns) {
-  try {
-    const cache = JSON.parse(savedColumns)
-    columns.value.forEach(col => {
-      const key = col.key || col.prop || col.type
-      if (key && cache[key] !== undefined) col.visible = cache[key]
-    })
-  } catch (e) {}
-}
-watch(
-  columns,
-  newVal => {
-    const cache = {}
-    newVal.forEach(col => {
-      if (col.key) cache[col.key] = col.visible
-    })
-    localStorage.setItem(cacheKey, JSON.stringify(cache))
-  },
-  { deep: true }
-)
+const bdtOpen = ref(false)
+const bdtQueryPlateNo = ref('')
+const bdtList = ref([])
+
+const plateOpen = ref(false)
+const plateForm = ref({})
+
+const holeOpen = ref(false)
+const holeForm = ref({})
+
+const sendBackOpen = ref(false)
+const sendBackForm = ref({
+  produceIdList: [],
+  remark: ''
+})
 
 const data = reactive({
   queryParams: {
@@ -419,6 +422,32 @@ const data = reactive({
 
 const { queryParams } = toRefs(data)
 
+// --- 3. Watchers ---
+// 初始化列显隐缓存
+const savedColumns = localStorage.getItem(cacheKey)
+if (savedColumns) {
+  try {
+    const cache = JSON.parse(savedColumns)
+    columns.value.forEach(col => {
+      const key = col.key || col.prop || col.type
+      if (key && cache[key] !== undefined) col.visible = cache[key]
+    })
+  } catch (e) {}
+}
+
+watch(
+  columns,
+  newVal => {
+    const cache = {}
+    newVal.forEach(col => {
+      if (col.key) cache[col.key] = col.visible
+    })
+    localStorage.setItem(cacheKey, JSON.stringify(cache))
+  },
+  { deep: true }
+)
+
+// --- 4. Methods ---
 /** 查询列表 */
 function getList() {
   loading.value = true
@@ -470,9 +499,6 @@ function handleExport() {
   )
 }
 
-// 业务方法
-const plateOpen = ref(false)
-const plateForm = ref({})
 function handleBatchPlate() {
   plateForm.value = {
     produceIdList: ids.value,
@@ -496,8 +522,6 @@ function submitPlate() {
   })
 }
 
-const holeOpen = ref(false)
-const holeForm = ref({})
 function handleActiveHole() {
   const row = selectedRows.value[0]
   holeForm.value = {
@@ -523,9 +547,6 @@ function submitHole() {
   })
 }
 
-const bdtOpen = ref(false)
-const bdtQueryPlateNo = ref('')
-const bdtList = ref([])
 function handleBdtQuery() {
   bdtQueryPlateNo.value = ''
   bdtList.value = []
@@ -552,12 +573,6 @@ function handleInsufficient() {
     .catch(() => {})
 }
 
-const sendBackOpen = ref(false)
-const sendBackForm = ref({
-  produceIdList: [],
-  remark: ''
-})
-
 function handleSendBack() {
   sendBackForm.value = {
     produceIdList: ids.value,
@@ -580,12 +595,17 @@ function submitSendBack() {
     .catch(() => {})
 }
 
+// --- 5. Lifecycle Hooks ---
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 </script>
 

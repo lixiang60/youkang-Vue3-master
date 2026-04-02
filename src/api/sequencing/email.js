@@ -71,3 +71,15 @@ export function listEmailProduce(data) {
     }
   })
 }
+
+// 查询报告邮件列表
+export function listReportEmailProduce(data) {
+  return request({
+    url: '/order/sample/template/produce/list',
+    method: 'post',
+    data: {
+      ...data,
+      flowName: '报告邮件'
+    }
+  })
+}
