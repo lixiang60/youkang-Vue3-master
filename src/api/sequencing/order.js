@@ -90,3 +90,20 @@ export function batchAddSampleByOrder(data) {
     data: data
   })
 }
+
+// 范围查询订单
+export function queryByRange(query) {
+  return request({
+    url: '/order/info/queryByRange',
+    method: 'post',
+    data: query
+  })
+}
+
+// 查询订单及关联样品
+export function getOrderWithSamples(orderId) {
+  return request({
+    url: '/order/info/withSamples/' + orderId,
+    method: 'get'
+  })
+}

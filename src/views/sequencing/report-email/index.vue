@@ -11,29 +11,30 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['sequencing:reportemail:send']"
-          size="small"
-          type="success"
-          plain
-          icon="Message"
-          :disabled="multiple"
-          @click="handleSendEmail"
-        >
-          报告发送
+        <el-button size="small" type="success" plain icon="Message" :disabled="multiple" @click="handleSendEmail">
+          邮件发送
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="warning" plain icon="CircleClose" :disabled="multiple" @click="handleIgnoreEmail">
+          邮件忽略
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['sequencing:reportemail:ignore']"
           size="small"
-          type="warning"
+          type="success"
           plain
-          icon="CircleClose"
+          icon="Promotion"
           :disabled="multiple"
-          @click="handleIgnoreEmail"
+          @click="handleTemplateReturn"
         >
-          邮件忽略
+          邮件模板回发
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">
+          删除
         </el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
@@ -117,7 +118,8 @@ const columns = ref([
   { key: 'sendBy', label: '发送人', minWidth: 100, visible: true },
   { key: 'sendTime', label: '发送时间', minWidth: 160, visible: true },
   { key: 'sendResult', label: '发送结果', minWidth: 100, visible: true },
-  { key: 'failureReason', label: '失败原因', minWidth: 150, showOverflowTooltip: true, visible: true }
+  { key: 'failureReason', label: '失败原因', minWidth: 150, showOverflowTooltip: true, visible: true },
+  { key: 'companyName', label: '所属公司', minWidth: 150, visible: true }
 ])
 
 const searchFields = ref([
@@ -231,6 +233,26 @@ function handleIgnoreEmail() {
   if (ids.value.length === 0) return
   proxy.$modal.confirm('确定要忽略选中的 ' + ids.value.length + ' 条记录吗？').then(() => {
     proxy.$modal.msgSuccess('操作成功')
+  })
+}
+
+/** 邮件模板回发操作 */
+function handleTemplateReturn() {
+  if (ids.value.length === 0) return
+  const currentId = ids.value[0]
+  reset()
+  open.value = true
+  title.value = '邮件模板已准备好，请查收'
+  form.value.id = currentId
+  form.value.remark = '样品模板已准备好，请查收。'
+}
+
+/** 删除操作 */
+function handleDelete() {
+  const selectionIds = ids.value
+  if (!selectionIds.length) return
+  proxy.$modal.confirm('确定要删除选中的 ' + selectionIds.length + ' 条记录吗？').then(() => {
+    proxy.$modal.msgSuccess('删除成功')
   })
 }
 

@@ -392,12 +392,17 @@ function handleNotImplemented() {
   proxy.$modal.msg('功能开发中...')
 }
 
+// --- 4. Lifecycle Hooks ---
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 </script>
 

@@ -563,10 +563,10 @@ import {
   updateProduceTempStatus,
   updateProduceOriginConcentration,
   sendBackProduce,
-  getPcrGelCutList,
   getResampleList,
   getUserTemplateHole
 } from '@/api/sequencing/production'
+import { queryByRange } from '@/api/sequencing/order'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -894,10 +894,12 @@ function handlePcrGelCut() {
 function handlePrintPcr() {
   proxy.$modal.loading('请求中...')
   const params = {
-    ...pcrForm.value,
-    belongCompany: ''
+    startOrderId: pcrForm.value.startOrderNo,
+    endOrderId: pcrForm.value.endOrderNo,
+    belongCompany: pcrForm.value.belongCompany,
+    produceCompany: pcrForm.value.belongCompany // 保持同值以兼容后端
   }
-  getPcrGelCutList(params)
+  queryByRange(params)
     .then(response => {
       const res = response.data || response
       pcrDataList.value = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : []

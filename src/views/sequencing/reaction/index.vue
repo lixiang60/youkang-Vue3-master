@@ -5,9 +5,9 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain icon="EditPen" :disabled="single" @click="handleUpdate"
-          >编辑</el-button
-        >
+        <el-button size="small" type="primary" plain icon="EditPen" :disabled="single" @click="handleUpdate">
+          编辑
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain icon="Search" @click="toggleSearchPanel">查询</el-button>
@@ -16,31 +16,29 @@
         <el-button size="small" plain icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain :disabled="multiple" @click="handleOriginConcentration">
-          <template #icon
-            ><el-icon> <EditPen /> </el-icon
-          ></template>
+        <el-button
+          size="small"
+          type="primary"
+          plain
+          icon="EditPen"
+          :disabled="multiple"
+          @click="handleOriginConcentration"
+        >
           原浓度
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain :disabled="multiple" @click="handleAddPlate">
-          <template #icon
-            ><el-icon> <Calendar /> </el-icon
-          ></template>
+        <el-button size="small" type="success" plain icon="Calendar" :disabled="multiple" @click="handleAddPlate">
           添加板号
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Message" :disabled="multiple" @click="handleReportStatus"
-          >报告状态</el-button
-        >
+        <el-button size="small" type="warning" plain icon="Message" :disabled="multiple" @click="handleReportStatus">
+          报告状态
+        </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain :disabled="single" @click="handleAddHole">
-          <template #icon
-            ><el-icon> <List /> </el-icon
-          ></template>
+        <el-button size="small" type="success" plain icon="List" :disabled="single" @click="handleAddHole">
           添加孔号
         </el-button>
       </el-col>
@@ -51,17 +49,17 @@
         <el-button size="small" type="info" plain icon="Grid" @click="handleNotImplemented">上机表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" plain icon="CircleClose" :disabled="multiple" @click="handleStop"
-          >反应停止</el-button
-        >
+        <el-button size="small" type="danger" plain icon="CircleClose" :disabled="multiple" @click="handleStop">
+          反应停止
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" plain icon="Histogram" @click="handleNotImplemented">新上基表</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" plain icon="Warning" :disabled="multiple" @click="handleInsufficient"
-          >样品不足</el-button
-        >
+        <el-button size="small" type="warning" plain icon="Warning" :disabled="multiple" @click="handleInsufficient">
+          样品不足
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="info" plain icon="Compass" @click="handleDispense">机器分装</el-button>
@@ -78,15 +76,16 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" plain icon="RefreshRight" :disabled="multiple" @click="handlePreReaction"
-          >反应预做</el-button
+        <el-button
+          size="small"
+          type="success"
+          plain
+          icon="RefreshRight"
+          :disabled="multiple"
+          @click="handlePreReaction"
         >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" plain icon="Camera" @click="showSearch = !showSearch">图像设置</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" type="info" plain icon="Files" @click="handleNotImplemented">添加引物</el-button>
+          反应预做
+        </el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
@@ -217,9 +216,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitConc">确定</el-button>
-          <el-button type="danger" @click="concOpen = false">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitConc">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="concOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -400,9 +399,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitStatus">确定</el-button>
-          <el-button type="danger" @click="statusOpen = false">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitStatus">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="statusOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -474,9 +473,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitPreReaction">确定</el-button>
-          <el-button type="danger" @click="preOpen = false">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitPreReaction">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="preOpen = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -587,9 +586,11 @@
       <el-empty v-else description="请输入板号查询数据" />
 
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#printBDT'" type="success" :disabled="bdtList.length === 0">打 印</el-button>
-          <el-button type="danger" @click="bdtOpen = false">关 闭</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#printBDT'" type="success" :icon="Printer" :disabled="bdtList.length === 0"
+            >打 印</el-button
+          >
+          <el-button type="danger" :icon="Close" @click="bdtOpen = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -1071,12 +1072,17 @@ function handleNotImplemented() {
   proxy.$modal.msg('功能开发中...')
 }
 
+// --- 4. Lifecycle Hooks ---
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
 
 onActivated(() => {
-  getList()
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
 })
 </script>
 
