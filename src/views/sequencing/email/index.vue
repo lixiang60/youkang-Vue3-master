@@ -81,27 +81,27 @@ const searchRef = ref(null)
 
 // 列配置 (根据截图及标准生产字段调整)
 const columns = ref([
-  { type: 'selection', key: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'produceId', prop: 'produceId', label: '生产编号', width: 120, fixed: true, visible: true },
-  { key: 'orderId', prop: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { key: 'customerName', prop: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'customerAddress', prop: 'customerAddress', label: '客户地址', width: 150, visible: true },
-  { key: 'orderType', prop: 'orderType', label: '订单类型', width: 100, visible: true },
-  { key: 'customerLevel', prop: 'customerLevel', label: '客户等级', width: 80, visible: true },
-  { key: 'reagent', prop: 'reagent', label: '试剂', width: 100, visible: true },
-  { key: 'urgent', prop: 'urgent', label: '加急', width: 80, visible: true },
-  { key: 'sampleId', prop: 'sampleId', label: '样品编号', width: 120, visible: true },
-  { key: 'primer', prop: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'primerConcentration', prop: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
-  { key: 'sampleType', prop: 'sampleType', label: '样品类型', width: 80, visible: true },
-  { key: 'antibioticType', prop: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
-  { key: 'isAsync', prop: 'isAsync', label: '是否测试', width: 80, visible: true },
-  { key: 'originConcentration', prop: 'originConcentration', label: '原浓度', width: 100, visible: true },
-  { key: 'produceStatus', prop: 'produceStatus', label: '完成情况', width: 100, visible: true },
-  { key: 'returnState', prop: 'returnState', label: '退回状态', width: 100, visible: true },
-  { key: 'remark', prop: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'flowId', prop: 'flowId', label: '流程ID', width: 100, visible: true },
-  { key: 'flowName', prop: 'flowName', label: '流程名称', width: 100, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 100, visible: true },
+  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'orderType', label: '订单类型', minWidth: 100, visible: true },
+  { key: 'customerLevel', label: '客户等级', minWidth: 90, visible: true },
+  { key: 'reagent', label: '试剂', minWidth: 100, visible: true },
+  { key: 'urgent', label: '加急', minWidth: 80, visible: true },
+  { key: 'sampleId', label: '样品编号', minWidth: 120, visible: true },
+  { key: 'primer', label: '测序引物', minWidth: 120, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', minWidth: 90, visible: true },
+  { key: 'sampleType', label: '样品类型', minWidth: 90, visible: true },
+  { key: 'antibioticType', label: '抗生素类型', minWidth: 110, visible: true },
+  { key: 'isAsync', label: '是否测试', minWidth: 90, visible: true },
+  { key: 'originConcentration', label: '原浓度', minWidth: 100, visible: true },
+  { key: 'produceStatus', label: '完成情况', minWidth: 120, visible: true },
+  { key: 'returnState', label: '退回状态', minWidth: 120, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'flowId', label: '流程ID', minWidth: 100, visible: true },
+  { key: 'flowName', label: '流程名称', minWidth: 100, visible: true }
 ])
 
 // 检索配置

@@ -110,9 +110,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="success" @click="submitForm">确定</el-button>
-          <el-button type="danger" @click="cancel">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -122,6 +122,7 @@
 <script setup name="Template">
 import { ref, reactive, toRefs, watch, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { listTemplate, getTemplate, addTemplate, updateTemplate, delTemplate } from '@/api/sequencing/template'
+import { Check, Close } from '@element-plus/icons-vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -130,12 +131,12 @@ const { proxy } = getCurrentInstance()
 const cacheKey = 'sequencing_template_columns_visible'
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'templateNumber', label: '模板排版号', width: 150, fixed: true, sortable: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, visible: true },
-  { key: 'plateType', label: '板子类型', width: 100, visible: true },
-  { key: 'plateLayout', label: '板孔布局', width: 100, visible: true },
-  { key: 'createTime', label: '创建时间', width: 160, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'templateNumber', label: '模板排版号', minWidth: 180, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', minWidth: 150, sortable: true, visible: true },
+  { key: 'plateType', label: '板子类型', minWidth: 120, visible: true },
+  { key: 'plateLayout', label: '板孔布局', minWidth: 120, visible: true },
+  { key: 'createTime', label: '创建时间', minWidth: 180, visible: true }
 ])
 
 const searchFields = ref([
@@ -322,4 +323,9 @@ watch(
 )
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>

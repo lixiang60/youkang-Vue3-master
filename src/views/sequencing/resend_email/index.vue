@@ -133,41 +133,27 @@ const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 const cacheKey = 'sequencing_resend_email_columns_visible'
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'productionNo', label: '生产编号', prop: 'productionNo', width: 100, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', prop: 'orderId', width: 160, fixed: true, visible: true },
-  { key: 'customerName', label: '客户姓名', prop: 'customerName', width: 100, visible: true },
-  {
-    key: 'customerAddress',
-    label: '客户地址',
-    prop: 'customerAddress',
-    width: 150,
-    showOverflowTooltip: true,
-    visible: false
-  },
-  { key: 'customerLevel', label: '客户等级', prop: 'customerLevel', width: 80, visible: true },
-  {
-    key: 'researchGroup',
-    label: '课题组',
-    prop: 'researchGroup',
-    width: 120,
-    showOverflowTooltip: true,
-    visible: true
-  },
-  { key: 'sampleId', label: '样品编号', prop: 'sampleId', width: 120, visible: true },
-  { key: 'primer', label: '测序引物', prop: 'primer', width: 120, visible: true },
-  { key: 'primerConcentration', label: '引物浓度', prop: 'primerConcentration', width: 80, visible: true },
-  { key: 'sampleType', label: '样品类型', prop: 'sampleType', width: 80, visible: true },
-  { key: 'carrierName', label: '载体名称', prop: 'carrierName', width: 100, visible: true },
-  { key: 'fragmentSize', label: '片段大小', prop: 'fragmentSize', width: 80, visible: true },
-  { key: 'testResult', label: '是否测通', prop: 'testResult', width: 80, visible: true },
-  { key: 'performance', label: '完成情况', prop: 'performance', width: 100, visible: true },
-  { key: 'returnState', label: '返回状态', prop: 'returnState', width: 100, visible: true },
-  { key: 'remark', label: '备注', prop: 'remark', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'flowName', label: '流程名称', prop: 'flowName', width: 120, visible: true },
-  { key: 'templatePlateNo', label: '板号', prop: 'templatePlateNo', width: 100, visible: true },
-  { key: 'templateHoleNo', label: '孔号', prop: 'templateHoleNo', width: 80, visible: true },
-  { key: 'createUser', label: '添加人', prop: 'createUser', width: 100, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'productionNo', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 110, visible: true },
+  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: false },
+  { key: 'customerLevel', label: '客户等级', minWidth: 100, visible: true },
+  { key: 'researchGroup', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { key: 'sampleId', label: '样品编号', minWidth: 130, visible: true },
+  { key: 'primer', label: '测序引物', minWidth: 120, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', minWidth: 100, visible: true },
+  { key: 'sampleType', label: '样品类型', minWidth: 100, visible: true },
+  { key: 'carrierName', label: '载体名称', minWidth: 120, visible: true },
+  { key: 'fragmentSize', label: '片段大小', minWidth: 100, visible: true },
+  { key: 'testResult', label: '是否测通', minWidth: 100, visible: true },
+  { key: 'performance', label: '完成情况', minWidth: 110, visible: true },
+  { key: 'returnState', label: '返回状态', minWidth: 110, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'flowName', label: '流程名称', minWidth: 130, visible: true },
+  { key: 'templatePlateNo', label: '板号', minWidth: 110, visible: true },
+  { key: 'templateHoleNo', label: '孔号', minWidth: 100, visible: true },
+  { key: 'createUser', label: '添加人', minWidth: 110, visible: true }
 ])
 
 const searchFields = ref([
@@ -360,4 +346,9 @@ watch(
 )
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>

@@ -512,40 +512,39 @@ const { sys_normal_disable, sys_yes_no } = proxy.useDict('sys_normal_disable', '
 const cacheKey = 'sequencing_samples_columns_visible'
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', width: 120, fixed: true, visible: false },
-  { key: 'orderHistory', label: '历史订单', width: 160, visible: true },
-  { key: 'sampleId', label: '样品编号', width: 120, fixed: true, visible: true },
-  { key: 'sampleType', label: '样品类型', width: 80, visible: true },
-  { key: 'samplePosition', label: '样品位置', width: 80, visible: true },
-  { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'primerType', label: '引物类型', width: 80, visible: true },
-  { key: 'primerPosition', label: '引物位置', width: 80, visible: true },
-  { key: 'primerConcentration', label: '引物浓度', width: 80, visible: true },
-  { key: 'seq', label: '序列', width: 100, showOverflowTooltip: true, visible: true },
-  { key: 'project', label: '测序项目', width: 100, visible: true },
-  { key: 'carrierName', label: '载体名称', width: 100, visible: true },
-  { key: 'antibioticType', label: '抗生素类型', width: 100, visible: true },
-  { key: 'plasmidLength', label: '质粒长度', width: 80, visible: true },
-  { key: 'fragmentSize', label: '片段大小', width: 80, visible: true },
-  { key: 'testResult', label: '是否测通', width: 80, visible: true },
-  { key: 'originConcentration', label: '原浓度', width: 80, visible: true },
-  { key: 'templatePlateNo', label: '模板板号', width: 80, visible: true },
-  { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
-  { key: 'performance', label: '完成情况', width: 80, visible: true },
-  { key: 'returnState', label: '返回状态', width: 80, visible: true },
-  { key: 'flowName', label: '流程名称', width: 100, visible: true },
-  { key: 'plateNo', label: '板号', width: 80, visible: true },
-  { key: 'holeNo', label: '孔号', width: 80, visible: true },
-  { key: 'belongCompany', label: '所属公司', width: 120, visible: true },
-  { key: 'produceCompany', label: '生产公司', width: 120, visible: true },
-  { key: 'holeNumber', label: '孔号数量', width: 80, visible: true },
-  { key: 'layout', label: '排版方式', width: 80, visible: true },
-  { key: 'createUser', label: '创建人', width: 100, visible: true },
-  { key: 'createTime', label: '完成时间', width: 160, visible: true },
-
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { key: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: false },
+  { key: 'orderHistory', label: '历史订单', minWidth: 160, visible: true },
+  { key: 'sampleId', label: '样品编号', minWidth: 130, fixed: true, visible: true },
+  { key: 'sampleType', label: '样品类型', minWidth: 100, visible: true },
+  { key: 'samplePosition', label: '样品位置', minWidth: 100, visible: true },
+  { key: 'primer', label: '测序引物', minWidth: 110, visible: true },
+  { key: 'primerType', label: '引物类型', minWidth: 100, visible: true },
+  { key: 'primerPosition', label: '引物位置', minWidth: 100, visible: true },
+  { key: 'primerConcentration', label: '引物浓度', minWidth: 100, visible: true },
+  { key: 'seq', label: '序列', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'project', label: '测序项目', minWidth: 110, visible: true },
+  { key: 'carrierName', label: '载体名称', minWidth: 120, visible: true },
+  { key: 'antibioticType', label: '抗生素类型', minWidth: 110, visible: true },
+  { key: 'plasmidLength', label: '质粒长度', minWidth: 100, visible: true },
+  { key: 'fragmentSize', label: '片段大小', minWidth: 100, visible: true },
+  { key: 'testResult', label: '是否测通', minWidth: 100, visible: true },
+  { key: 'originConcentration', label: '原浓度', minWidth: 100, visible: true },
+  { key: 'templatePlateNo', label: '模板板号', minWidth: 110, visible: true },
+  { key: 'templateHoleNo', label: '模板孔号', minWidth: 100, visible: true },
+  { key: 'performance', label: '完成情况', minWidth: 100, visible: true },
+  { key: 'returnState', label: '返回状态', minWidth: 100, visible: true },
+  { key: 'flowName', label: '流程名称', minWidth: 130, visible: true },
+  { key: 'plateNo', label: '板号', minWidth: 110, visible: true },
+  { key: 'holeNo', label: '孔号', minWidth: 100, visible: true },
+  { key: 'belongCompany', label: '所属公司', minWidth: 140, visible: true },
+  { key: 'produceCompany', label: '生产公司', minWidth: 140, visible: true },
+  { key: 'holeNumber', label: '孔号数量', minWidth: 100, visible: true },
+  { key: 'layout', label: '排版方式', minWidth: 100, visible: true },
+  { key: 'createUser', label: '创建人', minWidth: 110, visible: true },
+  { key: 'createTime', label: '完成时间', minWidth: 180, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 const searchFields = ref([
@@ -989,6 +988,11 @@ watch(
 </script>
 
 <style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+
 /* 页面容器 */
 .app-container {
   padding: 16px;

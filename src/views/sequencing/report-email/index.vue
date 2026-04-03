@@ -100,26 +100,26 @@ const { proxy } = getCurrentInstance()
 
 // --- 1. Constants & Config ---
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
   { key: 'id', label: '标示', minWidth: 100, fixed: true, visible: true },
   { key: 'salesman', label: '销售员', minWidth: 100, visible: true },
   { key: 'customerId', label: '客户ID', minWidth: 100, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 100, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 120, visible: true },
   { key: 'orderId', label: '订单号', minWidth: 150, visible: true },
   { key: 'plateNo', label: '版号', minWidth: 120, visible: true },
-  { key: 'emailTitle', label: '邮件标题', minWidth: 200, showOverflowTooltip: true, visible: true },
-  { key: 'fileSize', label: '文件大小', minWidth: 100, visible: true },
-  { key: 'attachUrl', label: '附件地址', minWidth: 150, showOverflowTooltip: true, visible: true },
+  { key: 'emailTitle', label: '邮件标题', minWidth: 240, showOverflowTooltip: true, visible: true },
+  { key: 'fileSize', label: '文件大小', minWidth: 110, visible: true },
+  { key: 'attachUrl', label: '附件地址', minWidth: 180, showOverflowTooltip: true, visible: true },
   { key: 'isSend', label: '是否发送', minWidth: 100, visible: true },
-  { key: 'remark', label: '备注', minWidth: 120, showOverflowTooltip: true, visible: true },
-  { key: 'createBy', label: '添加人', minWidth: 100, visible: true },
-  { key: 'createTime', label: '添加时间', minWidth: 160, visible: true },
-  { key: 'downloadUrl', label: '下载', minWidth: 80, slot: 'download', visible: true },
-  { key: 'sendBy', label: '发送人', minWidth: 100, visible: true },
-  { key: 'sendTime', label: '发送时间', minWidth: 160, visible: true },
-  { key: 'sendResult', label: '发送结果', minWidth: 100, visible: true },
-  { key: 'failureReason', label: '失败原因', minWidth: 150, showOverflowTooltip: true, visible: true },
-  { key: 'companyName', label: '所属公司', minWidth: 150, visible: true }
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'createBy', label: '添加人', minWidth: 110, visible: true },
+  { key: 'createTime', label: '添加时间', minWidth: 180, visible: true },
+  { key: 'downloadUrl', label: '下载', minWidth: 90, slot: 'download', visible: true },
+  { key: 'sendBy', label: '发送人', minWidth: 110, visible: true },
+  { key: 'sendTime', label: '发送时间', minWidth: 180, visible: true },
+  { key: 'sendResult', label: '发送结果', minWidth: 110, visible: true },
+  { key: 'failureReason', label: '失败原因', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'companyName', label: '所属公司', minWidth: 160, visible: true }
 ])
 
 const searchFields = ref([

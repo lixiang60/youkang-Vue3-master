@@ -99,9 +99,9 @@
         </div>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确定</el-button>
-          <el-button @click="cancel">取消</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -128,12 +128,12 @@ const searchRef = ref(null)
 
 // 列配置
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
-  { key: 'name', label: '名称', visible: true },
-  { key: 'status', label: '状态', visible: true },
-  { key: 'createTime', label: '创建时间', width: 180, visible: true },
-  { key: 'remark', label: '备注', showOverflowTooltip: true, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '名称', minWidth: 150, visible: true },
+  { key: 'status', label: '状态', minWidth: 100, visible: true },
+  { key: 'createTime', label: '创建时间', minWidth: 180, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 // 检索配置

@@ -218,9 +218,9 @@
       </div>
       <el-empty v-else description="请输入板号查询数据" />
       <template #footer>
-        <div class="dialog-footer">
-          <el-button v-print="'#printReportDBT'" type="success" :disabled="dbtList.length === 0">打 印</el-button>
-          <el-button type="danger" @click="dbtOpen = false">关 闭</el-button>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button v-print="'#printReportDBT'" type="success" :icon="Printer" :disabled="dbtList.length === 0">打 印</el-button>
+          <el-button type="danger" :icon="Close" @click="dbtOpen = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -250,20 +250,20 @@ const selectedProduceIds = computed(() => selectedRows.value.map(r => r.produceI
 
 // 列配置
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', width: 120, fixed: true, sortable: true, visible: true },
-  { key: 'orderId', label: '订单号', width: 160, fixed: true, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, visible: true },
-  { key: 'sampleId', label: '样品编号', width: 120, visible: true },
-  { key: 'primer', label: '测序引物', width: 100, visible: true },
-  { key: 'originConcentration', label: '原浓度', width: 100, visible: true },
-  { key: 'reportStatus', label: '报告状态', width: 100, visible: true },
-  { key: 'returnState', label: '状态', width: 100, visible: true },
-  { key: 'templatePlateNo', label: '模板板号', width: 120, visible: true },
-  { key: 'templateHoleNo', label: '模板孔号', width: 80, visible: true },
-  { key: 'plateNo', label: '反应板号', width: 120, visible: true },
-  { key: 'holeNo', label: '反应孔号', width: 80, visible: true },
-  { key: 'remark', label: '备注', width: 150, showOverflowTooltip: true, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
+  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 110, visible: true },
+  { key: 'sampleId', label: '样品编号', minWidth: 130, visible: true },
+  { key: 'primer', label: '测序引物', minWidth: 110, visible: true },
+  { key: 'originConcentration', label: '原浓度', minWidth: 100, visible: true },
+  { key: 'reportStatus', label: '报告状态', minWidth: 120, visible: true },
+  { key: 'returnState', label: '状态', minWidth: 110, visible: true },
+  { key: 'templatePlateNo', label: '模板板号', minWidth: 120, visible: true },
+  { key: 'templateHoleNo', label: '模板孔号', minWidth: 100, visible: true },
+  { key: 'plateNo', label: '反应板号', minWidth: 120, visible: true },
+  { key: 'holeNo', label: '反应孔号', minWidth: 100, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 // 检索配置

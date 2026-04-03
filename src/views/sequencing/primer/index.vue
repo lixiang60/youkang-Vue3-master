@@ -123,11 +123,12 @@ const { proxy } = getCurrentInstance()
 const cacheKey = 'sequencing_primer_columns_visible'
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'primerName', label: '引物名称', width: 150, fixed: true, sortable: true, visible: true },
-  { key: 'primerSequence', label: '引物序列', width: 200, visible: true },
-  { key: 'status', label: '状态', width: 80, visible: true },
-  { key: 'createTime', label: '创建时间', width: 160, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'primerName', label: '引物名称', minWidth: 160, fixed: true, sortable: true, visible: true },
+  { key: 'primerSequence', label: '引物序列', minWidth: 240, visible: true },
+  { key: 'status', label: '状态', minWidth: 100, visible: true },
+  { key: 'createTime', label: '创建时间', minWidth: 180, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 const searchFields = ref([
@@ -314,4 +315,9 @@ watch(
 )
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>
