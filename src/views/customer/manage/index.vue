@@ -5,13 +5,19 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" :icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" plain :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" :icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" plain :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:manage:add']" size="small" type="primary" :icon="Plus" @click="handleAdd"
+        <el-button
+          v-hasPermi="['customer:manage:add']"
+          size="small"
+          type="primary"
+          plain
+          :icon="Plus"
+          @click="handleAdd"
           >添加</el-button
         >
       </el-col>
@@ -20,6 +26,7 @@
           v-hasPermi="['customer:manage:edit']"
           size="small"
           type="success"
+          plain
           :icon="Edit"
           :disabled="single"
           @click="handleUpdate"
@@ -27,13 +34,14 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" :icon="EditSearch" @click="handleEdit">编辑</el-button>
+        <el-button size="small" plain :icon="EditSearch" @click="handleEdit">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:manage:remove']"
           size="small"
           type="danger"
+          plain
           :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
@@ -41,13 +49,13 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" :icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
+        <el-button size="small" type="info" plain :icon="ShoppingCart" @click="handlePurchase">购买其他</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" :icon="Star" @click="handleTransferPoints">转至积分</el-button>
+        <el-button size="small" type="warning" plain :icon="Star" @click="handleTransferPoints">转至积分</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" :icon="Setting" @click="handleContinueSetting">继续设置</el-button>
+        <el-button size="small" type="info" plain :icon="Setting" @click="handleContinueSetting">继续设置</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
     </el-row>
@@ -56,6 +64,7 @@
     <dynamic-table
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
+      size="small"
       :loading="loading"
       :data="dataList"
       :columns="columns"
@@ -66,21 +75,12 @@
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
       </template>
-
-      <template #action="{ row }">
-        <el-button v-hasPermi="['customer:manage:edit']" link type="primary" icon="Edit" @click="handleUpdate(row)"
-          >修改</el-button
-        >
-        <el-button v-hasPermi="['customer:manage:remove']" link type="primary" icon="Delete" @click="handleDelete(row)"
-          >删除</el-button
-        >
-      </template>
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
     <el-dialog v-model="open" :title="title" width="900px" append-to-body>
       <div class="well-form">
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="0px">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="0px" size="small">
           <div class="form-row">
             <div class="form-label">姓名客户：</div>
             <div class="form-content">
@@ -273,7 +273,7 @@ const columns = ref([
   { key: 'status', label: '状态', minWidth: 90, visible: true },
   { key: 'salesPerson', label: '销售员', minWidth: 110, visible: true },
   { key: 'customerUnit', label: '客户单位', minWidth: 160, showOverflowTooltip: true, visible: true },
-  { key: 'invoiceType', label: '发票种类', minWidth: 120, visible: true },
+  { key: 'invoiceType', label: '发票种类', minWidth: 160, visible: true },
   { key: 'remarks', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
   { key: 'createBy', label: '添加人', minWidth: 110, visible: true },
   { key: 'createTime', label: '时间', minWidth: 130, visible: true, slot: 'createTime' },
@@ -281,8 +281,7 @@ const columns = ref([
   { key: 'availablePoints', label: '可用积分', minWidth: 100, visible: true },
   { key: 'usedPoints', label: '已使用积分', minWidth: 110, visible: true },
   { key: 'frozenPoints', label: '冻结积分', minWidth: 100, visible: true },
-  { key: 'company', label: '所属公司', minWidth: 110, visible: true },
-  { label: '操作', minWidth: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
+  { key: 'company', label: '所属公司', minWidth: 110, visible: true }
 ])
 
 const data = reactive({

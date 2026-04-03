@@ -3,15 +3,15 @@
     <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮区 -->
-    <el-row :gutter="10" class="mb8" align="middle" style="flex-wrap: wrap; row-gap: 10px;">
+    <el-row :gutter="10" class="mb8" align="middle" style="flex-wrap: wrap; row-gap: 10px">
       <el-col :span="1.5">
         <el-button size="small" plain :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" plain :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
-      <el-col :span="1.5" style="padding-left: 0; padding-right: 0; margin: 0 10px;">
-        <div style="border-right: 1px solid #dcdfe6; height: 16px;"></div>
+      <el-col :span="1.5" style="padding-left: 0; padding-right: 0; margin: 0 10px">
+        <div style="border-right: 1px solid #dcdfe6; height: 16px"></div>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -158,25 +158,6 @@
         <el-tag :type="row.status == 1 ? 'success' : 'danger'">
           {{ row.status == 1 ? '启用' : '停用' }}
         </el-tag>
-      </template>
-
-      <template #action="{ row }">
-        <el-button
-          v-hasPermi="['customer:research_group:edit']"
-          link
-          type="primary"
-          icon="Edit"
-          @click="handleUpdate(row)"
-          >修改</el-button
-        >
-        <el-button
-          v-hasPermi="['customer:research_group:remove']"
-          link
-          type="primary"
-          icon="Delete"
-          @click="handleDelete(row)"
-          >删除</el-button
-        >
       </template>
     </dynamic-table>
 
@@ -330,8 +311,7 @@ const columns = ref([
   { key: 'pointsAmount', label: '积分金额', minWidth: 100, visible: true },
   { key: 'isReminder', label: '是否提醒', minWidth: 100, visible: true },
   { key: 'reminderContent', label: '提醒内容', minWidth: 160, showOverflowTooltip: true, visible: true },
-  { key: 'geneLabelType', label: '基因标签类型', minWidth: 120, visible: true },
-  { label: '操作', minWidth: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
+  { key: 'geneLabelType', label: '基因标签类型', minWidth: 120, visible: true }
 ])
 
 const data = reactive({
