@@ -145,6 +145,11 @@
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
       </template>
+      <template #isEnabled="{ row }">
+        <el-tag :type="row.status == 1 ? 'success' : 'danger'">
+          {{ row.status == 1 ? '启用' : '停用' }}
+        </el-tag>
+      </template>
 
       <template #action="{ row }">
         <el-button
@@ -242,6 +247,7 @@
 </template>
 
 <script setup name="Research_group">
+import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
 import {
   listResearch_group,
   getResearch_group,
@@ -288,34 +294,35 @@ const searchFields = ref([
     label: '状态',
     type: 'select',
     options: [
-      { label: '正常', value: '0' },
-      { label: '停用', value: '1' }
+      { label: '启用', value: '1' },
+      { label: '停用', value: '0' }
     ]
   }
 ])
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
-  { key: 'name', label: '名称', width: 120, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'region', label: '地区', width: 80, visible: true },
-  { key: 'salesPerson', label: '业务员', width: 80, visible: true },
-  { key: 'paymentMethod', label: '结算方式', width: 100, visible: true },
-  { key: 'invoiceTitle', label: '发票抬头', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'companyName', label: '所属公司', width: 120, showOverflowTooltip: true, visible: false },
-  { key: 'companyId', label: '所属公司ID', width: 100, visible: false },
-  { key: 'contactPerson', label: '联系人', width: 100, visible: true },
-  { key: 'contactPhone', label: '联系电话', width: 120, visible: true },
-  { key: 'prepaymentSubject', label: '预付款课题', width: 120, showOverflowTooltip: true, visible: false },
-  { key: 'contactAddress', label: '联系地址', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'createTime', label: '添加时间', width: 110, slot: 'createTime', visible: true },
-  { key: 'addedBy', label: '添加人', width: 100, visible: false },
-  { key: 'pointsBase', label: '积分基数', width: 80, visible: false },
-  { key: 'pointsAmount', label: '积分金额', width: 80, visible: false },
-  { key: 'isReminder', label: '是否提醒', width: 80, visible: false },
-  { key: 'reminderContent', label: '提醒内容', width: 120, showOverflowTooltip: true, visible: false },
-  { key: 'geneLabelType', label: '基因标签类型', width: 120, visible: true },
-  { label: '操作', width: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { key: 'name', label: '名称', minWidth: 140, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'status', label: '状态', minWidth: 90, slot: 'isEnabled', visible: true },
+  { key: 'region', label: '地区', minWidth: 100, visible: true },
+  { key: 'salesPerson', label: '业务员', minWidth: 100, visible: true },
+  { key: 'paymentMethod', label: '结算方式', minWidth: 110, visible: true },
+  { key: 'invoiceTitle', label: '发票抬头', minWidth: 160, showOverflowTooltip: true, visible: true },
+  { key: 'companyName', label: '所属公司', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { key: 'companyId', label: '所属公司ID', minWidth: 100, visible: true },
+  { key: 'contactPerson', label: '联系人', minWidth: 110, visible: true },
+  { key: 'contactPhone', label: '联系电话', minWidth: 130, visible: true },
+  { key: 'prepaymentSubject', label: '预付款课题', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { key: 'contactAddress', label: '联系地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'createTime', label: '添加时间', minWidth: 130, slot: 'createTime', visible: true },
+  { key: 'addedBy', label: '添加人', minWidth: 110, visible: true },
+  { key: 'pointsBase', label: '积分基数', minWidth: 100, visible: true },
+  { key: 'pointsAmount', label: '积分金额', minWidth: 100, visible: true },
+  { key: 'isReminder', label: '是否提醒', minWidth: 100, visible: true },
+  { key: 'reminderContent', label: '提醒内容', minWidth: 160, showOverflowTooltip: true, visible: true },
+  { key: 'geneLabelType', label: '基因标签类型', minWidth: 120, visible: true },
+  { label: '操作', minWidth: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
 ])
 
 const data = reactive({
@@ -366,7 +373,7 @@ function reset() {
     contactPerson: undefined,
     contactPhone: undefined,
     contactAddress: undefined,
-    status: '0',
+    status: '1',
     remark: undefined
   }
   proxy.resetForm('formRef')
@@ -511,7 +518,21 @@ function handleDelete(row) {
     .catch(() => {})
 }
 
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
+
+onActivated(() => {
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
+})
 </script>
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>

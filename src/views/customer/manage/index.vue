@@ -205,6 +205,7 @@
 
 <script setup name="Manage">
 import { listManage, getManage, addManage, updateManage, delManage } from '@/api/customer/manage'
+import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
 import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
@@ -252,36 +253,36 @@ const searchFields = ref([
 
 // 列信息
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: '客户ID', width: 80, fixed: true, visible: true },
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'id', label: '客户ID', minWidth: 80, fixed: true, visible: true },
   {
     key: 'customerName',
     label: '姓名昵称',
-    width: 100,
+    minWidth: 120,
     fixed: true,
     showOverflowTooltip: true,
     visible: true
   },
-  { key: 'subjectGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'region', label: '地区', width: 100, visible: true },
-  { key: 'address', label: '地址', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'phone', label: '手机', width: 130, visible: true },
-  { key: 'email', label: '邮箱', width: 100, visible: true },
-  { key: 'wechatId', label: '微信ID', width: 100, visible: false },
-  { key: 'customerLevel', label: '等级', width: 80, visible: false },
-  { key: 'status', label: '状态', width: 80, visible: true },
-  { key: 'salesPerson', label: '销售员', width: 100, visible: true },
-  { key: 'customerUnit', label: '客户单位', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'invoiceType', label: '发票种类', width: 120, visible: false },
-  { key: 'remarks', label: '备注', width: 100, showOverflowTooltip: true, visible: false },
-  { key: 'createBy', label: '添加人', width: 100, visible: false },
-  { key: 'createTime', label: '时间', width: 110, visible: false, slot: 'createTime' },
-  { key: 'totalPoints', label: '总积分', width: 80, visible: true },
-  { key: 'availablePoints', label: '可用积分', width: 90, visible: true },
-  { key: 'usedPoints', label: '已使用积分', width: 100, visible: false },
-  { key: 'frozenPoints', label: '冻结积分', width: 90, visible: false },
-  { key: 'company', label: '所属公司', width: 90, visible: false },
-  { label: '操作', width: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
+  { key: 'subjectGroupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', minWidth: 100, visible: true },
+  { key: 'address', label: '地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'phone', label: '手机', minWidth: 130, visible: true },
+  { key: 'email', label: '邮箱', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'wechatId', label: '微信ID', minWidth: 120, visible: true },
+  { key: 'customerLevel', label: '等级', minWidth: 100, visible: true },
+  { key: 'status', label: '状态', minWidth: 90, visible: true },
+  { key: 'salesPerson', label: '销售员', minWidth: 110, visible: true },
+  { key: 'customerUnit', label: '客户单位', minWidth: 160, showOverflowTooltip: true, visible: true },
+  { key: 'invoiceType', label: '发票种类', minWidth: 120, visible: true },
+  { key: 'remarks', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'createBy', label: '添加人', minWidth: 110, visible: true },
+  { key: 'createTime', label: '时间', minWidth: 130, visible: true, slot: 'createTime' },
+  { key: 'totalPoints', label: '总积分', minWidth: 100, visible: true },
+  { key: 'availablePoints', label: '可用积分', minWidth: 100, visible: true },
+  { key: 'usedPoints', label: '已使用积分', minWidth: 110, visible: true },
+  { key: 'frozenPoints', label: '冻结积分', minWidth: 100, visible: true },
+  { key: 'company', label: '所属公司', minWidth: 110, visible: true },
+  { label: '操作', minWidth: 150, fixed: 'right', slot: 'action', align: 'center', visible: true }
 ])
 
 const data = reactive({
@@ -481,7 +482,22 @@ function handleSubjectGroupSelect(group) {
   form.value.subjectGroupName = group.name
 }
 
+let isInitialActivated = true
 onMounted(() => {
   getList()
 })
+
+onActivated(() => {
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
+})
 </script>
+
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>

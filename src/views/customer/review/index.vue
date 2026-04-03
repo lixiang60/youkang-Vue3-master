@@ -59,6 +59,7 @@
 </template>
 
 <script setup name="Review">
+import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { listReview, delReview } from '@/api/customer/review'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
@@ -88,27 +89,27 @@ const searchFields = ref([
 ])
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'customerId', label: '客户ID', width: 80, fixed: true, visible: true },
-  { key: 'name', label: '姓名客户', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'region', label: '地区', width: 100, visible: true },
-  { key: 'address', label: '地址', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'zipCode', label: '邮编', width: 100, visible: false },
-  { key: 'phone', label: '电话', width: 120, visible: false },
-  { key: 'mobile', label: '手机', width: 120, visible: true },
-  { key: 'email', label: '邮箱', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'level', label: '等级', width: 80, visible: true },
-  { key: 'status', label: '状态', width: 80, visible: true },
-  { key: 'salesman', label: '销售员', width: 100, visible: true },
-  { key: 'invoiceTitle', label: '发票抬头', width: 150, showOverflowTooltip: true, visible: false },
-  { key: 'paymentMethod', label: '结算方式', width: 100, visible: true },
-  { key: 'invoiceType', label: '发票种类', width: 120, visible: false },
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false },
-  { key: 'addedBy', label: '添加人', width: 100, visible: false },
-  { key: 'createTime', label: '时间', width: 110, slot: 'createTime', visible: true },
-  { key: 'totalPoints', label: '总积分', width: 80, visible: true },
-  { key: 'availablePoints', label: '可用积分', width: 90, visible: true },
-  { key: 'usedPoints', label: '已使用积分', width: 100, visible: false }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'customerId', label: '客户ID', minWidth: 90, fixed: true, visible: true },
+  { key: 'name', label: '姓名客户', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', minWidth: 100, visible: true },
+  { key: 'address', label: '地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'zipCode', label: '邮编', minWidth: 100, visible: true },
+  { key: 'phone', label: '电话', minWidth: 120, visible: true },
+  { key: 'mobile', label: '手机', minWidth: 130, visible: true },
+  { key: 'email', label: '邮箱', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'level', label: '等级', minWidth: 90, visible: true },
+  { key: 'status', label: '状态', minWidth: 90, visible: true },
+  { key: 'salesman', label: '销售员', minWidth: 110, visible: true },
+  { key: 'invoiceTitle', label: '发票抬头', minWidth: 160, showOverflowTooltip: true, visible: true },
+  { key: 'paymentMethod', label: '结算方式', minWidth: 120, visible: true },
+  { key: 'invoiceType', label: '发票种类', minWidth: 120, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'addedBy', label: '添加人', minWidth: 110, visible: true },
+  { key: 'createTime', label: '时间', minWidth: 130, slot: 'createTime', visible: true },
+  { key: 'totalPoints', label: '总积分', minWidth: 100, visible: true },
+  { key: 'availablePoints', label: '可用积分', minWidth: 100, visible: true },
+  { key: 'usedPoints', label: '已使用积分', minWidth: 110, visible: true }
 ])
 
 const data = reactive({
@@ -193,6 +194,7 @@ function handleDelete(row) {
     .catch(() => {})
 }
 
+let isInitialActivated = true
 onMounted(() => {
   // TODO: 等后端接口实现后再启用
   // getList()
@@ -202,4 +204,17 @@ onMounted(() => {
   dataList.value = []
   total.value = 0
 })
+
+onActivated(() => {
+  if (!isInitialActivated) {
+    // getList()
+  }
+  isInitialActivated = false
+})
 </script>
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>

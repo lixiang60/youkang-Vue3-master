@@ -42,7 +42,9 @@
       @selection-change="handleSelectionChange"
     >
       <template #isEnabled="{ row }">
-        <dict-tag :options="sys_normal_disable" :value="row.status" />
+        <el-tag :type="row.status == 1 ? 'success' : 'danger'">
+          {{ row.status == 1 ? '启用' : '停用' }}
+        </el-tag>
       </template>
       <template #createTime="{ row }">
         <span>{{ parseTime(row.createTime, '{y}-{m}-{d}') }}</span>
@@ -104,6 +106,7 @@
 </template>
 
 <script setup name="Research">
+import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
 import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
@@ -132,30 +135,30 @@ const searchFields = ref([
     label: '状态',
     type: 'select',
     options: [
-      { label: '正常', value: '0' },
-      { label: '停用', value: '1' }
+      { label: '启用', value: '1' },
+      { label: '停用', value: '0' }
     ]
   }
 ])
 
 const columns = ref([
-  { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'id', width: 80, fixed: true, sortable: true, visible: true },
-  { key: 'customerId', label: '客户ID', width: 80, fixed: true, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 100, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'region', label: '地区', width: 80, visible: true },
-  { key: 'subjectGroupId', label: '课题组ID', width: 100, visible: true },
-  { key: 'subjectGroupName', label: '课题组', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'status', label: '是否启用', width: 80, slot: 'isEnabled', visible: true },
-  { key: 'paymentMethod', label: '结算方式', width: 100, visible: false },
-  { key: 'salesPerson', label: '业务员', width: 100, visible: false },
-  { key: 'customerAddress', label: '客户地址', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'createUser', label: '添加人', width: 100, visible: false },
-  { key: 'createTime', label: '添加时间', width: 110, slot: 'createTime', visible: true },
-  { key: 'customerPhone', label: '客户电话', width: 120, visible: true },
-  { key: 'customerEmail', label: 'E_MAIL', width: 120, showOverflowTooltip: true, visible: true },
-  { key: 'remark', label: '备注', width: 100, showOverflowTooltip: true, visible: false },
-  { key: 'company', label: '所属公司', width: 120, showOverflowTooltip: true, visible: true }
+  { type: 'selection', minWidth: 50, fixed: true, visible: true },
+  { key: 'id', label: 'id', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { key: 'customerId', label: '客户ID', minWidth: 90, fixed: true, visible: true },
+  { key: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { key: 'region', label: '地区', minWidth: 100, visible: true },
+  { key: 'subjectGroupId', label: '课题组ID', minWidth: 100, visible: true },
+  { key: 'subjectGroupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { key: 'status', label: '是否启用', minWidth: 90, slot: 'isEnabled', visible: true },
+  { key: 'paymentMethod', label: '结算方式', minWidth: 110, visible: true },
+  { key: 'salesPerson', label: '业务员', minWidth: 110, visible: true },
+  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'createUser', label: '添加人', minWidth: 110, visible: true },
+  { key: 'createTime', label: '添加时间', minWidth: 130, slot: 'createTime', visible: true },
+  { key: 'customerPhone', label: '客户电话', minWidth: 130, visible: true },
+  { key: 'customerEmail', label: 'E_MAIL', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { key: 'company', label: '所属公司', minWidth: 140, showOverflowTooltip: true, visible: true }
 ])
 
 const data = reactive({
@@ -283,6 +286,7 @@ function handleDelete(row) {
     .catch(() => {})
 }
 
+let isInitialActivated = true
 onMounted(() => {
   getList()
   listCustomerOption().then(response => {
@@ -292,4 +296,17 @@ onMounted(() => {
     subjectGroupOptions.value = response.data.records
   })
 })
+
+onActivated(() => {
+  if (!isInitialActivated) {
+    getList()
+  }
+  isInitialActivated = false
+})
 </script>
+<style scoped>
+:deep(.el-table .el-table__header-wrapper th) {
+  font-size: 12px !important;
+  color: #606266 !important;
+}
+</style>
