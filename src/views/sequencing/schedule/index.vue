@@ -340,7 +340,7 @@ const columns = ref([
   { key: 'templateNumber', label: '个数', minWidth: 80, visible: true },
   { key: 'orderId', label: '订单号', minWidth: 150, sortable: true, visible: true },
   { key: 'customerName', label: '客户姓名', minWidth: 110, visible: true },
-  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: false },
+  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
   { key: 'sampleId', label: '样品编号', minWidth: 130, visible: true },
   { key: 'primer', label: '测序引物', minWidth: 110, visible: true },
   { key: 'primerConcentration', label: '引物浓度', minWidth: 100, visible: true },
@@ -356,7 +356,7 @@ const columns = ref([
   { key: 'originConcentration', label: '原浓度', minWidth: 100, visible: true },
   { key: 'flowName', label: '流程名称', minWidth: 130, visible: true },
   { key: 'createUser', label: '创建人', minWidth: 110, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: false }
+  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 const searchFields = ref([

@@ -514,7 +514,7 @@ const cacheKey = 'sequencing_samples_columns_visible'
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
   { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
-  { key: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: false },
+  { key: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
   { key: 'orderHistory', label: '历史订单', minWidth: 160, visible: true },
   { key: 'sampleId', label: '样品编号', minWidth: 130, fixed: true, visible: true },
   { key: 'sampleType', label: '样品类型', minWidth: 100, visible: true },

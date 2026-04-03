@@ -94,7 +94,7 @@ const columns = ref([
   { key: 'productionNo', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
   { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
   { key: 'customerName', label: '客户姓名', minWidth: 110, visible: true },
-  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: false },
+  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
   { key: 'customerLevel', label: '客户等级', minWidth: 100, visible: true },
   { key: 'researchGroup', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
   { key: 'sampleId', label: '样品编号', minWidth: 130, visible: true },
