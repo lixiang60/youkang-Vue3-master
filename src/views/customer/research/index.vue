@@ -3,15 +3,18 @@
     <dynamic-search ref="searchRef" v-model="queryParams" :fields="searchFields" @search="handleQuery" />
 
     <!-- 操作按钮 -->
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8" align="middle">
       <el-col :span="1.5">
-        <el-button size="small" :icon="Search" @click="toggleSearchPanel">查询</el-button>
+        <el-button size="small" plain :icon="Search" @click="toggleSearchPanel">查询</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" :icon="Refresh" @click="handleRefresh">刷新</el-button>
+        <el-button size="small" plain :icon="Refresh" @click="handleRefresh">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5" style="padding-left: 0; padding-right: 0; margin: 0 10px;">
+        <div style="border-right: 1px solid #dcdfe6; height: 16px;"></div>
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:research:add']" size="small" type="primary" :icon="Plus" @click="handleAdd"
+        <el-button v-hasPermi="['customer:research:add']" size="small" type="primary" plain :icon="Plus" @click="handleAdd"
           >添加</el-button
         >
       </el-col>
@@ -20,6 +23,7 @@
           v-hasPermi="['customer:research:remove']"
           size="small"
           type="danger"
+          plain
           :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
