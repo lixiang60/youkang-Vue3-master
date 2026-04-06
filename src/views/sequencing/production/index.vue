@@ -248,9 +248,6 @@
                 <el-option label="2.0" value="2.0" />
                 <el-option label="3.0" value="3.0" />
                 <el-option label="5.0" value="5.0" />
-                <el-option label="高" value="高" />
-                <el-option label="低" value="低" />
-                <el-option label="加测" value="加测" />
               </el-select>
               <el-icon style="margin-left: 10px; color: #f56c6c; font-size: 18px; vertical-align: middle">
                 <Warning />

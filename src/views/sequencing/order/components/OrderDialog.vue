@@ -46,7 +46,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <!-- <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="测序生产实验室：" prop="sequencingLab">
             <el-select v-model="form.sequencingLab" placeholder="请选择" style="width: 80%">
@@ -63,16 +63,16 @@
             </el-select>
           </el-form-item>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="20">
-        <el-col :span="12">
+        <!-- <el-col :span="12">
           <el-form-item label="信息不全：" prop="infoIncomplete">
             <el-select v-model="form.infoIncomplete" placeholder="请选择" style="width: 80%">
               <el-option label="是" value="1" />
               <el-option label="否" value="0" />
             </el-select>
           </el-form-item>
-        </el-col>
+        </el-col> -->
         <el-col :span="12">
           <el-form-item label="送样日期：" prop="sampleDeliveryDate">
             <el-date-picker
@@ -108,7 +108,6 @@
           <el-form-item label="测序级别：" prop="generation">
             <el-radio-group v-model="form.generation">
               <el-radio :label="1">一代</el-radio>
-              <el-radio :label="4">四代</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -138,7 +137,7 @@
               <el-table-column prop="sampleId" label="样品编号" width="150" show-overflow-tooltip />
               <el-table-column prop="sampleType" label="样品类型" width="100" />
               <el-table-column prop="primer" label="引物" width="150" show-overflow-tooltip />
-              <el-table-column prop="project" label="项目" width="150" show-overflow-tooltip />
+              <!-- <el-table-column prop="project" label="项目" width="150" show-overflow-tooltip /> -->
               <el-table-column prop="remark" label="备注" show-overflow-tooltip />
               <el-table-column label="操作" width="80" fixed="right">
                 <template #default="scope">
