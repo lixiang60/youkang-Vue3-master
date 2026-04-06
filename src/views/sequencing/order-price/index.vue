@@ -116,15 +116,15 @@ const { proxy } = getCurrentInstance()
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', minWidth: 80, visible: true },
-  { key: 'orderId', label: '订单号', minWidth: 150, visible: true },
-  { key: 'name', label: '名称', minWidth: 120, visible: true },
-  { key: 'unit', label: '单位', minWidth: 80, visible: true },
-  { key: 'quantity', label: '数量', minWidth: 80, visible: true },
-  { key: 'price', label: '单价', minWidth: 100, visible: true },
-  { key: 'cost', label: '费用', minWidth: 100, visible: true },
-  { key: 'createBy', label: '添加人', minWidth: 100, visible: true },
-  { key: 'createTime', label: '时间', minWidth: 180, visible: true }
+  { prop: 'id', label: 'ID', minWidth: 80, visible: true },
+  { prop: 'orderId', label: '订单号', minWidth: 150, visible: true },
+  { prop: 'name', label: '名称', minWidth: 120, visible: true },
+  { prop: 'unit', label: '单位', minWidth: 80, visible: true },
+  { prop: 'quantity', label: '数量', minWidth: 80, visible: true },
+  { prop: 'price', label: '单价', minWidth: 100, visible: true },
+  { prop: 'cost', label: '费用', minWidth: 100, visible: true },
+  { prop: 'createBy', label: '添加人', minWidth: 100, visible: true },
+  { prop: 'createTime', label: '时间', minWidth: 180, visible: true }
 ])
 
 const searchFields = ref([

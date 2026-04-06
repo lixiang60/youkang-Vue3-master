@@ -45,14 +45,14 @@ const { proxy } = getCurrentInstance()
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
-  { key: 'customerId', label: '客户ID', minWidth: 100, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'orderInfo', label: '订单信息', minWidth: 150, visible: true },
-  { key: 'orderType', label: '订单类型', minWidth: 120, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
-  { key: 'createTime', label: '添加时间', minWidth: 180, visible: true }
+  { prop: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { prop: 'customerId', label: '客户ID', minWidth: 100, visible: true },
+  { prop: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { prop: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'orderInfo', label: '订单信息', minWidth: 150, visible: true },
+  { prop: 'orderType', label: '订单类型', minWidth: 120, visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { prop: 'createTime', label: '添加时间', minWidth: 180, visible: true }
 ])
 
 const searchFields = ref([

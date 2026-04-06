@@ -134,40 +134,40 @@ const total = ref(0)
 const title = ref('')
 
 const columns = ref([
-  { type: 'selection', key: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 110, visible: true },
-  { key: 'orderId', label: '订单号', minWidth: 150, visible: true },
-  { key: 'scheduleTime', label: '排版时间', minWidth: 180, visible: true },
-  { key: 'scheduler', label: '排版人', minWidth: 110, visible: true },
+  { type: 'selection', prop: 'selection', minWidth: 50, fixed: true, visible: true },
+  { prop: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { prop: 'customerName', label: '客户姓名', minWidth: 110, visible: true },
+  { prop: 'orderId', label: '订单号', minWidth: 150, visible: true },
+  { prop: 'scheduleTime', label: '排版时间', minWidth: 180, visible: true },
+  { prop: 'scheduler', label: '排版人', minWidth: 110, visible: true },
   {
-    key: 'reimburseType',
+    prop: 'reimburseType',
     label: '返还类型',
     minWidth: 150,
     showOverflowTooltip: true,
     visible: true
   },
-  { key: 'reimburseCount', label: '返还数量', minWidth: 100, visible: true },
-  { key: 'produceIds', label: '生产编号', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'status', label: '状态', minWidth: 110, visible: true },
-  { key: 'reimburseTime', label: '返还时间', minWidth: 180, visible: true },
-  { key: 'reimburser', label: '返还人', minWidth: 110, visible: true },
+  { prop: 'reimburseCount', label: '返还数量', minWidth: 100, visible: true },
+  { prop: 'produceIds', label: '生产编号', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'status', label: '状态', minWidth: 110, visible: true },
+  { prop: 'reimburseTime', label: '返还时间', minWidth: 180, visible: true },
+  { prop: 'reimburser', label: '返还人', minWidth: 110, visible: true },
   {
-    key: 'belongCompany',
+    prop: 'belongCompany',
     label: '所属公司',
     minWidth: 140,
     showOverflowTooltip: true,
     visible: true
   },
   {
-    key: 'produceCompany',
+    prop: 'produceCompany',
     label: '生产公司',
     minWidth: 140,
     showOverflowTooltip: true,
     visible: true
   },
-  { key: 'createUser', label: '创建人', minWidth: 110, visible: true },
-  { key: 'createTime', label: '创建时间', minWidth: 180, visible: true }
+  { prop: 'createUser', label: '创建人', minWidth: 110, visible: true },
+  { prop: 'createTime', label: '创建时间', minWidth: 180, visible: true }
 ])
 
 // 检索配置

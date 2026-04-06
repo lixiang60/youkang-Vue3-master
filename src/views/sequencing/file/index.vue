@@ -129,11 +129,11 @@ const searchRef = ref(null)
 // 列配置
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
-  { key: 'name', label: '名称', minWidth: 150, visible: true },
-  { key: 'status', label: '状态', minWidth: 100, visible: true },
-  { key: 'createTime', label: '创建时间', minWidth: 180, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
+  { prop: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { prop: 'name', label: '名称', minWidth: 150, visible: true },
+  { prop: 'status', label: '状态', minWidth: 100, visible: true },
+  { prop: 'createTime', label: '创建时间', minWidth: 180, visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 // 检索配置

@@ -15,13 +15,24 @@
       <el-table-column
         v-if="col.visible !== false"
         v-bind="col"
-        :prop="col.key || col.prop"
+        :prop="col.prop"
         :align="col.align || 'center'"
         :width="null"
         :min-width="col.width || col.minWidth"
       >
+        <!-- 默认渲染：支持 defaultValue 配置 -->
+        <template v-if="!col.slot" #default="scope">
+          <span>{{
+            scope.row[col.prop] !== null && scope.row[col.prop] !== undefined
+              ? scope.row[col.prop]
+              : col.defaultValue !== undefined
+                ? col.defaultValue
+                : ''
+          }}</span>
+        </template>
+
         <!-- 自定义列模板 (Slot) -->
-        <template v-if="col.slot" #default="scope">
+        <template v-else #default="scope">
           <slot :name="col.slot" :row="scope.row" :index="scope.$index"></slot>
         </template>
       </el-table-column>
@@ -41,7 +52,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   data: {
     type: Array,
     default: () => []

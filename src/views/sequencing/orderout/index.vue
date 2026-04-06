@@ -73,30 +73,85 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="客户名称" prop="customerName">
-              <el-input v-model="form.customerName" placeholder="请输入客户名称" />
+            <el-form-item label="客户ID" prop="customerId">
+              <el-input v-model="form.customerId" placeholder="请输入客户ID" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="测序代数" prop="generation">
-              <el-input v-model="form.generation" placeholder="请输入测序代数" />
+            <el-form-item label="客户姓名" prop="customerName">
+              <el-input v-model="form.customerName" placeholder="请输入客户姓名" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="订单状态" prop="orderStatus">
-              <el-select v-model="form.orderStatus" placeholder="请选择订单状态" style="width: 100%">
-                <el-option label="已出库" value="1" />
-                <el-option label="未出库" value="0" />
+            <el-form-item label="客户地址" prop="customerAddress">
+              <el-input v-model="form.customerAddress" placeholder="请输入客户地址" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="课题组" prop="groupName">
+              <el-input v-model="form.groupName" placeholder="请输入课题组" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12"></el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="客户等级" prop="customerLevel">
+              <el-input v-model="form.customerLevel" placeholder="请输入客户等级" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="试测" prop="isTest">
+              <el-input v-model="form.isTest" placeholder="请输入试测状态" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="信息不全" prop="incompleteInfo">
+              <el-select v-model="form.incompleteInfo" placeholder="请选择信息完整性" style="width: 100%">
+                <el-option label="信息完整" value="完整" />
+                <el-option label="信息缺失" value="缺失" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
+            <el-form-item label="订单信息" prop="orderInfo">
+              <el-input v-model="form.orderInfo" placeholder="请输入数据..." />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="加急" prop="isUrgent">
+              <el-radio-group v-model="form.isUrgent">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="送样时间" prop="deliveryTime">
+              <el-date-picker
+                v-model="form.deliveryTime"
+                type="datetime"
+                placeholder="请选择日期时间"
+                style="width: 100%"
+                value-format="YYYY-MM-DD HH:mm:ss"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -112,7 +167,7 @@
 </template>
 
 <script setup name="OrderOut">
-import { ref, reactive, toRefs, computed, onMounted, getCurrentInstance } from 'vue'
+import { ref, reactive, toRefs, onMounted, getCurrentInstance } from 'vue'
 import { Check, Close, EditPen } from '@element-plus/icons-vue'
 import { listOrder } from '@/api/sequencing/order'
 import DynamicTable from '@/components/DynamicTable/index.vue'
@@ -140,7 +195,17 @@ const columns = ref([
 const searchFields = ref([
   { prop: 'orderId', label: '订单号', type: 'input' },
   { prop: 'customerName', label: '客户姓名', type: 'input' },
-  { prop: 'createBy', label: '添加人', type: 'input' }
+  { prop: 'createBy', label: '添加人', type: 'input' },
+  {
+    prop: 'orderStatus',
+    label: '订单状态',
+    type: 'select',
+    options: [
+      { label: '订单生成', value: '订单生成' },
+      { label: '订单出库', value: '订单出库' },
+      { label: '订单完成', value: '订单完成' }
+    ]
+  }
 ])
 
 const dataList = ref([])
@@ -162,7 +227,8 @@ const data = reactive({
     pageSize: 10,
     orderId: undefined,
     customerName: undefined,
-    createBy: undefined
+    createBy: undefined,
+    orderStatus: undefined
   },
   rules: {
     orderId: [{ required: true, message: '订单号不能为空', trigger: 'blur' }]
@@ -210,9 +276,16 @@ function handleSelect(selection) {
 function reset() {
   form.value = {
     orderId: undefined,
+    customerId: undefined,
     customerName: undefined,
-    generation: undefined,
-    orderStatus: undefined,
+    customerAddress: undefined,
+    groupName: undefined,
+    customerLevel: undefined,
+    isTest: undefined,
+    incompleteInfo: undefined,
+    orderInfo: undefined,
+    isUrgent: '0',
+    deliveryTime: undefined,
     remark: undefined
   }
 }

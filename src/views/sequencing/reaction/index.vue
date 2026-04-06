@@ -625,18 +625,18 @@ const cacheKey = 'sequencing_reaction_columns_visible'
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
-  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 110, fixed: true, visible: true },
-  { key: 'sampleId', label: '样品编号', minWidth: 130, visible: true },
-  { key: 'originHoleNo', label: '原孔号', minWidth: 100, visible: true },
-  { key: 'samplePosition', label: '样品位置', minWidth: 120, visible: true },
-  { key: 'primer', label: '测序引物', minWidth: 110, visible: true },
-  { key: 'originConcentration', label: '原浓度', minWidth: 100, visible: true },
-  { key: 'templatePlateNo', label: '板号', minWidth: 120, visible: true },
-  { key: 'templateHoleNo', label: '孔号', minWidth: 100, visible: true },
-  { key: 'returnState', label: '状态', minWidth: 110, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
+  { prop: 'produceId', label: '生产编号', minWidth: 120, fixed: true, sortable: true, visible: true },
+  { prop: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { prop: 'customerName', label: '客户姓名', minWidth: 110, fixed: true, visible: true },
+  { prop: 'sampleId', label: '样品编号', minWidth: 130, visible: true },
+  { prop: 'originHoleNo', label: '原孔号', minWidth: 100, visible: true },
+  { prop: 'samplePosition', label: '样品位置', minWidth: 120, visible: true },
+  { prop: 'primer', label: '测序引物', minWidth: 110, visible: true },
+  { prop: 'originConcentration', label: '原浓度', minWidth: 100, visible: true },
+  { prop: 'templatePlateNo', label: '板号', minWidth: 120, visible: true },
+  { prop: 'templateHoleNo', label: '孔号', minWidth: 100, visible: true },
+  { prop: 'returnState', label: '状态', minWidth: 110, visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 // 检索配置

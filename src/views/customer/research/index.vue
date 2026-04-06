@@ -10,11 +10,17 @@
       <el-col :span="1.5">
         <el-button size="small" plain :icon="Refresh" @click="handleRefresh">刷新</el-button>
       </el-col>
-      <el-col :span="1.5" style="padding-left: 0; padding-right: 0; margin: 0 10px;">
-        <div style="border-right: 1px solid #dcdfe6; height: 16px;"></div>
+      <el-col :span="1.5" style="padding-left: 0; padding-right: 0; margin: 0 10px">
+        <div style="border-right: 1px solid #dcdfe6; height: 16px"></div>
       </el-col>
       <el-col :span="1.5">
-        <el-button v-hasPermi="['customer:research:add']" size="small" type="primary" plain :icon="Plus" @click="handleAdd"
+        <el-button
+          v-hasPermi="['customer:research:add']"
+          size="small"
+          type="primary"
+          plain
+          :icon="Plus"
+          @click="handleAdd"
           >添加</el-button
         >
       </el-col>
@@ -147,22 +153,22 @@ const searchFields = ref([
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'id', label: 'id', minWidth: 80, fixed: true, sortable: true, visible: true },
-  { key: 'customerId', label: '客户ID', minWidth: 90, fixed: true, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'region', label: '地区', minWidth: 100, visible: true },
-  { key: 'subjectGroupId', label: '课题组ID', minWidth: 100, visible: true },
-  { key: 'subjectGroupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
-  { key: 'status', label: '是否启用', minWidth: 90, slot: 'isEnabled', visible: true },
-  { key: 'paymentMethod', label: '结算方式', minWidth: 110, visible: true },
-  { key: 'salesPerson', label: '业务员', minWidth: 110, visible: true },
-  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'createUser', label: '添加人', minWidth: 110, visible: true },
-  { key: 'createTime', label: '添加时间', minWidth: 130, slot: 'createTime', visible: true },
-  { key: 'customerPhone', label: '客户电话', minWidth: 130, visible: true },
-  { key: 'customerEmail', label: 'E_MAIL', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
-  { key: 'company', label: '所属公司', minWidth: 140, showOverflowTooltip: true, visible: true }
+  { prop: 'id', label: 'id', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { prop: 'customerId', label: '客户ID', minWidth: 90, fixed: true, visible: true },
+  { prop: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { prop: 'region', label: '地区', minWidth: 100, visible: true },
+  { prop: 'subjectGroupId', label: '课题组ID', minWidth: 100, visible: true },
+  { prop: 'subjectGroupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { prop: 'status', label: '是否启用', minWidth: 90, slot: 'isEnabled', visible: true },
+  { prop: 'paymentMethod', label: '结算方式', minWidth: 110, visible: true },
+  { prop: 'salesPerson', label: '业务员', minWidth: 110, visible: true },
+  { prop: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'createUser', label: '添加人', minWidth: 110, visible: true },
+  { prop: 'createTime', label: '添加时间', minWidth: 130, slot: 'createTime', visible: true },
+  { prop: 'customerPhone', label: '客户电话', minWidth: 130, visible: true },
+  { prop: 'customerEmail', label: 'E_MAIL', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { prop: 'company', label: '所属公司', minWidth: 140, showOverflowTooltip: true, visible: true }
 ])
 
 const data = reactive({

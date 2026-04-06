@@ -132,11 +132,11 @@ const cacheKey = 'sequencing_template_columns_visible'
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'templateNumber', label: '模板排版号', minWidth: 180, fixed: true, sortable: true, visible: true },
-  { key: 'orderId', label: '订单号', minWidth: 150, sortable: true, visible: true },
-  { key: 'plateType', label: '板子类型', minWidth: 120, visible: true },
-  { key: 'plateLayout', label: '板孔布局', minWidth: 120, visible: true },
-  { key: 'createTime', label: '创建时间', minWidth: 180, visible: true }
+  { prop: 'templateNumber', label: '模板排版号', minWidth: 180, fixed: true, sortable: true, visible: true },
+  { prop: 'orderId', label: '订单号', minWidth: 150, sortable: true, visible: true },
+  { prop: 'plateType', label: '板子类型', minWidth: 120, visible: true },
+  { prop: 'plateLayout', label: '板孔布局', minWidth: 120, visible: true },
+  { prop: 'createTime', label: '创建时间', minWidth: 180, visible: true }
 ])
 
 const searchFields = ref([

@@ -169,21 +169,21 @@ const cacheKey = 'sequencing_order_columns_visible'
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单编号', minWidth: 150, fixed: true, sortable: true, visible: true },
-  { key: 'customerId', label: '客户ID', minWidth: 80, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'groupId', label: '课题组ID', minWidth: 80, visible: true },
-  { key: 'groupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
-  { key: 'genNo', label: '基因编号', minWidth: 110, visible: true },
-  { key: 'generation', label: '代数', minWidth: 70, visible: true },
-  { key: 'orderType', label: '订单类型', minWidth: 110, visible: true },
-  { key: 'isAsync', label: '是否同步', minWidth: 90, visible: true },
-  { key: 'belongCompany', label: '所属公司', minWidth: 150, showOverflowTooltip: true, visible: true },
-  { key: 'produceCompany', label: '生产公司', minWidth: 150, showOverflowTooltip: true, visible: true },
-  { key: 'createBy', label: '创建人', minWidth: 100, visible: true },
-  { key: 'createTime', label: '创建时间', minWidth: 180, slot: 'createTime', visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
+  { prop: 'orderId', label: '订单编号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { prop: 'customerId', label: '客户ID', minWidth: 80, visible: true },
+  { prop: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { prop: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'groupId', label: '课题组ID', minWidth: 80, visible: true },
+  { prop: 'groupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { prop: 'genNo', label: '基因编号', minWidth: 110, visible: true },
+  { prop: 'generation', label: '代数', minWidth: 70, visible: true },
+  { prop: 'orderType', label: '订单类型', minWidth: 110, visible: true },
+  { prop: 'isAsync', label: '是否同步', minWidth: 90, visible: true },
+  { prop: 'belongCompany', label: '所属公司', minWidth: 150, showOverflowTooltip: true, visible: true },
+  { prop: 'produceCompany', label: '生产公司', minWidth: 150, showOverflowTooltip: true, visible: true },
+  { prop: 'createBy', label: '创建人', minWidth: 100, visible: true },
+  { prop: 'createTime', label: '创建时间', minWidth: 180, slot: 'createTime', visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 const editorOptions = ref({

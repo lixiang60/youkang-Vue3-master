@@ -122,16 +122,16 @@ const title = ref('')
 
 const columns = ref([
   { type: 'selection', width: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
-  { key: 'type', label: '类型', width: 100, visible: true },
-  { key: 'customerName', label: '客户姓名', width: 120, visible: true },
-  { key: 'content', label: '内容', width: 200, showOverflowTooltip: true, visible: true },
-  { key: 'displayPosition', label: '显示位置', width: 100, visible: true },
-  { key: 'createBy', label: '添加人', width: 100, visible: true },
-  { key: 'status', label: '状态', width: 80, visible: true },
-  { key: 'processContent', label: '处理内容', width: 150, showOverflowTooltip: true, visible: true },
-  { key: 'processBy', label: '处理人', width: 100, visible: true },
-  { key: 'belongCompany', label: '所属公司', width: 120, visible: true }
+  { prop: 'id', label: 'ID', width: 80, fixed: true, sortable: true, visible: true },
+  { prop: 'type', label: '类型', width: 100, visible: true },
+  { prop: 'customerName', label: '客户姓名', width: 120, visible: true },
+  { prop: 'content', label: '内容', width: 200, showOverflowTooltip: true, visible: true },
+  { prop: 'displayPosition', label: '显示位置', width: 100, visible: true },
+  { prop: 'createBy', label: '添加人', width: 100, visible: true },
+  { prop: 'status', label: '状态', width: 80, visible: true },
+  { prop: 'processContent', label: '处理内容', width: 150, showOverflowTooltip: true, visible: true },
+  { prop: 'processBy', label: '处理人', width: 100, visible: true },
+  { prop: 'belongCompany', label: '所属公司', width: 120, visible: true }
 ])
 
 const cacheKey = 'sequencing_handover_columns_visible'

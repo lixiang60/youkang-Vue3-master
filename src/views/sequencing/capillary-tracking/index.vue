@@ -43,12 +43,12 @@ const { proxy } = getCurrentInstance()
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'id', label: 'id', minWidth: 80, visible: true },
-  { key: 'plateNo', label: '板号', minWidth: 150, visible: true },
-  { key: 'machineNo', label: '机器号', minWidth: 120, visible: true },
-  { key: 'createBy', label: '添加人', minWidth: 100, visible: true },
-  { key: 'createTime', label: '添加时间', minWidth: 180, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
+  { prop: 'id', label: 'id', minWidth: 80, visible: true },
+  { prop: 'plateNo', label: '板号', minWidth: 150, visible: true },
+  { prop: 'machineNo', label: '机器号', minWidth: 120, visible: true },
+  { prop: 'createBy', label: '添加人', minWidth: 100, visible: true },
+  { prop: 'createTime', label: '添加时间', minWidth: 180, visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true }
 ])
 
 const searchFields = ref([

@@ -292,26 +292,26 @@ const searchFields = ref([
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
-  { key: 'name', label: '名称', minWidth: 140, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'status', label: '状态', minWidth: 90, slot: 'isEnabled', visible: true },
-  { key: 'region', label: '地区', minWidth: 100, visible: true },
-  { key: 'salesPerson', label: '业务员', minWidth: 100, visible: true },
-  { key: 'paymentMethod', label: '结算方式', minWidth: 110, visible: true },
-  { key: 'invoiceTitle', label: '发票抬头', minWidth: 160, showOverflowTooltip: true, visible: true },
-  { key: 'companyName', label: '所属公司', minWidth: 140, showOverflowTooltip: true, visible: true },
-  { key: 'companyId', label: '所属公司ID', minWidth: 100, visible: true },
-  { key: 'contactPerson', label: '联系人', minWidth: 110, visible: true },
-  { key: 'contactPhone', label: '联系电话', minWidth: 130, visible: true },
-  { key: 'prepaymentSubject', label: '预付款课题', minWidth: 140, showOverflowTooltip: true, visible: true },
-  { key: 'contactAddress', label: '联系地址', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'createTime', label: '添加时间', minWidth: 130, slot: 'createTime', visible: true },
-  { key: 'addedBy', label: '添加人', minWidth: 110, visible: true },
-  { key: 'pointsBase', label: '积分基数', minWidth: 100, visible: true },
-  { key: 'pointsAmount', label: '积分金额', minWidth: 100, visible: true },
-  { key: 'isReminder', label: '是否提醒', minWidth: 100, visible: true },
-  { key: 'reminderContent', label: '提醒内容', minWidth: 160, showOverflowTooltip: true, visible: true },
-  { key: 'geneLabelType', label: '基因标签类型', minWidth: 120, visible: true }
+  { prop: 'id', label: 'ID', minWidth: 80, fixed: true, sortable: true, visible: true },
+  { prop: 'name', label: '名称', minWidth: 140, fixed: true, showOverflowTooltip: true, visible: true },
+  { prop: 'region', label: '地区', minWidth: 100, visible: true },
+  { prop: 'salesPerson', label: '业务员', minWidth: 100, visible: true },
+  { prop: 'paymentMethod', label: '结算方式', minWidth: 110, visible: true },
+  { prop: 'invoiceTitle', label: '发票抬头', minWidth: 160, showOverflowTooltip: true, visible: true },
+  { prop: 'companyName', label: '所属公司', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { prop: 'companyId', label: '所属公司ID', minWidth: 100, visible: true },
+  { prop: 'contactPerson', label: '联系人', minWidth: 110, visible: true },
+  { prop: 'contactPhone', label: '联系电话', minWidth: 130, visible: true },
+  { prop: 'prepaymentSubject', label: '预付款课题', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { prop: 'contactAddress', label: '联系地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'createTime', label: '添加时间', minWidth: 130, slot: 'createTime', visible: true },
+  { prop: 'addedBy', label: '添加人', minWidth: 110, visible: true },
+  { prop: 'pointsBase', label: '积分基数', minWidth: 100, visible: true },
+  { prop: 'pointsAmount', label: '积分金额', minWidth: 100, visible: true },
+  { prop: 'isReminder', label: '是否提醒', minWidth: 100, visible: true },
+  { prop: 'reminderContent', label: '提醒内容', minWidth: 160, showOverflowTooltip: true, visible: true },
+  { prop: 'geneLabelType', label: '基因标签类型', minWidth: 120, visible: true },
+  { prop: 'labelTemplate', label: '标签模板', minWidth: 120, visible: true }
 ])
 
 const data = reactive({
@@ -320,7 +320,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     name: undefined,
-    status: undefined
+    status: '1'
   },
   rules: {
     name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
