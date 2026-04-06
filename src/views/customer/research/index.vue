@@ -5,19 +5,10 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="mb8" align="middle">
       <el-col :span="1.5">
-        <el-button size="small" plain :icon="Search" @click="toggleSearchPanel">查询</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" plain :icon="Refresh" @click="handleRefresh">刷新</el-button>
-      </el-col>
-      <el-col :span="1.5" style="padding-left: 0; padding-right: 0; margin: 0 10px">
-        <div style="border-right: 1px solid #dcdfe6; height: 16px"></div>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
           v-hasPermi="['customer:research:add']"
           size="small"
-          type="primary"
+          type="success"
           plain
           :icon="Plus"
           @click="handleAdd"
@@ -34,6 +25,24 @@
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="warning" plain :icon="Search" @click="toggleSearchPanel">查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="small" type="success" plain :icon="Refresh" @click="handleRefresh">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          v-hasPermi="['customer:research:batchEdit']"
+          size="small"
+          type="primary"
+          plain
+          :icon="Edit"
+          :disabled="multiple"
+          @click="handleBatchEdit"
+          >批量编辑</el-button
         >
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList"></right-toolbar>
@@ -112,16 +121,80 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 批量修改结算方式对话框 -->
+    <el-dialog v-model="batchEditOpen" width="600px" append-to-body>
+      <template #header>
+        <div style="display: flex; align-items: center; gap: 5px">
+          <el-icon><Edit /></el-icon>
+          <span>编辑结算方式</span>
+        </div>
+      </template>
+      <div class="well-form">
+        <el-form ref="batchEditFormRef" :model="batchEditForm" label-width="0px" size="small">
+          <div class="form-row">
+            <div class="form-label">客户id：</div>
+            <div class="form-content">
+              <span style="color: red">选中数量: {{ ids.length }}, 选中客户ID: {{ selectedCustomerIds }}</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">结算方式：</div>
+            <div class="form-content">
+              <el-select
+                v-model="batchEditForm.paymentMethod"
+                placeholder="请选择结算方式"
+                clearable
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in PAYMENT_METHOD_OPTIONS"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">地区：</div>
+            <div class="form-content">
+              <el-select v-model="batchEditForm.region" placeholder="请选择地区" clearable style="width: 100%">
+                <el-option v-for="item in REGION_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">业务员：</div>
+            <div class="form-content">
+              <el-input v-model="batchEditForm.salesPerson" placeholder="请输入业务员"></el-input>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">客户单位：</div>
+            <div class="form-content">
+              <el-input v-model="batchEditForm.customerUnit" placeholder="请输入客户单位"></el-input>
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitBatchEdit">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancelBatchEdit">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Research">
-import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
+import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance, computed } from 'vue'
 import { listResearch, getResearch, addResearch, updateResearch, delResearch } from '@/api/customer/research'
 import { listCustomerOption, listSubjectGroupOption } from '@/api/common'
+import { REGION_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/utils/constant'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
-import { Search, Refresh, Plus, Delete, Check, Close } from '@element-plus/icons-vue'
+import { Search, Refresh, Plus, Delete, Check, Close, Edit } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -137,6 +210,20 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const batchEditOpen = ref(false)
+const batchEditFormRef = ref(null)
+const batchEditForm = reactive({
+  paymentMethod: undefined,
+  region: undefined,
+  salesPerson: undefined,
+  customerUnit: undefined
+})
+
+const selectedRows = ref([])
+const selectedCustomerIds = computed(() => {
+  return selectedRows.value.map(row => row.customerId).join(', ')
+})
 
 const searchFields = ref([
   { prop: 'name', label: '名称', type: 'input' },
@@ -238,6 +325,7 @@ function handleRefresh() {
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id)
+  selectedRows.value = selection
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
@@ -247,6 +335,29 @@ function handleAdd() {
   reset()
   open.value = true
   title.value = '客户课题组设置'
+}
+
+/** 批量编辑按钮操作 */
+function handleBatchEdit() {
+  if (ids.value.length === 0) {
+    proxy.$modal.msgWarning('请选择要编辑的数据')
+    return
+  }
+  batchEditForm.paymentMethod = undefined
+  batchEditForm.region = undefined
+  batchEditForm.salesPerson = undefined
+  batchEditForm.customerUnit = undefined
+  batchEditOpen.value = true
+}
+
+/** 提交批量编辑 */
+function submitBatchEdit() {
+  proxy.$modal.msgWarning('API接入中...')
+}
+
+/** 取消批量编辑 */
+function cancelBatchEdit() {
+  batchEditOpen.value = false
 }
 
 /** 修改按钮操作 */

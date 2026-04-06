@@ -163,6 +163,110 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 订单款项弹窗 -->
+    <el-dialog v-model="showPaymentDialog" title="订单收费" width="1000px" append-to-body>
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
+          <el-button size="small" type="success" plain icon="Plus" @click="handleAddFee">添加</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="primary" plain icon="Edit" :disabled="paymentSingle" @click="handleUpdateFee"
+            >编辑</el-button
+          >
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="danger" plain icon="Delete" :disabled="paymentMultiple" @click="handleDeleteFee"
+            >删除</el-button
+          >
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="info" plain icon="Printer" @click="handlePrintPayment">打印</el-button>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="paymentLoading"
+        :data="paymentList"
+        border
+        size="small"
+        @selection-change="handlePaymentSelectionChange"
+      >
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="ID" align="center" prop="id" width="80" />
+        <el-table-column label="订单号" align="center" prop="orderId" width="150" />
+        <el-table-column label="名称" align="center" prop="name" />
+        <el-table-column label="单位" align="center" prop="unit" width="80" />
+        <el-table-column label="数量" align="center" prop="quantity" width="80" />
+        <el-table-column label="单价" align="center" prop="price" width="100" />
+        <el-table-column label="费用" align="center" prop="cost" width="100" />
+        <el-table-column label="添加人" align="center" prop="createBy" width="100" />
+        <el-table-column label="时间" align="center" prop="createTime" width="150" />
+      </el-table>
+
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="showPaymentDialog = false">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="showPaymentDialog = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 手工添加费用弹窗 -->
+    <el-dialog v-model="showAddFeeDialog" :title="feeTitle" width="700px" append-to-body>
+      <div class="well-form">
+        <el-form :model="feeForm" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">订单号：</div>
+            <div class="form-content">
+              <el-input v-model="feeForm.orderId" disabled />
+            </div>
+            <div class="form-label">名称：</div>
+            <div class="form-content">
+              <el-input v-model="feeForm.name" placeholder="请输入名称" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">单位：</div>
+            <div class="form-content">
+              <el-input v-model="feeForm.unit" placeholder="请输入单位" />
+            </div>
+            <div class="form-label">数量：</div>
+            <div class="form-content">
+              <el-input-number
+                v-model="feeForm.quantity"
+                :precision="0"
+                controls-position="right"
+                style="width: 100%"
+                @change="calcFee"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">单价：</div>
+            <div class="form-content">
+              <el-input-number
+                v-model="feeForm.price"
+                :precision="2"
+                controls-position="right"
+                style="width: 100%"
+                @change="calcFee"
+              />
+            </div>
+            <div class="form-label">费用：</div>
+            <div class="form-content">
+              <el-input-number v-model="feeForm.cost" :precision="2" controls-position="right" style="width: 100%" />
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitFeeForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="showAddFeeDialog = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -219,6 +323,26 @@ const title = ref('')
 const open = ref(false)
 const formRef = ref(null)
 const searchRef = ref(null)
+
+// 订单款项相关
+const showPaymentDialog = ref(false)
+const paymentLoading = ref(false)
+const paymentList = ref([])
+const paymentIds = ref([])
+const paymentSingle = ref(true)
+const paymentMultiple = ref(true)
+
+// 添加费用相关
+const showAddFeeDialog = ref(false)
+const feeTitle = ref('')
+const feeForm = ref({
+  orderId: '',
+  name: '',
+  unit: '',
+  quantity: 0,
+  price: 0,
+  cost: 0
+})
 
 const data = reactive({
   form: {},
@@ -321,16 +445,30 @@ function cancel() {
 }
 
 /** 业务扩展手柄 */
-function handleOrderPayment() {
-  proxy.$modal.msg('订单款项功能开发中...')
+function handleInvoice() {
+  if (ids.value.length === 0) {
+    proxy.$modal.msgWarning('请选择要开票的订单')
+    return
+  }
+  proxy.$modal
+    .confirm('确认付款打印发票吗？')
+    .then(() => {
+      proxy.$modal.msgSuccess('开票完成')
+    })
+    .catch(() => {})
 }
 
 function handleOrderClear() {
-  proxy.$modal.msg('订单清空功能开发中...')
-}
-
-function handleInvoice() {
-  proxy.$modal.msg('开票功能开发中...')
+  if (ids.value.length === 0) {
+    proxy.$modal.msgWarning('请选择要清空的订单')
+    return
+  }
+  proxy.$modal
+    .confirm('确定要清空所选订单吗？')
+    .then(() => {
+      proxy.$modal.msgSuccess('清空完成')
+    })
+    .catch(() => {})
 }
 
 function handleWeeklyReport() {
@@ -343,6 +481,92 @@ function handleGroupConfirmation() {
 
 function handleDeliveryNote() {
   proxy.$modal.msg('送货单功能开发中...')
+}
+
+/** 订单款项 (收费) 相关逻辑 */
+function handleOrderPayment() {
+  if (ids.value.length === 0) {
+    proxy.$modal.msgWarning('请选择一条订单')
+    return
+  }
+  showPaymentDialog.value = true
+  const orderId = ids.value[0]
+  // 模拟数据加载
+  paymentLoading.value = true
+  setTimeout(() => {
+    paymentList.value = [
+      {
+        id: 590223,
+        orderId: orderId,
+        name: 'PCR切胶',
+        unit: '个',
+        quantity: 2,
+        price: 18,
+        cost: 36,
+        createBy: '系统自动',
+        createTime: '2018-06-19 14:30:52'
+      },
+      {
+        id: 590222,
+        orderId: orderId,
+        name: 'PCR扩增',
+        unit: '条',
+        quantity: 2,
+        price: 5,
+        cost: 10,
+        createBy: '系统自动',
+        createTime: '2018-06-19 14:30:51'
+      }
+    ]
+    paymentLoading.value = false
+  }, 300)
+}
+
+function handlePaymentSelectionChange(selection) {
+  paymentIds.value = selection.map(item => item.id)
+  paymentSingle.value = selection.length !== 1
+  paymentMultiple.value = !selection.length
+}
+
+function handleAddFee() {
+  feeTitle.value = '手工添加费用'
+  feeForm.value = {
+    orderId: ids.value[0],
+    name: '',
+    unit: '',
+    quantity: 0,
+    price: 0,
+    cost: 0
+  }
+  showAddFeeDialog.value = true
+}
+
+function handleUpdateFee() {
+  const selectRow = paymentList.value.find(item => item.id === paymentIds.value[0])
+  if (selectRow) {
+    feeTitle.value = '修改费用'
+    feeForm.value = { ...selectRow }
+    showAddFeeDialog.value = true
+  }
+}
+
+function handleDeleteFee() {
+  proxy.$modal.confirm('确定要删除选中的费用吗？').then(() => {
+    proxy.$modal.msgSuccess('删除成功')
+  })
+}
+
+function submitFeeForm() {
+  proxy.$modal.msgSuccess('提交成功')
+  showAddFeeDialog.value = false
+}
+
+function calcFee() {
+  feeForm.value.cost = (feeForm.value.quantity || 0) * (feeForm.value.price || 0)
+}
+
+function handlePrintPayment() {
+  proxy.$modal.msg('打印出库单功能开发中...')
 }
 
 onMounted(() => {

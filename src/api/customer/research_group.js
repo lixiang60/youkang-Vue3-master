@@ -4,8 +4,8 @@ import request from '@/utils/request'
 export function listResearch_group(query) {
   return request({
     url: '/customer/subjectGroup/list',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 // 根据课题组名称查询课题组信息

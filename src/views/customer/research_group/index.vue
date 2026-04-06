@@ -49,15 +49,7 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['customer:research_group:import']"
-          size="small"
-          type="info"
-          plain
-          :icon="Upload"
-          @click="handleImport"
-          >导入</el-button
-        >
+        <el-button size="small" type="info" plain :icon="Upload" @click="handleImport">导入</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -233,6 +225,216 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 设置课题组费用弹窗 (图1) -->
+    <el-dialog v-model="showPriceListDialog" title="设置课题组费用" width="1100px" append-to-body>
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
+          <el-button size="small" type="success" plain icon="Plus" @click="handleAddPrice">添加</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="primary" plain icon="Edit" :disabled="priceSingle" @click="handleEditPrice"
+            >编辑</el-button
+          >
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="danger" plain icon="Delete" :disabled="priceMultiple" @click="handleDeletePrice"
+            >删除</el-button
+          >
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="warning" plain icon="Refresh" :disabled="priceSingle" @click="handleResetPrice"
+            >重置</el-button
+          >
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="info" plain icon="Download" @click="handleAllPrices">所有价格</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button size="small" type="success" plain icon="Download" @click="handleBlankPrice">空白价格</el-button>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="priceLoading"
+        :data="priceList"
+        border
+        size="small"
+        @selection-change="handlePriceSelectionChange"
+      >
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="id" align="center" prop="id" width="80" />
+        <el-table-column label="课题组ID" align="center" prop="groupId" width="100" />
+        <el-table-column label="类别" align="center" prop="category" width="100" />
+        <el-table-column label="收费名称" align="center" prop="chargeName" min-width="150" show-overflow-tooltip />
+        <el-table-column label="价格" align="center" prop="unitPrice" width="100" />
+        <el-table-column label="生效日期" align="center" prop="startDate" width="110" />
+        <el-table-column label="失效日期" align="center" prop="endDate" width="110" />
+        <el-table-column label="状态" align="center" prop="statusLabel" width="80">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 1 ? 'success' : 'info'">{{ row.statusLabel }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态时间" align="center" prop="statusTime" width="150" />
+        <el-table-column label="状态人" align="center" prop="statusBy" width="100" />
+        <el-table-column label="添加人" align="center" prop="createBy" width="100" />
+        <el-table-column label="添加时间" align="center" prop="createTime" width="150" />
+      </el-table>
+
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="showPriceListDialog = false">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="showPriceListDialog = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 设置客户费用弹窗 (图2) -->
+    <el-dialog v-model="showAddPriceDialog" title="设置客户费用" width="700px" append-to-body>
+      <div class="well-form">
+        <el-form :model="priceForm" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">收费名称：</div>
+            <div class="form-content">
+              <el-select v-model="priceForm.chargeName" placeholder="请选择收费名称" style="width: 100%">
+                <el-option-group v-for="group in CHARGE_NAME_OPTIONS" :key="group.label" :label="group.label">
+                  <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value" />
+                </el-option-group>
+              </el-select>
+            </div>
+            <div class="form-label">价格：</div>
+            <div class="form-content">
+              <el-input v-model="priceForm.price" placeholder="请输入价格" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">生效日期：</div>
+            <div class="form-content">
+              <el-date-picker
+                v-model="priceForm.startDate"
+                type="date"
+                placeholder="选择日期"
+                style="width: 100%"
+                value-format="YYYY-MM-DD"
+              />
+            </div>
+            <div class="form-label">失效日期：</div>
+            <div class="form-content">
+              <el-date-picker
+                v-model="priceForm.endDate"
+                type="date"
+                placeholder="选择日期"
+                style="width: 100%"
+                value-format="YYYY-MM-DD"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">备注：</div>
+            <div class="form-content">
+              <el-input v-model="priceForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitPriceForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="showAddPriceDialog = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 设置课题组提醒弹窗 -->
+    <el-dialog v-model="showReminderDialog" title="设置课题组提醒" width="700px" append-to-body>
+      <div class="well-form">
+        <el-form :model="reminderForm" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">课题组名称：</div>
+            <div class="form-content">
+              <el-input v-model="reminderForm.groupName" disabled />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">是否提醒：</div>
+            <div class="form-content">
+              <el-radio-group v-model="reminderForm.isReminder">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">提醒内容：</div>
+            <div class="form-content">
+              <el-input v-model="reminderForm.content" type="textarea" :rows="5" placeholder="请输入提醒内容" />
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitReminderForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="showReminderDialog = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 下载价格设置表弹窗 -->
+    <el-dialog v-model="showExportPriceDialog" title="下载价格设置表" width="600px" append-to-body>
+      <div class="well-form">
+        <el-form :model="exportPriceForm" label-width="0px">
+          <div class="form-row">
+            <div class="form-label">导出类型：</div>
+            <div class="form-content">
+              <el-radio-group v-model="exportPriceForm.type">
+                <el-radio label="all">全部价格</el-radio>
+                <el-radio label="blank">未设置价格</el-radio>
+              </el-radio-group>
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitExportPriceForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="showExportPriceDialog = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 导入价格设置表弹窗 -->
+    <el-dialog v-model="importOpen" title="导入价格设置表" width="600px" append-to-body :close-on-click-modal="false">
+      <div class="well-form">
+        <el-form label-width="0px">
+          <div class="form-row">
+            <div class="form-label">上传文件：</div>
+            <div class="form-content">
+              <el-upload
+                ref="uploadRef"
+                :auto-upload="false"
+                :limit="1"
+                accept=".xlsx, .xls"
+                @on-change="handleFileChange"
+              >
+                <template #trigger>
+                  <el-button type="primary">选择文件</el-button>
+                </template>
+                <template #tip>
+                  <div class="el-upload__tip">请选择制作好的价格设置 Excel 表</div>
+                </template>
+              </el-upload>
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer" style="text-align: center">
+          <el-button type="success" :icon="Check" @click="submitImport">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="importOpen = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -245,8 +447,10 @@ import {
   updateResearch_group,
   delResearch_group
 } from '@/api/customer/research_group'
+import { listPriceConfig, updatePriceConfig, resetPriceConfig } from '@/api/customer/priceConfig'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
+import { CHARGE_NAME_OPTIONS } from '@/utils/constant'
 import {
   Search,
   Refresh,
@@ -276,6 +480,49 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+const formRef = ref(null)
+const searchRef = ref(null)
+const currentGroupId = ref(null)
+
+// 导入相关
+const importOpen = ref(false)
+const importFile = ref(null)
+const uploadRef = ref(null)
+
+// 课题组费用设置相关
+const showPriceListDialog = ref(false)
+const priceLoading = ref(false)
+const priceList = ref([])
+const priceIds = ref([])
+const priceSingle = ref(true)
+const priceMultiple = ref(true)
+
+// 单个价格设置相关
+const showAddPriceDialog = ref(false)
+const priceForm = ref({
+  id: undefined,
+  groupId: undefined,
+  chargeName: '',
+  unitPrice: '',
+  startDate: '',
+  endDate: '',
+  remark: ''
+})
+
+// 提醒设置相关
+const showReminderDialog = ref(false)
+const reminderForm = ref({
+  groupId: undefined,
+  groupName: '',
+  isReminder: '0',
+  content: ''
+})
+
+// 导出价格相关
+const showExportPriceDialog = ref(false)
+const exportPriceForm = ref({
+  type: 'all'
+})
 
 const searchFields = ref([
   { prop: 'name', label: '名称', type: 'input' },
@@ -414,7 +661,21 @@ function handleUpdate(row) {
 
 /** 导入按钮操作 */
 function handleImport() {
-  proxy.$modal.msgInfo('导入功能开发中...')
+  importFile.value = null
+  importOpen.value = true
+}
+
+function handleFileChange(file) {
+  importFile.value = file
+}
+
+function submitImport() {
+  if (!importFile.value) {
+    proxy.$modal.msgWarning('请先选择要上传的文件')
+    return
+  }
+  proxy.$modal.msgWarning('待接入后台导入API')
+  importOpen.value = false
 }
 
 /** 设置价格按钮操作 */
@@ -423,7 +684,85 @@ function handleSetPrice() {
     proxy.$modal.msgWarning('请选择要设置价格的课题组')
     return
   }
-  proxy.$modal.msgInfo('设置价格功能开发中...')
+  currentGroupId.value = ids.value[0]
+  showPriceListDialog.value = true
+  // 调用真实接口
+  priceLoading.value = true
+  listPriceConfig(currentGroupId.value)
+    .then(response => {
+      // 映射字段以支持 UI
+      priceList.value = (response.data || []).map(item => ({
+        ...item,
+        id: item.customId || item.templateId, // 统一使用 ID
+        statusLabel: item.status === 1 ? '在用' : '停用'
+      }))
+      priceLoading.value = false
+    })
+    .catch(() => {
+      priceLoading.value = false
+    })
+}
+
+function handlePriceSelectionChange(selection) {
+  priceIds.value = selection.map(item => item.id)
+  priceSingle.value = selection.length !== 1
+  priceMultiple.value = !selection.length
+}
+
+function handleAddPrice() {
+  priceForm.value = {
+    id: undefined,
+    groupId: ids.value[0],
+    chargeName: '',
+    unitPrice: '',
+    startDate: '',
+    endDate: '',
+    remark: ''
+  }
+  showAddPriceDialog.value = true
+}
+
+function handleEditPrice() {
+  const selectRow = priceList.value.find(item => item.id === priceIds.value[0])
+  if (selectRow) {
+    priceForm.value = { ...selectRow }
+    showAddPriceDialog.value = true
+  }
+}
+
+function handleDeletePrice() {
+  proxy.$modal.confirm('确定要删除选中的费用配置吗？').then(() => {
+    proxy.$modal.msgSuccess('删除成功')
+  })
+}
+
+/** 重置价格配置 (恢复模板默认值) */
+function handleResetPrice() {
+  const selectRow = priceList.value.find(item => item.id === priceIds.value[0])
+  if (!selectRow || !selectRow.customId) {
+    proxy.$modal.msgWarning('该配置已是模板默认值，无需重置')
+    return
+  }
+  proxy.$modal.confirm('确定要重置该配置并恢复为模板默认值吗？').then(() => {
+    resetPriceConfig(selectRow.customId).then(() => {
+      proxy.$modal.msgSuccess('重置成功')
+      handleSetPrice() // 刷新列表
+    })
+  })
+}
+
+function submitPriceForm() {
+  // 按照后端接口规范处理 ID
+  // 如果是由于修改模板生成的自定义价格，后端会自动处理 customId 的创建
+  const postData = {
+    ...priceForm.value,
+    id: priceForm.value.customId || null // customId 存在则修改，不存在则新增自定义
+  }
+  updatePriceConfig(postData).then(() => {
+    proxy.$modal.msgSuccess('保存成功')
+    showAddPriceDialog.value = false
+    handleSetPrice() // 刷新列表
+  })
 }
 
 /** 提醒设置按钮操作 */
@@ -432,7 +771,19 @@ function handleReminderSettings() {
     proxy.$modal.msgWarning('请选择要设置提醒的课题组')
     return
   }
-  proxy.$modal.msgInfo('提醒设置功能开发中...')
+  const selectRow = dataList.value.find(item => item.id === ids.value[0])
+  reminderForm.value = {
+    groupId: ids.value[0],
+    groupName: selectRow ? selectRow.name : '',
+    isReminder: '0',
+    content: ''
+  }
+  showReminderDialog.value = true
+}
+
+function submitReminderForm() {
+  proxy.$modal.msgWarning('待接入API')
+  showReminderDialog.value = false
 }
 
 /** 预付款设置按钮操作 */
@@ -441,7 +792,7 @@ function handlePrepaymentSettings() {
     proxy.$modal.msgWarning('请选择要设置预付款的课题组')
     return
   }
-  proxy.$modal.msgInfo('预付款设置功能开发中...')
+  proxy.$modal.msgWarning('待接入API')
 }
 
 /** 批量编辑按钮操作 */
@@ -450,22 +801,34 @@ function handleBatchEdit() {
     proxy.$modal.msgWarning('请选择要批量编辑的课题组')
     return
   }
-  proxy.$modal.msgInfo('批量编辑功能开发中...')
+  proxy.$modal.msgWarning('待接入API')
 }
 
 /** 基因标签按钮操作 */
 function handleGeneLabel() {
-  proxy.$modal.msgInfo('基因标签功能开发中...')
+  proxy.$modal.msgWarning('功能开发中')
 }
 
 /** 所有价格按钮操作 */
 function handleAllPrices() {
-  proxy.$modal.msgInfo('所有价格功能开发中...')
+  exportPriceForm.value.type = 'all'
+  showExportPriceDialog.value = true
 }
 
 /** 空白价格按钮操作 */
 function handleBlankPrice() {
-  proxy.$modal.msgInfo('空白价格功能开发中...')
+  exportPriceForm.value.type = 'blank'
+  showExportPriceDialog.value = true
+}
+
+function submitExportPriceForm() {
+  const query = {
+    groupId: currentGroupId.value,
+    type: exportPriceForm.value.type
+  }
+  // 核心逻辑：增加字段价格 (unitPrice) 的导出处理
+  proxy.download('customer/priceConfig/export', query, '价格设置表_' + new Date().getTime() + '.xlsx')
+  showExportPriceDialog.value = false
 }
 
 /** 提交按钮 */
@@ -476,13 +839,13 @@ function submitForm() {
         const updateData = {
           ...form.value
         }
-        updateResearch_group(updateData).then(response => {
+        updateResearch_group(updateData).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addResearch_group(form.value).then(response => {
+        addResearch_group(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()

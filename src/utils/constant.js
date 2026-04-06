@@ -44,3 +44,41 @@ export const REGION_OPTIONS = [
   { label: '南昌', value: '南昌' },
   { label: '深圳', value: '深圳' }
 ]
+
+// 结算方式选项
+export const PAYMENT_METHOD_OPTIONS = [
+  { label: '现金结算', value: '现金结算' },
+  { label: '支票结算', value: '支票结算' },
+  { label: '转账汇款', value: '转账汇款' },
+  { label: '月结', value: '月结' },
+  { label: '预付款', value: '预付款' },
+  { label: '内部结算', value: '内部结算' }
+]
+
+// 收费名称选项 (分级)
+export const CHARGE_NAME_OPTIONS = [
+  {
+    label: '测序',
+    value: '测序',
+    options: [
+      { label: '测序单价', value: '测序单价' },
+      { label: 'PCR扩增', value: 'PCR扩增' },
+      { label: '克隆', value: '克隆' },
+      { label: '四代价格', value: '四代价格' }
+    ]
+  },
+  {
+    label: '合成',
+    value: '合成',
+    options: [
+      { label: '10-59bp-OPC', value: '10-59bp-OPC' },
+      { label: '10-59bp-PAGE', value: '10-59bp-PAGE' },
+      { label: '60-79bp-OPC', value: '60-79bp-OPC' },
+      { label: '测序引物', value: '测序引物' },
+      { label: '大干89bp-PA', value: '大干89bp-PA' },
+      { label: '小干16bp-HP', value: '小干16bp-HP' },
+      { label: 'CY3', value: 'CY3' },
+      { label: 'CY5', value: 'CY5' }
+    ]
+  }
+]
