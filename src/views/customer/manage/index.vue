@@ -157,7 +157,7 @@
             <div class="form-content">
               <div style="display: flex; gap: 10px">
                 <el-input v-model="form.salesPerson" placeholder="请输入销售员" />
-                <el-button icon="Search" circle></el-button>
+                <el-button icon="Search" circle @click="openSalesPersonSelector"></el-button>
               </div>
             </div>
             <div class="form-label">客户单位：</div>
@@ -197,6 +197,13 @@
       :selected-id="form.subjectGroupId"
       @confirm="handleSubjectGroupSelect"
     />
+
+    <!-- 销售员选择组件 -->
+    <sales-person-selector
+      v-model="showSalesPersonSelector"
+      :selected-name="form.salesPerson"
+      @confirm="handleSalesPersonSelect"
+    />
   </div>
 </template>
 
@@ -205,6 +212,7 @@ import { listManage, getManage, addManage, updateManage, delManage } from '@/api
 import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
 import { COMPANY_OPTIONS, REGION_OPTIONS } from '@/utils/constant'
 import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
+import SalesPersonSelector from '@/views/customer/components/SalesPersonSelector.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
@@ -227,6 +235,7 @@ const { proxy } = getCurrentInstance()
 const dataList = ref([])
 const open = ref(false)
 const showSubjectGroupSelector = ref(false)
+const showSalesPersonSelector = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
@@ -489,6 +498,16 @@ function openSubjectGroupSelector() {
 function handleSubjectGroupSelect(group) {
   form.value.subjectGroupId = group.id
   form.value.subjectGroupName = group.name
+}
+
+/** 打开销售员选择弹窗 */
+function openSalesPersonSelector() {
+  showSalesPersonSelector.value = true
+}
+
+/** 销售员选择回调 */
+function handleSalesPersonSelect(user) {
+  form.value.salesPerson = user.nickName
 }
 
 let isInitialActivated = true

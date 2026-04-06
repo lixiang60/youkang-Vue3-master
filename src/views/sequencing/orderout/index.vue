@@ -177,19 +177,19 @@ const { proxy } = getCurrentInstance()
 
 const columns = ref([
   { type: 'selection', minWidth: 50, fixed: true, visible: true },
-  { key: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
-  { key: 'customerId', label: '客户ID', minWidth: 80, visible: true },
-  { key: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
-  { key: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
-  { key: 'generation', label: '测序代数', minWidth: 90, visible: true },
-  { key: 'groupId', label: '课题组ID', minWidth: 80, visible: true },
-  { key: 'groupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
-  { key: 'orderType', label: '订单类型', minWidth: 110, visible: true },
-  { key: 'endTime', label: '结束时间', minWidth: 180, visible: true },
-  { key: 'orderInfo', label: '订单信息', minWidth: 150, visible: true },
-  { key: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
-  { key: 'orderStatus', label: '订单状态', minWidth: 100, visible: true },
-  { key: 'createBy', label: '添加人', minWidth: 100, visible: true }
+  { prop: 'orderId', label: '订单号', minWidth: 150, fixed: true, sortable: true, visible: true },
+  { prop: 'customerId', label: '客户ID', minWidth: 80, visible: true },
+  { prop: 'customerName', label: '客户姓名', minWidth: 120, fixed: true, showOverflowTooltip: true, visible: true },
+  { prop: 'customerAddress', label: '客户地址', minWidth: 180, showOverflowTooltip: true, visible: true },
+  { prop: 'generation', label: '测序代数', minWidth: 90, visible: true },
+  { prop: 'groupId', label: '课题组ID', minWidth: 80, visible: true },
+  { prop: 'groupName', label: '课题组', minWidth: 140, showOverflowTooltip: true, visible: true },
+  { prop: 'orderType', label: '订单类型', minWidth: 110, visible: true },
+  { prop: 'endTime', label: '结束时间', minWidth: 180, visible: true },
+  { prop: 'orderInfo', label: '订单信息', minWidth: 150, visible: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true, visible: true },
+  { prop: 'orderStatus', label: '订单状态', minWidth: 100, visible: true },
+  { prop: 'createBy', label: '添加人', minWidth: 100, visible: true }
 ])
 
 const searchFields = ref([

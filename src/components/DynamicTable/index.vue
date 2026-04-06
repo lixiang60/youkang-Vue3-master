@@ -21,7 +21,7 @@
         :min-width="col.width || col.minWidth"
       >
         <!-- 默认渲染：支持 defaultValue 配置 -->
-        <template v-if="!col.slot" #default="scope">
+        <template v-if="!col.slot && col.type !== 'selection' && col.type !== 'index'" #default="scope">
           <span>{{
             scope.row[col.prop] !== null && scope.row[col.prop] !== undefined
               ? scope.row[col.prop]
@@ -32,7 +32,7 @@
         </template>
 
         <!-- 自定义列模板 (Slot) -->
-        <template v-else #default="scope">
+        <template v-else-if="col.slot && col.type !== 'selection' && col.type !== 'index'" #default="scope">
           <slot :name="col.slot" :row="scope.row" :index="scope.$index"></slot>
         </template>
       </el-table-column>
