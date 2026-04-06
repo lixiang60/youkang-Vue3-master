@@ -89,8 +89,7 @@
             <div class="form-label">所属公司：</div>
             <div class="form-content">
               <el-select v-model="form.company" placeholder="请选择所属公司" style="width: 100%">
-                <el-option label="杭州有康" value="杭州有康" />
-                <el-option label="北京分公司" value="北京分公司" />
+                <el-option v-for="item in COMPANY_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </div>
           </div>
@@ -98,9 +97,7 @@
             <div class="form-label">地区：</div>
             <div class="form-content">
               <el-select v-model="form.region" placeholder="请选择地区" style="width: 100%">
-                <el-option label="华东" value="华东" />
-                <el-option label="华北" value="华北" />
-                <el-option label="华南" value="华南" />
+                <el-option v-for="item in REGION_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </div>
             <div class="form-label">地址：</div>
@@ -206,6 +203,7 @@
 <script setup name="Manage">
 import { listManage, getManage, addManage, updateManage, delManage } from '@/api/customer/manage'
 import { ref, reactive, toRefs, onMounted, onActivated, getCurrentInstance } from 'vue'
+import { COMPANY_OPTIONS, REGION_OPTIONS } from '@/utils/constant'
 import SubjectGroupSelector from '@/views/customer/components/SubjectGroupSelector.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicSelector from '@/components/DynamicSelector/index.vue'
@@ -240,6 +238,18 @@ const title = ref('')
 const searchFields = ref([
   { prop: 'customerName', label: '客户名称', type: 'input' },
   { prop: 'phone', label: '手机号', type: 'input' },
+  {
+    prop: 'company',
+    label: '所属公司',
+    type: 'select',
+    options: COMPANY_OPTIONS
+  },
+  {
+    prop: 'region',
+    label: '地区',
+    type: 'select',
+    options: REGION_OPTIONS
+  },
   {
     prop: 'status',
     label: '状态',
@@ -329,7 +339,7 @@ function reset() {
     customerId: undefined,
     customerName: '',
     region: '',
-    company: '杭州有康',
+    company: COMPANY_OPTIONS[0].value,
     address: '',
     subjectGroupId: '',
     subjectGroupName: '',
