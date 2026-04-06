@@ -1,11 +1,13 @@
 <template>
-  <el-dialog
-    title="批量添加测序样品"
-    :model-value="modelValue"
-    width="900px"
-    append-to-body
-    @update:model-value="handleUpdateVisible"
-  >
+  <el-dialog :model-value="modelValue" width="900px" append-to-body @update:model-value="handleUpdateVisible">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <List />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">批量添加测序样品</span>
+      </div>
+    </template>
     <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" class="batch-sample-form">
       <el-row>
         <el-col :span="12">

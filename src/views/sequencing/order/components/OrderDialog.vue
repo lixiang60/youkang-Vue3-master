@@ -1,11 +1,13 @@
 <template>
-  <el-dialog
-    :title="title"
-    :model-value="modelValue"
-    width="1000px"
-    append-to-body
-    @update:model-value="handleUpdateVisible"
-  >
+  <el-dialog :model-value="modelValue" width="1000px" append-to-body @update:model-value="handleUpdateVisible">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <EditPen />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">{{ title }}</span>
+      </div>
+    </template>
     <el-form ref="formRef" :model="form" :rules="rules" label-width="140px" label-position="left">
       <el-row :gutter="20">
         <el-col :span="24">

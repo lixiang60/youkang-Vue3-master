@@ -1,12 +1,13 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    title="内部操作表预览"
-    width="1100px"
-    append-to-body
-    top="5vh"
-    class="print-preview-dialog"
-  >
+  <el-dialog v-model="visible" width="1100px" append-to-body top="5vh" class="print-preview-dialog">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <Printer />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">内部操作表预览</span>
+      </div>
+    </template>
     <div id="printInternalOperation" class="report-container">
       <!-- 报表头部 -->
       <div class="report-header">

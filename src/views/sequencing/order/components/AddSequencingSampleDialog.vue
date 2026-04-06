@@ -1,11 +1,13 @@
 <template>
-  <el-dialog
-    title="添加测序样品"
-    :model-value="modelValue"
-    width="900px"
-    append-to-body
-    @update:model-value="handleUpdateVisible"
-  >
+  <el-dialog :model-value="modelValue" width="900px" append-to-body @update:model-value="handleUpdateVisible">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <Plus />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">添加测序样品</span>
+      </div>
+    </template>
     <!-- Order Info Section -->
     <el-form :model="orderInfo" label-width="100px" class="order-info-form">
       <el-row>

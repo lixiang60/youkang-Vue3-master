@@ -1,11 +1,18 @@
 <template>
   <el-dialog
-    title="订单量查询"
     :model-value="modelValue"
     width="740px"
     append-to-body
     @update:model-value="val => emit('update:modelValue', val)"
   >
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <Search />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">订单量查询</span>
+      </div>
+    </template>
     <el-form :model="form" label-width="0" class="well-form">
       <div class="form-row border-top">
         <div class="form-label" style="width: 100px">开始时间：</div>

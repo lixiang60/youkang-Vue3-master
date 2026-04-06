@@ -1,11 +1,13 @@
 <template>
-  <el-dialog
-    title="标签打印"
-    :model-value="modelValue"
-    width="800px"
-    append-to-body
-    @update:model-value="handleUpdateVisible"
-  >
+  <el-dialog :model-value="modelValue" width="800px" append-to-body @update:model-value="handleUpdateVisible">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <Printer />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">标签打印</span>
+      </div>
+    </template>
     <el-form :model="form" label-width="0" class="well-form">
       <div class="form-row border-top">
         <div class="form-label" style="width: 120px">起始订单：</div>

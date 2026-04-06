@@ -1,11 +1,13 @@
 <template>
-  <el-dialog
-    title="基因测序订单批量添加"
-    :model-value="modelValue"
-    width="800px"
-    append-to-body
-    @update:model-value="handleUpdateVisible"
-  >
+  <el-dialog :model-value="modelValue" width="800px" append-to-body @update:model-value="handleUpdateVisible">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <Plus />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">基因测序订单批量添加</span>
+      </div>
+    </template>
     <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" class="batch-add-form">
       <el-form-item label="客户选择：" prop="customerId">
         <el-select v-model="form.customerId" placeholder="请选择" filterable clearable style="width: 100%">
