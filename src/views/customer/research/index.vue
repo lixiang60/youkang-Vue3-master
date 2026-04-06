@@ -71,45 +71,59 @@
     </dynamic-table>
 
     <!-- 添加或修改对话框 -->
-    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
+    <el-dialog v-model="open" :title="title" width="850px" append-to-body>
       <div class="well-form">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="0px">
           <div class="form-row">
             <div class="form-label">客户选择：</div>
             <div class="form-content">
-              <el-select v-model="form.customerId" placeholder="请选择客户" filterable clearable style="width: 100%">
-                <el-option
-                  v-for="item in customerOptions"
-                  :key="item.customerId"
-                  :label="`${item.customerId}-${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
-                  :value="item.customerId"
-                />
-              </el-select>
+              <el-form-item prop="customerId">
+                <el-select
+                  v-model="form.customerId"
+                  placeholder="请选择客户"
+                  filterable
+                  clearable
+                  :teleported="false"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in customerOptions"
+                    :key="item.customerId"
+                    :label="`${item.customerId}-${item.customerName}-${item.address || ''}-${item.email || ''}-${item.phone || ''}-${item.customerUnit || ''}`"
+                    :value="item.customerId"
+                  />
+                </el-select>
+              </el-form-item>
             </div>
           </div>
           <div class="form-row">
             <div class="form-label">课题组选择：</div>
             <div class="form-content">
-              <el-select
-                v-model="form.subjectGroupId"
-                placeholder="请选择课题组"
-                filterable
-                clearable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in subjectGroupOptions"
-                  :key="item.id"
-                  :label="`${item.id}-${item.name}-${item.contactAddress || ''}`"
-                  :value="item.id"
-                />
-              </el-select>
+              <el-form-item prop="subjectGroupId">
+                <el-select
+                  v-model="form.subjectGroupId"
+                  placeholder="请选择课题组"
+                  filterable
+                  clearable
+                  :teleported="false"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in subjectGroupOptions"
+                    :key="item.id"
+                    :label="`${item.id}-${item.name}-${item.contactAddress || ''}`"
+                    :value="item.id"
+                  />
+                </el-select>
+              </el-form-item>
             </div>
           </div>
           <div class="form-row">
             <div class="form-label">备注：</div>
             <div class="form-content">
-              <el-input v-model="form.remark" type="textarea" :rows="5" placeholder="请输入备注信息" />
+              <el-form-item prop="remark">
+                <el-input v-model="form.remark" type="textarea" :rows="5" placeholder="请输入备注信息" />
+              </el-form-item>
             </div>
           </div>
         </el-form>
@@ -140,27 +154,38 @@
           <div class="form-row">
             <div class="form-label">结算方式：</div>
             <div class="form-content">
-              <el-select
-                v-model="batchEditForm.paymentMethod"
-                placeholder="请选择结算方式"
-                clearable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in PAYMENT_METHOD_OPTIONS"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <el-form-item prop="paymentMethod">
+                <el-select
+                  v-model="batchEditForm.paymentMethod"
+                  placeholder="请选择结算方式"
+                  clearable
+                  :teleported="false"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in PAYMENT_METHOD_OPTIONS"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
             </div>
           </div>
           <div class="form-row">
             <div class="form-label">地区：</div>
             <div class="form-content">
-              <el-select v-model="batchEditForm.region" placeholder="请选择地区" clearable style="width: 100%">
-                <el-option v-for="item in REGION_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
-              </el-select>
+              <el-form-item prop="region">
+                <el-select
+                  v-model="batchEditForm.region"
+                  placeholder="请选择地区"
+                  clearable
+                  :teleported="false"
+                  style="width: 100%"
+                >
+                  <el-option v-for="item in REGION_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </el-form-item>
             </div>
           </div>
           <div class="form-row">
