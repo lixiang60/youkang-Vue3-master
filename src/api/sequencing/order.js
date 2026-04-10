@@ -116,3 +116,11 @@ export function getOrderWithSamplesRange(data) {
     data: data
   })
 }
+
+// 计算订单价格
+export function calcOrderPrice(orderId) {
+  return request({
+    url: '/order/info/calcPrice/' + orderId,
+    method: 'get'
+  })
+}

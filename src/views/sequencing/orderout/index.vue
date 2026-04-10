@@ -273,7 +273,7 @@
 <script setup name="OrderOut">
 import { ref, reactive, toRefs, onMounted, getCurrentInstance } from 'vue'
 import { Check, Close, EditPen } from '@element-plus/icons-vue'
-import { listOrder } from '@/api/sequencing/order'
+import { listOrder, calcOrderPrice } from '@/api/sequencing/order'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 
@@ -491,35 +491,25 @@ function handleOrderPayment() {
   }
   showPaymentDialog.value = true
   const orderId = ids.value[0]
-  // 模拟数据加载
   paymentLoading.value = true
-  setTimeout(() => {
-    paymentList.value = [
-      {
-        id: 590223,
-        orderId: orderId,
-        name: 'PCR切胶',
-        unit: '个',
-        quantity: 2,
-        price: 18,
-        cost: 36,
-        createBy: '系统自动',
-        createTime: '2018-06-19 14:30:52'
-      },
-      {
-        id: 590222,
-        orderId: orderId,
-        name: 'PCR扩增',
+  calcOrderPrice(orderId)
+    .then(response => {
+      paymentList.value = response.data.map(item => ({
+        id: item.sampleId,
+        orderId: item.orderId,
+        name: `${item.project}${item.sampleType ? ' / ' + item.sampleType : ''}`,
         unit: '条',
-        quantity: 2,
-        price: 5,
-        cost: 10,
+        quantity: item.quantity,
+        price: item.unitPrice,
+        cost: item.totalPrice,
         createBy: '系统自动',
-        createTime: '2018-06-19 14:30:51'
-      }
-    ]
-    paymentLoading.value = false
-  }, 300)
+        createTime: '-'
+      }))
+      paymentLoading.value = false
+    })
+    .catch(() => {
+      paymentLoading.value = false
+    })
 }
 
 function handlePaymentSelectionChange(selection) {
