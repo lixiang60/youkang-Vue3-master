@@ -1,36 +1,50 @@
 ---
 trigger: always_on
-description: 工具与编辑器行为规范
+description: 研发总纲 - 工具行为、占位规范与全局约束
 ---
 
-# 🛠 开发辅助工具规范
+# 📜 后台研发总纲 (General Development Guidelines)
 
-## 1. 验证文档行为
+本指南作为前端开发的核心总纲，定义了工具链行为、应急交互逻辑及全局样式底座。具体的页面、表格、接口规范请查阅各专项文档。
 
-- **不要自动打开 walkthrough**：生成、保存或更新验证文档（如 `walkthrough.md`）后，**不应自动打开** 或引导编辑器（如 VSCode/Cursor）弹出预览该文档，以避免分散开发注意力。
+## 1. 🛠 开发辅助工具规范
 
-## 2. 任务执行规范
+### 1.1 验证文档行为
+- **不要自动打开 walkthrough**：生成、保存或更新验证文档（如 `walkthrough.md`）后，**不应自动打开** 或引导编辑器弹出预览，以避免分散注意力。
 
-- **交互占位规范**：当功能按钮已在 UI 中展现，但具体的交互逻辑（如弹窗展示、页面跳转等）尚未编写时，应统一通过 `proxy.$modal.msgInfo('功能开发中...')` 给出明确反馈。
-- **接口占位规范**：在一个功能模块的交互（如弹窗已弹出）已完成，但核心业务 API 尚未接入到确定（submit）动作时，应统一通过 `proxy.$modal.msgWarning('API接入中...')` 指明进度。
+### 1.2 任务执行占位规范
+- **功能占位**：按钮已呈现但交互逻辑未编写时，统一调用 `proxy.$modal.msgInfo('功能开发中...')`。
+- **接口占位**：交互已完成但 API 尚未接入时，统一调用 `proxy.$modal.msgWarning('API接入中...')`。
 
-# 🎨 样式与编码规范
+## 2. 🎨 全局样式与底座
 
-## 1. 全局样式优先规则
+- **强依赖全局样式**：优先复用全局 SCSS 变量、Mixins 和 Utility 组件样式（参见 `src/assets/styles/`）。
+- **Element Plus 优先**：优先使用 Element 原生类设计，样式保持简洁。
+- **Scoped 强约束**：自定义样式必须使用 `<style scoped>`，严禁无理由添加。
 
-- **强依赖全局样式**：项目中高度复用了全局 SCSS 变量、Mixins 和 Utility 组件样式（参见 `src/assets/styles/` 目录）。
-- **优先使用element原生样式**：优先使用element原生类，样式保持代码简洁，截图只是layout实现
-- **禁止随意添加私有样式**：在 Vue 组件中，**杜绝**无理由添加与全局视觉设计不一致的随意样式定义。绝大多数基础样式（边距、颜色、字体、按钮样式）应引用全局系统。
-- **图标使用规范**：所有图标必须使用 `element-plus/icons-vue` 库，并推荐采用组件导入方式（如 `:icon="Search"`），以保持样式规范及类型安全。
-- **对话框按钮规范**：确定按钮统一使用 `type="success" :icon="Check"`，标签为 `确定`（无空格）；取消按钮统一使用 `type="danger" :icon="Close"`，标签为 `取消`（无空格）。底部容器需使用 `<div class="dialog-footer" style="text-align: center">`。
-- **Scoped 约束**：由于是公共/后台系统，组件内部自定义样式必须使用 `<style scoped>`，防止样式污染全局或其他组件。
+## 3. 📖 专项规范索引 (Rule Index)
 
-## 2. 页面样式代码结构风格
+在进行具体功能开发前，必须阅读并严格遵守以下相关专项规范：
 
-- Imports (导入)：统一放在最顶部。
-- Constants & Config (常量与配置)：包括 columns 定义、searchFields、验证规则 rules 等静态配置。
-- State (响应式状态)：集中定义所有 ref 和 reactive（如 loading、分页数据、弹窗控制开关、表单对象等）。
-- Computed (计算属性)：如 selectedProduceIds。
-- Methods (方法)：按照逻辑功能分组（查询、基础 CRUD、业务操作、辅助工具函数）。
-- Lifecycle Hooks (生命周期)：onMounted 和 onActivated 放在方法之后。
-- Watchers (监听器)：如列显隐的 watch。
+| 模块 | 规范文件 | 核心关注点 |
+| :--- | :--- | :--- |
+| **数据列表/表格** | [table-style.md](file:///root/www/youkang/youkang-front/.agents/rules/table-style.md) | 高密度布局、动态显隐列、`DynamicTable` 使用、强压制样式。 |
+| **组件/编码风格** | [component-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/component-rules.md) | 代码结构顺序、对话框按钮标准、图标库使用、Form 布局。 |
+| **后端接口对接** | [api-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/api-rules.md) | 接口文档目录、后端 Java 源码参考、DTO/VO 字段命名对齐。 |
+| **打印/报表规范** | [component-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/component-rules.md)#4 | 打印组件复用、`v-print` 使用、宋体强制约束。 |
+
+## 4. 🖨 报表与打印规范
+
+- **组件化抽离**：复杂的打印布局（如送货单、确认单）必须抽离为独立的 Content 组件（如 `DeliveryNoteContent.vue`），严禁在业务页面直接编写大段打印 HTML。
+- **通用容器**：优先使用通用 `PrintDialog` 组件作为预览包装，保持“预览 -> 确认 -> 打印”的交互一致性。
+- **标准指令**：强一致性使用 `v-print` 指令触发打印，禁止直接调用原生 `window.print()`。
+- **视觉约束**：
+    - **字体**：正式报表强制使用 `font-family: 'SimSun', serif;`（宋体）。
+    - **分页**：批量打印必须处理 `@media print` 下的分页符 (`page-break-after: always`)。
+    - **精简**：打印样式中必须隐藏对话框页眉、页脚及所有非纸质内容。
+
+
+---
+
+> [!IMPORTANT]
+> 每一个新页面的开发都应首先检视其是否符合 `table-style.md` 中定义的“高密度、体验友好”的列表看板规范。

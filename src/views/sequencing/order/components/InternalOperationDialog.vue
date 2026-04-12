@@ -16,7 +16,7 @@
           <div class="order-id-text">{{ orderData.orderInfo?.orderId }}</div>
         </div>
         <div class="header-center">
-          <div class="company-name">睿博兴科生物技术有限公司</div>
+          <div class="company-name">有康生物技术有限公司</div>
           <div class="company-site">www.ruibiotech.com</div>
           <div class="report-title">测序明细表</div>
         </div>

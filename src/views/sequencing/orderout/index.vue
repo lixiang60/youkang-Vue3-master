@@ -213,6 +213,20 @@
       </template>
     </el-dialog>
 
+    <!-- 打印预览弹窗 -->
+    <print-dialog v-model="showPrintDialog" title="送货单预览" print-id="printDeliveryNote">
+      <delivery-note-content :data="printData" :list="paymentList" />
+    </print-dialog>
+
+    <!-- 周报报表预览弹窗 -->
+    <weekly-report-dialog v-model="showWeeklyReportDialog" />
+
+    <!-- 课题组客户确认单弹窗 -->
+    <group-confirmation-dialog v-model="showGroupConfirmDialog" />
+
+    <!-- 批量打印送货单弹窗 -->
+    <batch-delivery-note-dialog v-model="showBatchDeliveryDialog" />
+
     <!-- 手工添加费用弹窗 -->
     <el-dialog v-model="showAddFeeDialog" :title="feeTitle" width="700px" append-to-body>
       <div class="well-form">
@@ -277,11 +291,16 @@
 </template>
 
 <script setup name="OrderOut">
-import { ref, reactive, toRefs, onMounted, getCurrentInstance } from 'vue'
+import { ref, reactive, toRefs, onMounted, computed, getCurrentInstance } from 'vue'
 import { Check, Close, EditPen } from '@element-plus/icons-vue'
 import { listOrder, calcOrderPrice } from '@/api/sequencing/order'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import PrintDialog from '@/components/PrintDialog/index.vue'
+import DeliveryNoteContent from '../components/DeliveryNoteContent.vue'
+import WeeklyReportDialog from '../components/WeeklyReportDialog.vue'
+import GroupConfirmationDialog from '../components/GroupConfirmationDialog.vue'
+import BatchDeliveryNoteDialog from '../components/BatchDeliveryNoteDialog.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -337,6 +356,13 @@ const paymentList = ref([])
 const paymentIds = ref([])
 const paymentSingle = ref(true)
 const paymentMultiple = ref(true)
+
+// 打印相关
+const showPrintDialog = ref(false)
+const showWeeklyReportDialog = ref(false)
+const showGroupConfirmDialog = ref(false)
+const showBatchDeliveryDialog = ref(false)
+const printData = ref({})
 
 // 添加费用相关
 const showAddFeeDialog = ref(false)
@@ -478,15 +504,15 @@ function handleOrderClear() {
 }
 
 function handleWeeklyReport() {
-  proxy.$modal.msg('周报功能开发中...')
+  showWeeklyReportDialog.value = true
 }
 
 function handleGroupConfirmation() {
-  proxy.$modal.msg('课题组客户确认单功能开发中...')
+  showGroupConfirmDialog.value = true
 }
 
 function handleDeliveryNote() {
-  proxy.$modal.msg('送货单功能开发中...')
+  showBatchDeliveryDialog.value = true
 }
 
 /** 订单款项 (收费) 相关逻辑 */
@@ -559,7 +585,19 @@ function calcFee() {
 }
 
 function handlePrintPayment() {
-  proxy.$modal.msg('打印出库单功能开发中...')
+  if (paymentList.value.length === 0) {
+    proxy.$modal.msgWarning('没有可打印的款项信息')
+    return
+  }
+  // 获取当前选中的订单基本信息
+  const currentOrder = dataList.value.find(item => item.orderId === ids.value[0]) || {}
+  printData.value = {
+    ...currentOrder,
+    deliveryTime: currentOrder.endTime || proxy.parseTime(new Date(), '{y}/{m}/{d}'),
+    remark: currentOrder.orderInfo || '收扩增费',
+    salesman: '陈真真-南'
+  }
+  showPrintDialog.value = true
 }
 
 onMounted(() => {
