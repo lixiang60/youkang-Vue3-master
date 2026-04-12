@@ -227,11 +227,11 @@
     </el-dialog>
 
     <!-- 设置课题组费用弹窗 (图1) -->
-    <el-dialog v-model="showPriceListDialog" title="设置课题组费用" width="1100px" append-to-body>
+    <el-dialog v-model="showPriceListDialog" title="设置课题组费用" width="90%" append-to-body>
       <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
+        <!-- <el-col :span="1.5">
           <el-button size="small" type="success" plain icon="Plus" @click="handleAddPrice">添加</el-button>
-        </el-col>
+        </el-col> -->
         <el-col :span="1.5">
           <el-button size="small" type="primary" plain icon="Edit" :disabled="priceSingle" @click="handleEditPrice"
             >编辑</el-button
@@ -263,22 +263,30 @@
         @selection-change="handlePriceSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="id" align="center" prop="id" width="80" />
-        <el-table-column label="课题组ID" align="center" prop="groupId" width="100" />
-        <el-table-column label="类别" align="center" prop="category" width="100" />
+        <el-table-column label="ID" align="center" prop="id" width="80" />
+        <el-table-column label="类别" align="center" prop="category" width="85" />
         <el-table-column label="收费名称" align="center" prop="chargeName" min-width="150" show-overflow-tooltip />
-        <el-table-column label="价格" align="center" prop="unitPrice" width="100" />
-        <el-table-column label="生效日期" align="center" prop="startDate" width="110" />
-        <el-table-column label="失效日期" align="center" prop="endDate" width="110" />
+        <el-table-column label="样品类型" align="center" prop="sampleType" show-overflow-tooltip />
+        <el-table-column label="项目" align="center" prop="project" width="90" show-overflow-tooltip />
+        <el-table-column label="单价" align="center" prop="unitPrice" width="80" />
+        <el-table-column label="计算方式" align="center" prop="calcMethod" width="90" />
+        <el-table-column label="质粒长度" align="center" width="110">
+          <template #default="{ row }"> {{ row.plasmidLengthMin || 0 }} - {{ row.plasmidLengthMax || '∞' }} </template>
+        </el-table-column>
+        <el-table-column label="片段大小" align="center" width="110">
+          <template #default="{ row }"> {{ row.fragmentSizeMin || 0 }} - {{ row.fragmentSizeMax || '∞' }} </template>
+        </el-table-column>
         <el-table-column label="状态" align="center" prop="statusLabel" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'info'">{{ row.statusLabel }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="状态时间" align="center" prop="statusTime" width="150" />
-        <el-table-column label="状态人" align="center" prop="statusBy" width="100" />
+        <el-table-column label="自定义" align="center" prop="isCustom" width="90" />
+        <el-table-column label="备注" align="center" prop="remark" min-width="150" show-overflow-tooltip />
         <el-table-column label="添加人" align="center" prop="createBy" width="100" />
         <el-table-column label="添加时间" align="center" prop="createTime" width="150" />
+        <el-table-column label="更新人" align="center" prop="updateBy" width="100" />
+        <el-table-column label="更新时间" align="center" prop="updateTime" width="150" />
       </el-table>
 
       <template #footer>
@@ -290,49 +298,80 @@
     </el-dialog>
 
     <!-- 设置客户费用弹窗 (图2) -->
-    <el-dialog v-model="showAddPriceDialog" title="设置客户费用" width="700px" append-to-body>
+    <el-dialog v-model="showAddPriceDialog" title="设置价格配置" width="750px" append-to-body>
       <div class="well-form">
-        <el-form :model="priceForm" label-width="0px">
+        <el-form ref="priceFormRef" :model="priceForm" :rules="priceRules" label-width="0px">
           <div class="form-row">
+            <div class="form-label">类别：</div>
+            <div class="form-content">
+              <span class="view-value">{{ priceForm.category || '' }}</span>
+            </div>
             <div class="form-label">收费名称：</div>
             <div class="form-content">
-              <el-select v-model="priceForm.chargeName" placeholder="请选择收费名称" style="width: 100%">
-                <el-option-group v-for="group in CHARGE_NAME_OPTIONS" :key="group.label" :label="group.label">
-                  <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value" />
-                </el-option-group>
-              </el-select>
-            </div>
-            <div class="form-label">价格：</div>
-            <div class="form-content">
-              <el-input v-model="priceForm.price" placeholder="请输入价格" />
+              <span class="view-value">{{ priceForm.chargeName || '' }}</span>
             </div>
           </div>
           <div class="form-row">
-            <div class="form-label">生效日期：</div>
+            <div class="form-label">样品类型：</div>
             <div class="form-content">
-              <el-date-picker
-                v-model="priceForm.startDate"
-                type="date"
-                placeholder="选择日期"
+              <span class="view-value">{{ priceForm.sampleType || '' }}</span>
+            </div>
+            <div class="form-label">测序项目：</div>
+            <div class="form-content">
+              <span class="view-value">{{ priceForm.project || '' }}</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">单价：</div>
+            <div class="form-content">
+              <el-input-number
+                v-model="priceForm.unitPrice"
+                :precision="2"
+                :step="0.1"
+                placeholder="请输入单价"
+                controls-position="right"
                 style="width: 100%"
-                value-format="YYYY-MM-DD"
               />
             </div>
-            <div class="form-label">失效日期：</div>
+            <div class="form-label">计算方式：</div>
             <div class="form-content">
-              <el-date-picker
-                v-model="priceForm.endDate"
-                type="date"
-                placeholder="选择日期"
-                style="width: 100%"
-                value-format="YYYY-MM-DD"
-              />
+              <span class="view-value">{{ priceForm.calcMethod || '' }}</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">质粒长度：</div>
+            <div class="form-content">
+              <span class="view-value">
+                {{ priceForm.plasmidLengthMin ?? '' }}
+                <template v-if="priceForm.plasmidLengthMin !== undefined && priceForm.plasmidLengthMin !== null">
+                  -
+                </template>
+                {{ priceForm.plasmidLengthMax ?? '' }}
+              </span>
+            </div>
+            <div class="form-label">状态：</div>
+            <div class="form-content">
+              <el-tag :type="priceForm.status === 1 ? 'success' : 'info'" size="small">
+                {{ priceForm.status === 1 ? '启用' : '禁用' }}
+              </el-tag>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">片段大小：</div>
+            <div class="form-content">
+              <span class="view-value">
+                {{ priceForm.fragmentSizeMin ?? '' }}
+                <template v-if="priceForm.fragmentSizeMin !== undefined && priceForm.fragmentSizeMin !== null">
+                  -
+                </template>
+                {{ priceForm.fragmentSizeMax ?? '' }}
+              </span>
             </div>
           </div>
           <div class="form-row">
             <div class="form-label">备注：</div>
             <div class="form-content">
-              <el-input v-model="priceForm.remark" type="textarea" :rows="4" placeholder="请输入备注内容" />
+              <el-input v-model="priceForm.remark" type="textarea" :rows="2" placeholder="请输入备注内容" />
             </div>
           </div>
         </el-form>
@@ -450,7 +489,7 @@ import {
 import { listPriceConfig, updatePriceConfig, resetPriceConfig } from '@/api/customer/priceConfig'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
-import { CHARGE_NAME_OPTIONS } from '@/utils/constant'
+
 import {
   Search,
   Refresh,
@@ -481,6 +520,7 @@ const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
 const formRef = ref(null)
+const priceFormRef = ref(null)
 const searchRef = ref(null)
 const currentGroupId = ref(null)
 
@@ -501,12 +541,27 @@ const priceMultiple = ref(true)
 const showAddPriceDialog = ref(false)
 const priceForm = ref({
   id: undefined,
+  templateId: undefined,
   groupId: undefined,
+  category: '',
   chargeName: '',
-  unitPrice: '',
-  startDate: '',
-  endDate: '',
+  sampleType: '',
+  project: '',
+  plasmidLengthMin: undefined,
+  plasmidLengthMax: undefined,
+  fragmentSizeMin: undefined,
+  fragmentSizeMax: undefined,
+  unitPrice: undefined,
+  calcMethod: '',
+  status: 1,
   remark: ''
+})
+
+const priceRules = reactive({
+  sampleType: [{ required: true, message: '样品类型不能为空', trigger: 'blur' }],
+  project: [{ required: true, message: '测序项目不能为空', trigger: 'blur' }],
+  unitPrice: [{ required: true, message: '单价不能为空', trigger: 'blur' }],
+  calcMethod: [{ required: true, message: '计算方式不能为空', trigger: 'blur' }]
 })
 
 // 提醒设置相关
@@ -725,7 +780,24 @@ function handleAddPrice() {
 function handleEditPrice() {
   const selectRow = priceList.value.find(item => item.id === priceIds.value[0])
   if (selectRow) {
-    priceForm.value = { ...selectRow }
+    // 每次编辑前重置表单并映射字段
+    priceForm.value = {
+      id: selectRow.templateId || null,
+      templateId: selectRow.templateId,
+      groupId: selectRow.groupId || currentGroupId.value,
+      category: selectRow.category || '',
+      chargeName: selectRow.chargeName || '',
+      sampleType: selectRow.sampleType || '',
+      project: selectRow.project || '',
+      plasmidLengthMin: selectRow.plasmidLengthMin,
+      plasmidLengthMax: selectRow.plasmidLengthMax,
+      fragmentSizeMin: selectRow.fragmentSizeMin,
+      fragmentSizeMax: selectRow.fragmentSizeMax,
+      unitPrice: selectRow.unitPrice,
+      calcMethod: selectRow.calcMethod || '',
+      status: selectRow.status ?? 1,
+      remark: selectRow.remark || ''
+    }
     showAddPriceDialog.value = true
   }
 }
@@ -752,16 +824,19 @@ function handleResetPrice() {
 }
 
 function submitPriceForm() {
-  // 按照后端接口规范处理 ID
-  // 如果是由于修改模板生成的自定义价格，后端会自动处理 customId 的创建
-  const postData = {
-    ...priceForm.value,
-    id: priceForm.value.customId || null // customId 存在则修改，不存在则新增自定义
-  }
-  updatePriceConfig(postData).then(() => {
-    proxy.$modal.msgSuccess('保存成功')
-    showAddPriceDialog.value = false
-    handleSetPrice() // 刷新列表
+  priceFormRef.value.validate(valid => {
+    if (valid) {
+      // 按照用户要求，确认后传递的 id 为列表中的 templateId
+      const postData = {
+        ...priceForm.value,
+        id: priceForm.value.templateId
+      }
+      updatePriceConfig(postData).then(() => {
+        proxy.$modal.msgSuccess('保存成功')
+        showAddPriceDialog.value = false
+        handleSetPrice() // 刷新列表
+      })
+    }
   })
 }
 
@@ -883,6 +958,12 @@ onActivated(() => {
 })
 </script>
 <style scoped>
+.view-value {
+  color: #606266;
+  font-size: 14px;
+  padding: 0 5px;
+  line-height: 32px;
+}
 :deep(.el-table .el-table__header-wrapper th) {
   font-size: 12px !important;
   color: #606266 !important;
