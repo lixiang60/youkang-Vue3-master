@@ -193,15 +193,16 @@
         @selection-change="handlePaymentSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="ID" align="center" prop="id" width="80" />
+        <el-table-column label="样品编号" align="center" prop="sampleId" width="120" />
         <el-table-column label="订单号" align="center" prop="orderId" width="150" />
-        <el-table-column label="名称" align="center" prop="name" />
-        <el-table-column label="单位" align="center" prop="unit" width="80" />
-        <el-table-column label="数量" align="center" prop="quantity" width="80" />
-        <el-table-column label="单价" align="center" prop="price" width="100" />
-        <el-table-column label="费用" align="center" prop="cost" width="100" />
-        <el-table-column label="添加人" align="center" prop="createBy" width="100" />
-        <el-table-column label="时间" align="center" prop="createTime" width="150" />
+        <el-table-column label="测序项目" align="center" prop="project" min-width="120" show-overflow-tooltip />
+        <el-table-column label="样品类型" align="center" prop="sampleType" width="100" />
+        <el-table-column label="片段大小" align="center" prop="fragmentSize" width="90" />
+        <el-table-column label="质粒长度" align="center" prop="plasmidLength" width="90" />
+        <el-table-column label="数量" align="center" prop="quantity" width="70" />
+        <el-table-column label="单价" align="center" prop="unitPrice" width="90" />
+        <el-table-column label="合计费用" align="center" prop="totalPrice" width="100" />
+        <el-table-column label="添加时间" align="center" prop="createTime" width="150" />
       </el-table>
 
       <template #footer>
@@ -223,13 +224,13 @@
             </div>
             <div class="form-label">名称：</div>
             <div class="form-content">
-              <el-input v-model="feeForm.name" placeholder="请输入名称" />
+              <el-input v-model="feeForm.project" placeholder="请输入名称" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-label">单位：</div>
             <div class="form-content">
-              <el-input v-model="feeForm.unit" placeholder="请输入单位" />
+              <el-input v-model="feeForm.quantityType" placeholder="请输入单位" />
             </div>
             <div class="form-label">数量：</div>
             <div class="form-content">
@@ -246,7 +247,7 @@
             <div class="form-label">单价：</div>
             <div class="form-content">
               <el-input-number
-                v-model="feeForm.price"
+                v-model="feeForm.unitPrice"
                 :precision="2"
                 controls-position="right"
                 style="width: 100%"
@@ -255,7 +256,12 @@
             </div>
             <div class="form-label">费用：</div>
             <div class="form-content">
-              <el-input-number v-model="feeForm.cost" :precision="2" controls-position="right" style="width: 100%" />
+              <el-input-number
+                v-model="feeForm.totalPrice"
+                :precision="2"
+                controls-position="right"
+                style="width: 100%"
+              />
             </div>
           </div>
         </el-form>
@@ -337,11 +343,11 @@ const showAddFeeDialog = ref(false)
 const feeTitle = ref('')
 const feeForm = ref({
   orderId: '',
-  name: '',
-  unit: '',
+  project: '',
+  quantityType: '个',
   quantity: 0,
-  price: 0,
-  cost: 0
+  unitPrice: 0,
+  totalPrice: 0
 })
 
 const data = reactive({
@@ -492,18 +498,14 @@ function handleOrderPayment() {
   showPaymentDialog.value = true
   const orderId = ids.value[0]
   paymentLoading.value = true
+
+  // 恢复为：弹窗打开时直接调用 9.1 计算价格接口 渲染数据
   calcOrderPrice(orderId)
     .then(response => {
-      paymentList.value = response.data.map(item => ({
-        id: item.sampleId,
-        orderId: item.orderId,
-        name: `${item.project}${item.sampleType ? ' / ' + item.sampleType : ''}`,
-        unit: '条',
-        quantity: item.quantity,
-        price: item.unitPrice,
-        cost: item.totalPrice,
-        createBy: '系统自动',
-        createTime: '-'
+      // 必须映射 id 字段，否则多选框和编辑逻辑无法正确定位行数据
+      paymentList.value = (response.data || []).map(item => ({
+        ...item,
+        id: item.sampleId
       }))
       paymentLoading.value = false
     })
@@ -522,11 +524,11 @@ function handleAddFee() {
   feeTitle.value = '手工添加费用'
   feeForm.value = {
     orderId: ids.value[0],
-    name: '',
-    unit: '',
+    project: '',
+    quantityType: '个',
     quantity: 0,
-    price: 0,
-    cost: 0
+    unitPrice: 0,
+    totalPrice: 0
   }
   showAddFeeDialog.value = true
 }
@@ -535,6 +537,7 @@ function handleUpdateFee() {
   const selectRow = paymentList.value.find(item => item.id === paymentIds.value[0])
   if (selectRow) {
     feeTitle.value = '修改费用'
+    // 恢复为：直接使用编辑时传入的 row 数据
     feeForm.value = { ...selectRow }
     showAddFeeDialog.value = true
   }
@@ -552,7 +555,7 @@ function submitFeeForm() {
 }
 
 function calcFee() {
-  feeForm.value.cost = (feeForm.value.quantity || 0) * (feeForm.value.price || 0)
+  feeForm.value.totalPrice = (feeForm.value.quantity || 0) * (feeForm.value.unitPrice || 0)
 }
 
 function handlePrintPayment() {
