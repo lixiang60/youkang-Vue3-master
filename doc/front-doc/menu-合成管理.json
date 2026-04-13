@@ -1,5 +1,19 @@
 [
   {
+    "menuId": 2052,
+    "menuName": "合成管理",
+    "parentId": 0,
+    "orderNum": 3,
+    "path": "synthesis",
+    "component": null,
+    "isFrame": "1",
+    "isCache": "0",
+    "menuType": "M",
+    "visible": "0",
+    "status": "0",
+    "icon": "Brush"
+  },
+  {
     "parentId": 2052,
     "menuName": "合成订单审核",
     "menuType": "C",
@@ -11,7 +25,7 @@
     "path": "audit",
     "component": "synthesis/audit/index",
     "perms": "synthesis:audit:list",
-    "icon": "peoples"
+    "icon": "User"
   },
   {
     "parentId": 2052,
@@ -25,7 +39,7 @@
     "path": "fee",
     "component": "synthesis/fee/index",
     "perms": "synthesis:fee:list",
-    "icon": "money"
+    "icon": "Money"
   },
   {
     "parentId": 2052,
@@ -39,7 +53,7 @@
     "path": "order",
     "component": "synthesis/order/index",
     "perms": "synthesis:order:list",
-    "icon": "list"
+    "icon": "List"
   },
   {
     "parentId": 2052,
@@ -53,7 +67,7 @@
     "path": "samples",
     "component": "synthesis/samples/index",
     "perms": "synthesis:samples:list",
-    "icon": "row"
+    "icon": "Memo"
   },
   {
     "parentId": 2052,
@@ -67,7 +81,7 @@
     "path": "report-email",
     "component": "synthesis/report-email/index",
     "perms": "synthesis:report-email:list",
-    "icon": "email"
+    "icon": "Message"
   },
   {
     "parentId": 2052,
@@ -81,7 +95,7 @@
     "path": "layout",
     "component": "synthesis/layout/index",
     "perms": "synthesis:layout:list",
-    "icon": "table"
+    "icon": "Grid"
   },
   {
     "parentId": 2052,
@@ -95,7 +109,7 @@
     "path": "arrange",
     "component": "synthesis/arrange/index",
     "perms": "synthesis:arrange:list",
-    "icon": "edit"
+    "icon": "Edit"
   },
   {
     "parentId": 2052,
@@ -109,7 +123,7 @@
     "path": "modify",
     "component": "synthesis/modify/index",
     "perms": "synthesis:modify:list",
-    "icon": "star"
+    "icon": "Star"
   },
   {
     "parentId": 2052,
@@ -123,7 +137,7 @@
     "path": "ammonolysis",
     "component": "synthesis/ammonolysis/index",
     "perms": "synthesis:ammonolysis:list",
-    "icon": "grid"
+    "icon": "Menu"
   },
   {
     "parentId": 2052,
@@ -137,7 +151,7 @@
     "path": "purification",
     "component": "synthesis/purification/index",
     "perms": "synthesis:purification:list",
-    "icon": "calculator"
+    "icon": "Filter"
   },
   {
     "parentId": 2052,
@@ -151,7 +165,7 @@
     "path": "aliquot-value",
     "component": "synthesis/aliquot-value/index",
     "perms": "synthesis:aliquot-value:list",
-    "icon": "calculator"
+    "icon": "Calculator"
   },
   {
     "parentId": 2052,
@@ -165,7 +179,7 @@
     "path": "aliquot",
     "component": "synthesis/aliquot/index",
     "perms": "synthesis:aliquot:list",
-    "icon": "table"
+    "icon": "Grid"
   },
   {
     "parentId": 2052,
@@ -179,7 +193,7 @@
     "path": "drying",
     "component": "synthesis/drying/index",
     "perms": "synthesis:drying:list",
-    "icon": "monitor"
+    "icon": "Monitor"
   },
   {
     "parentId": 2052,
@@ -193,7 +207,7 @@
     "path": "orderout",
     "component": "synthesis/orderout/index",
     "perms": "synthesis:orderout:list",
-    "icon": "enter"
+    "icon": "Van"
   },
   {
     "parentId": 2052,
@@ -207,7 +221,7 @@
     "path": "order-complete",
     "component": "synthesis/order-complete/index",
     "perms": "synthesis:order-complete:list",
-    "icon": "select"
+    "icon": "Select"
   },
   {
     "parentId": 2052,
@@ -221,6 +235,6 @@
     "path": "into-finance",
     "component": "synthesis/into-finance/index",
     "perms": "synthesis:into-finance:list",
-    "icon": "shopping"
+    "icon": "ShoppingCart"
   }
 ]
