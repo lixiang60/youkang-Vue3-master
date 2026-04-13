@@ -115,7 +115,7 @@
                         class="el-input__icon"
                         style="height: 32px; width: 16px"
                       />
-                      <el-icon v-else style="height: 32px; width: 16px"><search /></el-icon>
+                      <el-icon v-else style="height: 32px; width: 16px"><Search /></el-icon>
                     </template>
                   </el-input>
                 </template>
@@ -289,7 +289,6 @@
 
 <script setup name="Menu">
 import { addMenu, delMenu, getMenu, listMenu, updateMenu } from '@/api/system/menu'
-import SvgIcon from '@/components/SvgIcon'
 import IconSelect from '@/components/IconSelect'
 
 const { proxy } = getCurrentInstance()

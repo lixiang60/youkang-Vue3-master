@@ -14,7 +14,9 @@
       <div class="list-container">
         <div v-for="(item, index) in iconList" :key="index" class="icon-item-wrapper" @click="selectedIcon(item)">
           <div :class="['icon-item', { active: activeIcon === item }]">
-            <svg-icon :icon-class="item" class-name="icon" style="height: 25px; width: 16px" />
+            <el-icon style="height: 25px; width: 16px; margin-right: 5px">
+              <component :is="item" />
+            </el-icon>
             <span>{{ item }}</span>
           </div>
         </div>
@@ -26,9 +28,10 @@
 <script setup>
 import icons from './requireIcons'
 
-const props = defineProps({
+defineProps({
   activeIcon: {
-    type: String
+    type: String,
+    default: ''
   }
 })
 
