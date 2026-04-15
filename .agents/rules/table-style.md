@@ -1,5 +1,5 @@
 ---
-trigger: model_decision
+trigger: always_on
 ---
 
 # 📋 数据列表与表格设计规范 (Table & List Guidelines)

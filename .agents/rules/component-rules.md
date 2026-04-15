@@ -1,5 +1,5 @@
 ---
-trigger: model_decision
+trigger: always_on
 ---
 
 # 🧩 组件与页面编码规范 (Component & Coding Guidelines)
