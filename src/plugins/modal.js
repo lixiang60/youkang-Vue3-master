@@ -60,7 +60,9 @@ export default {
     return ElMessageBox.confirm(content, '系统提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
+      draggable: true,
+      customClass: 're-order-btn'
     })
   },
   // 提交内容
@@ -68,7 +70,9 @@ export default {
     return ElMessageBox.prompt(content, '系统提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
+      draggable: true,
+      customClass: 're-order-btn'
     })
   },
   // 打开遮罩层

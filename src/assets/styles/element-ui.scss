@@ -94,3 +94,16 @@
 .el-dropdown .el-dropdown-link{
   color: var(--el-color-primary) !important;
 }
+
+// 调整 MessageBox 按钮顺序：确定在左，取消在右
+.re-order-btn {
+  .el-message-box__btns {
+    flex-direction: row-reverse !important;
+    justify-content: flex-start !important;
+    
+    .el-button:nth-child(2) {
+      margin-left: 0 !important;
+      margin-right: 12px !important;
+    }
+  }
+}

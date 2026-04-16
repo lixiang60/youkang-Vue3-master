@@ -33,13 +33,29 @@ trigger: always_on
 - **核心列宽控准**：如 “订单号” 这种长字符串参数，基础宽度标准定为 `160px` 以上，严禁在首屏折行。
 
 ## 3. 🛠️ 顶部操作按钮 (Toolbar)
-- **统调尺寸**：`<el-row class="mb8">` 内部所有的 `<el-button>` 级联必须补充 `size="small"`，缓解高密度工具下的视觉留白多导致的屏宽挤占。
+- **统调尺寸**：`<el-row class="mb8">` 内部所有的 `<el-button>` 级联必须补充 `size="small"`。
+- **视觉增强**：操作栏容器必须具备 `.mb8` 类，并统一应用以下美化样式（卡片化布局）：
+  ```css
+  .mb8 {
+    background: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 12px;
+  }
+  ```
 
-## 4. 📐 隐藏层展开机制 (Expand Slot)
-如果列数超过 12 列以上，建议将非高频列移入展开槽中，解放主表视界负担。
+## 4. 📐 状态持久化 (Persistence)
+- **列显隐记录**：必须在视图层增加针对 `columns` 的深度监听，将其 visible 矩阵塞入 `localStorage`，并在 `setup` 阶段还原。
+  ```javascript
+  const storageKey = 'unique_page_key'
+  const savedColumns = localStorage.getItem(storageKey)
+  const columns = ref(savedColumns ? JSON.parse(savedColumns) : [...])
 
-- **行展开**：在 columns 设置 `{ type: 'expand', slot: 'expand', width: 50, fixed: true }`。
-- **面板承载**：使用 `<template #expand="scope">` 渲染 `<el-descriptions :column="4" size="small" border>` 用于折叠冗余备注、时间戳等附属字段。
+  watch(columns, (val) => {
+    localStorage.setItem(storageKey, JSON.stringify(val))
+  }, { deep: true })
+  ```
 
 ## 5. 🎨 强制样式覆写 (Local Style Scoped)
 为了防止 Element Plus 默认撑距松散，需在视图层底部强制追加强压制：
@@ -48,13 +64,16 @@ trigger: always_on
 /* 1. 强力压缩表头高度并控小字体 */
 :deep(.el-table .el-table__header-wrapper th) {
   font-size: 12px !important;
-  color: #606266 !important;
-  padding: 4px 0 !important;
+  color: #303133 !important;
+  background-color: #f8f9fb !important;
+  padding: 6px 0 !important;
+  font-weight: 600;
 }
 /* 2. 压缩行内列间距保持高密度 */
 :deep(.el-table--small .cell) {
   padding-left: 6px !important;
   padding-right: 6px !important;
+  font-size: 13px;
 }
 </style>
 ```

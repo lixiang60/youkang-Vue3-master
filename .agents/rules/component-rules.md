@@ -11,7 +11,7 @@ trigger: always_on
 为了提高代码的可维护性和一致性，Vue 组件内部代码应按以下顺序排列：
 
 - **Imports (导入)**：统一放在最顶部。
-- **Constants & Config (静态配置)**：包括 `columns` 定义、`searchFields`、验证规则 `rules` 等。
+- **Constants & Config (静态配置)**：包括 `columns` 定义、searchFields、验证规则 `rules` 等。
 - **State (响应式状态)**：集中定义所有 `ref` 和 `reactive`（如 `loading`、分页数据、弹窗开关、表单对象等）。
 - **Computed (计算属性)**：如 `selectedIds` 等派生状态。
 - **Methods (方法)**：按照逻辑功能分组（查询、基础 CRUD、业务操作、辅助工具函数）。
@@ -36,3 +36,14 @@ trigger: always_on
 
 - **Scoped 约束**：由于是公共/后台系统，组件内部自定义样式必须使用 `<style scoped>`，严禁污染全局。
 - **布局一致性**：表单内部推荐使用项目沉淀的 `.well-form` 或 `.form-row` 类来实现整齐的标签与输入框对齐方式（参考 `src/assets/styles/`）。
+
+## 5. ⚠️ 业务确认与反馈规范
+
+- **核心动作确认**：涉及删除、结算、批量修改等具有破坏性或流程转折性的操作，必须使用 `proxy.$modal.confirm('确认消息')` 弹出提示，严禁静默执行。
+- **状态反馈**：异步操作执行中需挂载 `v-loading`；执行完成后需调用 `proxy.$modal.msgSuccess()` 给出明确反馈。
+
+## 6. 🖨 报表与打印规范
+
+- **字体约束**：正式报表、送货单、报告单必须强制使用 `font-family: 'SimSun', serif;`（宋体），确保打印预览与纸质输出的一致性。
+- **布局抽离**：复杂的打印 HTML 片段必须抽离为业务对应的独立组件，通过 `v-print` 指令或 `PrintDialog` 触发。
+- **视觉一致性**：打印容器样式必须处理 `@media print` 下的分页符 (`page-break-after: always`) 并隐藏所有非打印 UI 元素（如按钮、背景区）。
