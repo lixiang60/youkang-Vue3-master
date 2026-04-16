@@ -1,21 +1,40 @@
 <template>
-  <el-dialog v-model="visible" title="批量添加合成样品" width="600px" append-to-body :close-on-click-modal="false">
-    <div class="batch-add-container">
-      <div class="file-row">
-        <el-input v-model="form.fileName" readonly size="small" style="width: 250px" />
-        <el-upload action="#" :auto-upload="false" :show-file-list="false" @change="handleFileChange">
-          <el-button size="small" style="margin-left: 10px">选择文件</el-button>
-        </el-upload>
+  <el-dialog v-model="visible" width="600px" append-to-body top="10vh" :close-on-click-modal="false">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
+          <FolderAdd />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">批量添加合成样品</span>
       </div>
+    </template>
 
-      <div class="mode-box">
-        <span class="mode-label">请选择模板模式：</span>
-        <el-radio-group v-model="form.templateMode">
-          <el-radio label="OD">OD模式</el-radio>
-          <el-radio label="NMOL">NMOL模式</el-radio>
-        </el-radio-group>
-      </div>
-    </div>
+    <el-form :model="form" label-width="120px">
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="选择文件" prop="fileName">
+            <div style="display: flex; gap: 10px; width: 100%">
+              <el-input v-model="form.fileName" readonly placeholder="请上传模板文件" style="flex: 1" />
+              <el-upload action="#" :auto-upload="false" :show-file-list="false" @change="handleFileChange">
+                <el-button type="primary" plain>选择文件</el-button>
+              </el-upload>
+            </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="模板模式">
+            <el-radio-group v-model="form.templateMode">
+              <el-radio label="OD">OD模式</el-radio>
+              <el-radio label="NMOL">NMOL模式</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+
     <template #footer>
       <div class="dialog-footer" style="text-align: center">
         <el-button type="success" :icon="Check" @click="handleSubmit">确定</el-button>
@@ -27,7 +46,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Check, Close } from '@element-plus/icons-vue'
+import { Check, Close, FolderAdd } from '@element-plus/icons-vue'
 
 const props = defineProps({
   modelValue: Boolean
@@ -58,40 +77,5 @@ function handleSubmit() {
 </script>
 
 <style scoped>
-.batch-add-container {
-  padding: 20px;
-  min-height: 200px;
-}
-
-.file-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 80px;
-}
-
-.mode-box {
-  border: 1px solid #b3d8ff;
-  background-color: #ecf5ff;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-}
-
-.mode-label {
-  color: #f56c6c;
-  font-weight: bold;
-  margin-right: 20px;
-}
-
-:deep(.el-dialog__header) {
-  background-color: #f8f9fb;
-  margin-right: 0;
-  padding: 10px 20px;
-}
-
-:deep(.el-dialog__title) {
-  color: #409eff;
-  font-size: 14px;
-  font-weight: bold;
-}
+/* 移除多余的样式，使用标准的 el-form 渲染 */
 </style>

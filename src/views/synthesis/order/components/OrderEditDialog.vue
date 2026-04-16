@@ -1,109 +1,140 @@
 <template>
-  <el-dialog v-model="visible" title="修改" width="900px" append-to-body :close-on-click-modal="false">
-    <div class="well-form">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="0">
-        <el-row class="form-row">
-          <el-col :span="3" class="label">订单号：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.orderId" readonly size="small" />
-          </el-col>
-          <el-col :span="3" class="label">客户ID：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.customerId" size="small" />
-          </el-col>
-        </el-row>
-        <el-row class="form-row">
-          <el-col :span="3" class="label">客户名：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.customerName" size="small" />
-          </el-col>
-          <el-col :span="3" class="label">客户地址：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.customerAddress" size="small" />
-          </el-col>
-        </el-row>
-        <el-row class="form-row">
-          <el-col :span="3" class="label">客户等级：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.customerLevel" size="small" />
-          </el-col>
-          <el-col :span="3" class="label">订单状态：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.orderStatus" size="small" />
-          </el-col>
-        </el-row>
-        <el-row class="form-row">
-          <el-col :span="3" class="label">订单类型：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.orderType" size="small" />
-          </el-col>
-          <el-col :span="3" class="label">基因关联号：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.geneRelationNo" size="small" style="width: 80%" />
-            <el-button size="small" :icon="Search" circle style="margin-left: 5px" />
-          </el-col>
-        </el-row>
-        <el-row class="form-row">
-          <el-col :span="3" class="label">订货日期：</el-col>
-          <el-col :span="9" class="content">
-            <el-date-picker
-              v-model="form.orderDate"
-              type="datetime"
-              placeholder="选择时间"
-              size="small"
-              style="width: 100%"
-            />
-          </el-col>
-          <el-col :span="3" class="label">加急：</el-col>
-          <el-col :span="9" class="content">
+  <el-dialog v-model="visible" width="900px" append-to-body top="8vh" :close-on-click-modal="false">
+    <template #header>
+      <div style="display: flex; align-items: center; padding: 10px 0">
+        <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+          <EditPen />
+        </el-icon>
+        <span style="font-weight: bold; font-size: 16px">修改订单</span>
+      </div>
+    </template>
+
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="订单号" prop="orderId">
+            <el-input v-model="form.orderId" readonly placeholder="请输入订单号" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="客户ID" prop="customerId">
+            <el-input v-model="form.customerId" placeholder="请输入客户ID" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="客户名" prop="customerName">
+            <el-input v-model="form.customerName" placeholder="请输入客户名" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="客户地址" prop="customerAddress">
+            <el-input v-model="form.customerAddress" placeholder="请输入客户地址" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="客户等级" prop="customerLevel">
+            <el-input v-model="form.customerLevel" placeholder="请输入客户等级" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="订单状态" prop="orderStatus">
+            <el-input v-model="form.orderStatus" placeholder="请输入订单状态" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="订单类型" prop="orderType">
+            <el-input v-model="form.orderType" placeholder="请输入订单类型" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="基因关联号" prop="geneRelationNo">
+            <div style="display: flex; gap: 10px; width: 100%">
+              <el-input v-model="form.geneRelationNo" style="flex: 1" placeholder="请关联基因" />
+              <el-button :icon="Search" circle type="primary" plain />
+            </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="订货日期" prop="orderDate">
+            <el-date-picker v-model="form.orderDate" type="datetime" placeholder="选择时间" style="width: 100%" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="加急" prop="isUrgent">
             <el-radio-group v-model="form.isUrgent">
               <el-radio label="1">是</el-radio>
               <el-radio label="0">否</el-radio>
             </el-radio-group>
-          </el-col>
-        </el-row>
-        <el-row class="form-row">
-          <el-col :span="3" class="label">课题组：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.groupName" size="small" style="width: 80%" />
-            <el-button size="small" :icon="Plus" circle style="margin-left: 5px" @click="handleAddGroup" />
-          </el-col>
-          <el-col :span="3" class="label">订单模式：</el-col>
-          <el-col :span="9" class="content">
-            <el-select v-model="form.orderMode" placeholder="请选择" size="small" style="width: 100%">
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="课题组" prop="groupName">
+            <div style="display: flex; gap: 10px; width: 100%">
+              <el-input v-model="form.groupName" style="flex: 1" placeholder="请输入或选择课题组" />
+              <el-button :icon="Plus" circle type="success" plain @click="handleAddGroup" />
+            </div>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="订单模式" prop="orderMode">
+            <el-select v-model="form.orderMode" placeholder="请选择" style="width: 100%">
               <el-option label="OD模式" value="OD模式" />
               <el-option label="其他模式" value="其他模式" />
             </el-select>
-          </el-col>
-        </el-row>
-        <el-row class="form-row" style="height: 120px">
-          <el-col :span="3" class="label" style="height: 120px">备注：</el-col>
-          <el-col :span="21" class="content" style="height: 120px">
-            <el-input v-model="form.remark" type="textarea" :rows="4" size="small" />
-          </el-col>
-        </el-row>
-        <el-row class="form-row">
-          <el-col :span="3" class="label">添加人：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.createBy" size="small" />
-          </el-col>
-          <el-col :span="3" class="label">添加时间：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.createTime" readonly size="small" />
-          </el-col>
-        </el-row>
-        <el-row class="form-row no-border">
-          <el-col :span="3" class="label">邮件回复：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.emailStatus" size="small" />
-          </el-col>
-          <el-col :span="3" class="label">回复人：</el-col>
-          <el-col :span="9" class="content">
-            <el-input v-model="form.replyBy" size="small" />
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="备注" prop="remark">
+            <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="添加备注信息..." />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="添加人" prop="createBy">
+            <el-input v-model="form.createBy" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="添加时间" prop="createTime">
+            <el-input v-model="form.createTime" readonly />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="邮件回复" prop="emailStatus">
+            <el-input v-model="form.emailStatus" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="回复人" prop="replyBy">
+            <el-input v-model="form.replyBy" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+
     <template #footer>
       <div class="dialog-footer" style="text-align: center">
         <el-button type="success" :icon="Check" @click="handleConfirm">确定</el-button>
@@ -118,7 +149,7 @@
 
 <script setup>
 import { ref, computed, watch, getCurrentInstance } from 'vue'
-import { Search, Plus, Check, Close } from '@element-plus/icons-vue'
+import { Search, Plus, Check, Close, EditPen } from '@element-plus/icons-vue'
 import GroupUpdateDialog from './GroupUpdateDialog.vue'
 
 const { proxy } = getCurrentInstance()
@@ -167,51 +198,5 @@ function handleConfirm() {
 </script>
 
 <style scoped>
-.well-form {
-  border: 1px solid #dcdfe6;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #dcdfe6;
-}
-
-.form-row.no-border {
-  border-bottom: none;
-}
-
-.label {
-  background-color: #f8f9fb;
-  padding: 10px;
-  text-align: center;
-  border-right: 1px solid #dcdfe6;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-}
-
-.content {
-  padding: 5px 10px;
-  display: flex;
-  align-items: center;
-  border-right: 1px solid #dcdfe6;
-}
-
-.content:last-child {
-  border-right: none;
-}
-
-:deep(.el-dialog__header) {
-  background-color: #f8f9fb;
-  margin-right: 0;
-  padding: 10px 20px;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 14px;
-  font-weight: bold;
-}
+/* 原有的 well-form 紧凑样式已移除，使用原生 el-form 提供更好的呼吸感 */
 </style>

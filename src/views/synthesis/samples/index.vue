@@ -55,167 +55,202 @@
       @selection-change="handleSelectionChange"
     />
 
-    <!-- 4. 修改对话框 (符合 component-rules.md 规范) -->
-    <el-dialog v-model="visible" title="修改" width="1000px" append-to-body :close-on-click-modal="false">
-      <div class="well-form">
-        <el-form ref="formRef" :model="form" label-width="0">
-          <!-- 栅格化表单结构 (参考 OrderEditDialog) -->
-          <el-row class="form-row">
-            <el-col :span="3" class="label">生产编号：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.produceId" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">订单号：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.orderId" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">客户ID：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.customerId" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">客户姓名：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.customerName" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">加急：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.isUrgent" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">客户等级：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.customerLevel" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">管数：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.tubeCount" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">引物名称：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.primerName" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">序列(5'-3')：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.sequence" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">碱基数：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.baseCount" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">U基数：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.uBase" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">i基数：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.iBase" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">OD总量：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.odTotal" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">OD/管：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.odPerTube" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">MV：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.mv" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">nmol：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.nmol" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">nmol/管：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.nmolPerTube" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">体积：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.volume" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">加水量：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.waterAmount" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">修饰：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.modification" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">基因名称：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.geneSample" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">纯化方式：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.purification" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">排版方式：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.layoutMethod" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">板号：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.plateNo" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">孔号：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.wellNo" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">孔号2：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.wellNo2" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">返还状态：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.returnStatus" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">返还原因：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.returnReason" size="small" />
-            </el-col>
-          </el-row>
-          <el-row class="form-row no-border">
-            <el-col :span="3" class="label">状态：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.status" size="small" />
-            </el-col>
-            <el-col :span="3" class="label border-left">样品模式：</el-col>
-            <el-col :span="9" class="content">
-              <el-input v-model="form.sampleMode" size="small" />
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
+    <!-- 4. 修改对话框 (已应用舒适呼吸感排版) -->
+    <el-dialog v-model="visible" width="900px" append-to-body top="6vh" :close-on-click-modal="false">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #409eff; font-size: 20px">
+            <EditPen />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">修改合成样品信息</span>
+        </div>
+      </template>
+      <el-form ref="formRef" :model="form" label-width="110px">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="生产编号">
+              <el-input v-model="form.produceId" readonly />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="订单号">
+              <el-input v-model="form.orderId" readonly />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="客户ID">
+              <el-input v-model="form.customerId" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="客户姓名">
+              <el-input v-model="form.customerName" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="加急">
+              <el-input v-model="form.isUrgent" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="客户等级">
+              <el-input v-model="form.customerLevel" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="管数">
+              <el-input v-model="form.tubeCount" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="引物名称">
+              <el-input v-model="form.primerName" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="序列(5'-3')">
+              <el-input v-model="form.sequence" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="碱基数">
+              <el-input v-model="form.baseCount" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="U基数">
+              <el-input v-model="form.uBase" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="i基数">
+              <el-input v-model="form.iBase" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="OD总量">
+              <el-input v-model="form.odTotal" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="OD/管">
+              <el-input v-model="form.odPerTube" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="MV">
+              <el-input v-model="form.mv" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="nmol">
+              <el-input v-model="form.nmol" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="nmol/管">
+              <el-input v-model="form.nmolPerTube" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="体积">
+              <el-input v-model="form.volume" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="加水量">
+              <el-input v-model="form.waterAmount" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="修饰">
+              <el-input v-model="form.modification" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="基因名称">
+              <el-input v-model="form.geneSample" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="纯化方式">
+              <el-input v-model="form.purification" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="排版方式">
+              <el-input v-model="form.layoutMethod" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="板号">
+              <el-input v-model="form.plateNo" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="孔号">
+              <el-input v-model="form.wellNo" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="孔号2">
+              <el-input v-model="form.wellNo2" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="返还状态">
+              <el-input v-model="form.returnStatus" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="返还原因">
+              <el-input v-model="form.returnReason" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="状态">
+              <el-input v-model="form.status" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="样品模式">
+              <el-input v-model="form.sampleMode" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <template #footer>
         <div class="dialog-footer" style="text-align: center">
-          <el-button type="success" :icon="Check" size="small" @click="submitForm">确定</el-button>
-          <el-button type="danger" :icon="Close" size="small" @click="open = false">取消</el-button>
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="open = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -234,7 +269,8 @@ import {
   Printer,
   DataLine,
   Check,
-  Close
+  Close,
+  EditPen
 } from '@element-plus/icons-vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
@@ -407,57 +443,5 @@ onMounted(() => {
   margin-bottom: 8px;
 }
 
-/* 3. Well-Form 标准样式同步 */
-.well-form {
-  border: 1px solid #dcdfe6;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #dcdfe6;
-}
-
-.form-row.no-border {
-  border-bottom: none;
-}
-
-.label {
-  background-color: #f8f9fb;
-  padding: 8px 10px;
-  text-align: right;
-  border-right: 1px solid #dcdfe6;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 40px;
-  color: #606266;
-  font-weight: bold;
-}
-
-.label.border-left {
-  border-left: 1px solid #dcdfe6;
-}
-
-.content {
-  padding: 5px 15px;
-  display: flex;
-  align-items: center;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 0px !important;
-}
-
-:deep(.el-dialog__header) {
-  background-color: #f8f9fb;
-  margin-right: 0;
-  padding: 8px 20px;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 14px;
-  font-weight: bold;
-}
+/* 原有的 well-form 紧凑样式已移除，使用原生 el-form 呼吸感布局 */
 </style>

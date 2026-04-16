@@ -51,83 +51,83 @@
       </template>
     </dynamic-table>
 
-    <!-- 4. 报告邮件发送对话框 (严格参考 OrderEditDialog.vue 标准) -->
-    <el-dialog v-model="visible" title="报告邮件发送" width="900px" append-to-body :close-on-click-modal="false">
-      <div class="well-form">
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="0">
-          <el-row class="form-row">
-            <el-col :span="3" class="label">订单号：</el-col>
-            <el-col :span="21" class="content">
+    <!-- 4. 报告邮件发送对话框 (根据新规范：原生宽绰表单) -->
+    <el-dialog v-model="visible" width="700px" append-to-body top="10vh" :close-on-click-modal="false">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #67c23a; font-size: 20px">
+            <Message />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">报告邮件发送</span>
+        </div>
+      </template>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="订单号">
               <span style="color: #f56c6c; font-weight: bold">
-                选中数量：{{ ids.length }}，选中标示：{{ selectedOrderIds.join(',') }}
+                选中数量：{{ ids.length }}，选中标示：{{ selectedOrderIds.join(', ') }}
               </span>
-            </el-col>
-          </el-row>
-          <el-row class="form-row">
-            <el-col :span="3" class="label">内容模板：</el-col>
-            <el-col :span="21" class="content">
-              <el-form-item prop="templateId" style="width: 100%">
-                <el-select v-model="form.templateId" placeholder="请选择内容模板" size="small" style="width: 100%">
-                  <el-option
-                    v-for="item in templateOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row class="form-row no-border" style="height: 120px">
-            <el-col :span="3" class="label">备注：</el-col>
-            <el-col :span="21" class="content">
-              <el-form-item prop="remark" style="width: 100%">
-                <el-input v-model="form.remark" type="textarea" :rows="4" size="small" placeholder="请输入操作备注" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="内容模板" prop="templateId">
+              <el-select v-model="form.templateId" placeholder="请选择内容模板" style="width: 100%">
+                <el-option v-for="item in templateOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" :rows="4" placeholder="请输入操作备注" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <template #footer>
         <div class="dialog-footer" style="text-align: center">
-          <el-button type="success" :icon="Check" size="small" @click="submitForm">确定</el-button>
-          <el-button type="danger" :icon="Close" size="small" @click="cancel">取消</el-button>
+          <el-button type="success" :icon="Check" @click="submitForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>
 
     <!-- 5. 忽略报告邮件发送对话框 -->
-    <el-dialog v-model="openIgnore" title="忽略报告邮件发送" width="900px" append-to-body :close-on-click-modal="false">
-      <div class="well-form">
-        <el-form ref="ignoreFormRef" :model="ignoreForm" :rules="rules" label-width="0">
-          <el-row class="form-row">
-            <el-col :span="3" class="label">订单号：</el-col>
-            <el-col :span="21" class="content">
+    <el-dialog v-model="openIgnore" width="700px" append-to-body top="10vh" :close-on-click-modal="false">
+      <template #header>
+        <div style="display: flex; align-items: center; padding: 10px 0">
+          <el-icon style="margin-right: 8px; color: #e6a23c; font-size: 20px">
+            <Warning />
+          </el-icon>
+          <span style="font-weight: bold; font-size: 16px">忽略报告邮件发送</span>
+        </div>
+      </template>
+      <el-form ref="ignoreFormRef" :model="ignoreForm" :rules="rules" label-width="100px">
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="订单号">
               <span style="color: #f56c6c; font-weight: bold">
-                选中数量：{{ ids.length }}，选中标示：{{ selectedOrderIds.join(',') }}
+                选中数量：{{ ids.length }}，选中标示：{{ selectedOrderIds.join(', ') }}
               </span>
-            </el-col>
-          </el-row>
-          <el-row class="form-row no-border" style="height: 120px">
-            <el-col :span="3" class="label">备注：</el-col>
-            <el-col :span="21" class="content">
-              <el-form-item prop="remark" style="width: 100%">
-                <el-input
-                  v-model="ignoreForm.remark"
-                  type="textarea"
-                  :rows="4"
-                  size="small"
-                  placeholder="请输入忽略原因/备注"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="ignoreForm.remark" type="textarea" :rows="4" placeholder="请输入忽略原因/备注" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <template #footer>
         <div class="dialog-footer" style="text-align: center">
-          <el-button type="success" :icon="Check" size="small" @click="submitIgnoreForm">确定</el-button>
-          <el-button type="danger" :icon="Close" size="small" @click="cancelIgnore">取消</el-button>
+          <el-button type="success" :icon="Check" @click="submitIgnoreForm">确定</el-button>
+          <el-button type="danger" :icon="Close" @click="cancelIgnore">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -136,7 +136,7 @@
 
 <script setup name="ReportEmail">
 import { ref, reactive, toRefs, onMounted, getCurrentInstance, watch, computed } from 'vue'
-import { Search, Refresh, Message, CircleCheck, Check, Close } from '@element-plus/icons-vue'
+import { Search, Refresh, Message, CircleCheck, Check, Close, Warning } from '@element-plus/icons-vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
 import { listReportEmailProduce } from '@/api/sequencing/email'
@@ -410,53 +410,5 @@ watch(
   margin-bottom: 8px;
 }
 
-/* 2. Well-Form 标准样式同步 (参照 OrderEditDialog.vue) */
-.well-form {
-  border: 1px solid #dcdfe6;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #dcdfe6;
-}
-
-.form-row.no-border {
-  border-bottom: none;
-}
-
-.label {
-  background-color: #f8f9fb;
-  padding: 10px;
-  text-align: center;
-  border-right: 1px solid #dcdfe6;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  color: #606266;
-  font-weight: bold;
-}
-
-.content {
-  padding: 5px 15px;
-  display: flex;
-  align-items: center;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 0px !important;
-}
-
-:deep(.el-dialog__header) {
-  background-color: #f8f9fb;
-  margin-right: 0;
-  padding: 10px 20px;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 14px;
-  font-weight: bold;
-}
+/* 废弃的 well-form 样式已清除，使用原生 el-form 呼吸感布局 */
 </style>

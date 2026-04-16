@@ -1,51 +1,41 @@
 ---
 trigger: always_on
-description: 研发总纲 - 工具行为、占位规范与全局约束
+description: 研发总纲 - 工具行为、占位规范、全局样式基调与规则路由矩阵
 ---
 
 # 📜 后台研发总纲 (General Development Guidelines)
 
-本指南作为前端开发的核心总纲，定义了工具链行为、应急交互逻辑及全局样式底座。具体的页面、表格、接口规范请查阅各专项文档。
+本指南作为前端开发的核心总纲，全局且始终生效。它定义了全局样式基调、代码骨架原则以及对其他专业级规范的“路由指引”。
 
-## 1. 🛠 开发辅助工具规范
+## 1. 🏗 代码物理结构原则 (Golden Pattern)
 
-### 1.1 验证文档行为
-- **不要自动打开 walkthrough**：生成、保存或更新验证文档（如 `walkthrough.md`）后，**不应自动打开** 或引导编辑器弹出预览，以避免分散注意力。
+- **Vue 页面/组件骨架约束**：开发复杂业务场景（例如 `index.vue`）时，强制要求具有清晰的“物理分块（6~7大基础块）”。即：引入库 -> `Constants & Config` -> `State (响应式数据)` -> `Computed (派生数据)` -> `Methods (业务逻辑与 API)` -> `Lifecycle (生命周期)` -> `Watchers (监听器)`。
+- **目标**：杜绝将响应式变量和杂乱函数像面条一样堆叠。
 
-### 1.2 交互占位逻辑
-- **功能占位**：按钮已呈现但交互逻辑未编写时，统一调用 `proxy.$modal.msgInfo('功能开发中...')`。
-- **接口占位**：交互已完成但 API 尚未接入时，统一调用 `proxy.$modal.msgWarning('API接入中...')`。
+## 2. 🎨 全局视觉基调 (Global UI Aesthetics)
 
-## 2. 🎨 全局样式与底座
+- **主推现代清爽留白 ("呼吸感"布局)**：弹窗内部表单及模块布局，必须优先使用 Element 原生 `el-form-item` 搭配 `el-row :gutter="20"`，留出充足且舒适的空间。
+- **禁绝生硬强排版**：严禁在常规 CRUD 弹窗中使用类 Excel 的 `.well-form` 硬编码网格边框布局。带边框的密集排版只允许出现在“打印参数设定”或高密度财务报表显示等受限业务中。
+- **头部强视觉导向**：复杂弹窗要求使用 `<template #header>` 配合对应的功能图标（如 `<EditPen />`、`<DocumentAdd />` 等）与加粗标题，以提高用户的注意力聚焦。
+- **Scoped 强约束**：自定义样式必须使用 `<style scoped>`，严禁污染全局，强依赖于 `src/assets/styles/` 中的核心公用样式。
 
-- **代码生成约束**：在编写页面、布局或生成代码时，**必须严格遵守当前项目已有的统一样式规则**，确保新开发的模块在视觉和结构上与现有系统保持高度一致。
-- **强依赖全局样式**：优先复用全局 SCSS 变量、Mixins 和 Utility 组件样式（参见 `src/assets/styles/`）。
-- **Element Plus 优先**：优先使用 Element 原生类设计，样式保持简洁。
-- **Scoped 强约束**：自定义样式必须使用 `<style scoped>`，严禁无理由添加。
+## 3. 🛠 占位与反馈逻辑 (Placeholder Logic)
 
-## 3. 📖 专项规范索引 (Rule Index)
+- **功能级占位**：按钮存在但尚未实现细节链路时，统一调用 `proxy.$modal.msgInfo('xxx功能开发中...')`。
+- **接口级占位**：前端骨架与表单逻辑编写已完备，但等待后端提供 API 时，统一调用 `proxy.$modal.msgWarning('API接入中...')`。
 
-在进行具体功能开发前，必须阅读并严格遵守以下相关专项规范：
+## 4. 🧭 专项规范矩阵 (Rule Routing Matrix)
 
-| 模块 | 规范文件 | 核心关注点 |
+作为 Agent，在执行当前业务指令时，如果涉及以下场景，**必须主动去阅读对应的专业规约文件**：
+
+| 如果您的任务涉及... | MUST READ: 必读指令文件 | 核心控制域 |
 | :--- | :--- | :--- |
-| **数据列表/表格** | [table-style.md](file:///root/www/youkang/youkang-front/.agents/rules/table-style.md) | 高密度布局、动态显隐列、`DynamicTable` 使用、强压制样式。 |
-| **组件/编码风格** | [component-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/component-rules.md) | 代码结构顺序、对话框按钮标准、图标库使用、Form 布局。 |
-| **后端接口对接** | [api-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/api-rules.md) | 接口文档目录、后端 Java 源码参考、DTO/VO 字段命名对齐。 |
-| **打印/报表规范** | [component-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/component-rules.md)#4 | 打印组件复用、`v-print` 使用、宋体强制约束。 |
-
-## 4. 🖨 报表与打印规范
-
-- **组件化抽离**：复杂的打印布局（如送货单、确认单）必须抽离为独立的 Content 组件（如 `DeliveryNoteContent.vue`），严禁在业务页面直接编写大段打印 HTML。
-- **通用容器**：优先使用通用 `PrintDialog` 组件作为预览包装，保持“预览 -> 确认 -> 打印”的交互一致性。
-- **标准指令**：强一致性使用 `v-print` 指令触发打印，禁止直接调用原生 `window.print()`。
-- **视觉约束**：
-    - **字体**：正式报表强制使用 `font-family: 'SimSun', serif;`（宋体）。
-    - **分页**：批量打印必须处理 `@media print` 下的分页符 (`page-break-after: always`)。
-    - **精简**：打印样式中必须隐藏对话框页眉、页脚及所有非纸质内容。
-
+| **数据展示列表 / 顶部搜索面板** | [table-style.md](file:///root/www/youkang/youkang-front/.agents/rules/table-style.md) | `DynamicTable`使用规范、高密度CSS压层覆盖、列名动态本地记忆、搜索面板折叠态控制。 |
+| **新建、重构 Vue 弹窗组件** | [component-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/component-rules.md) | 业务组件设计、对话框 `v-model` 数据反向透传模式、破坏性操作的二次防呆确认、**打印页面及报表**处理专篇。 |
+| **新建 API 请求 / 调试与 Java 对接** | [api-rules.md](file:///root/www/youkang/youkang-front/.agents/rules/api-rules.md) | axios 请求方法设定 (`GET/POST` 及 payload )、后端 DTO 字段对齐规范。 |
 
 ---
 
 > [!IMPORTANT]
-> 每一个新页面的开发都应首先检视其是否符合 `table-style.md` 中定义的“高密度、体验友好”的列表看板规范。
+> - 开发过程中，避免用工具自动唤起或强行预览新生成的 markdown 跟踪文档（如 `walkthrough.md`），以防止打断开发流。
+> - 每次进行相关模块开发时，通过本矩阵精准索引专项规则，以此维系系统长期的整洁度。
