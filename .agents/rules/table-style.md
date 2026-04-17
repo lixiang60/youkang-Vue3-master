@@ -1,5 +1,8 @@
 ---
-trigger: model_decision
+trigger:
+  - patterns: ["**/src/views/**/index.vue"]
+  - keywords: ["DynamicTable", "表格", "列表", "查询面板", "搜索面板"]
+description: 当开发、重构或修改 Vue 列表数据页面 (通常是 index.vue) 以及涉及 DynamicTable 样式、高密度排版或顶部搜索面板时，必须遵循此规约。
 ---
 
 # 📋 数据列表与表格设计规范 (Table & List Guidelines)
@@ -34,16 +37,7 @@ trigger: model_decision
 
 ## 3. 🛠️ 顶部操作按钮 (Toolbar)
 - **统调尺寸**：`<el-row class="mb8">` 内部所有的 `<el-button>` 级联必须补充 `size="small"`。
-- **视觉增强**：操作栏容器必须具备 `.mb8` 类，并统一应用以下美化样式（卡片化布局）：
-  ```css
-  .mb8 {
-    background: #fff;
-    padding: 12px 16px;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    margin-bottom: 12px;
-  }
-  ```
+- **布局一致性**：操作栏容器使用 `.mb8` 类主要用于控制下边距（通常为 8px-12px）。**除非是门户型仪表盘，否则严禁在局部强加白色背景与内边距**，以避免在已具备 Padding 的 `app-container` 中产生“框中框”或“空格边框”的视觉残留。
 
 ## 4. 📐 状态持久化 (Persistence)
 - **列显隐记录**：必须在视图层增加针对 `columns` 的深度监听，将其 visible 矩阵塞入 `localStorage`，并在 `setup` 阶段还原。
@@ -57,23 +51,23 @@ trigger: model_decision
   }, { deep: true })
   ```
 
-## 5. 🎨 强制样式覆写 (Local Style Scoped)
-为了防止 Element Plus 默认撑距松散，需在视图层底部强制追加强压制：
+## 5. 🎨 局部样式建议 (Local Style Scoped)
+为了防止 Element Plus 默认撑距过于松散，建议在视图层底部进行轻量压制。**注意：不再强制要求设置固定的背景色，以适配全局主题。**
 ```css
 <style scoped>
-/* 1. 强力压缩表头高度并控小字体 */
+/* 1. 紧凑型表头 (遵循高密度原则) */
 :deep(.el-table .el-table__header-wrapper th) {
   font-size: 12px !important;
-  color: #303133 !important;
-  background-color: #f8f9fb !important;
-  padding: 6px 0 !important;
+  padding: 4px 0 !important;
   font-weight: 600;
 }
-/* 2. 压缩行内列间距保持高密度 */
+/* 2. 压缩单元格内间距 */
 :deep(.el-table--small .cell) {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-  font-size: 13px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+.mb8 {
+  margin-bottom: 8px;
 }
 </style>
 ```

@@ -31,12 +31,10 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" plain :icon="Printer" @click="handleAction('标签打印')"
-          >标签打印</el-button
-        >
+        <el-button size="small" type="primary" plain :icon="Printer" @click="handleLabelPrint">标签打印</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="info" plain :icon="DataLine" @click="handleAction('周报')">周报</el-button>
+        <el-button size="small" type="primary" plain :icon="Notebook" @click="handleWeeklyReport">周报</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" :columns="columns" @query-table="getList" />
     </el-row>
@@ -254,6 +252,12 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 5. 合成周报报表预览弹窗 -->
+    <weekly-report-dialog v-model="showWeeklyReportDialog" />
+
+    <!-- 6. 标签打印配置及预览弹窗 -->
+    <label-print-config-dialog v-model="showLabelPrintDialog" />
   </div>
 </template>
 
@@ -267,13 +271,15 @@ import {
   Download,
   Brush,
   Printer,
-  DataLine,
   Check,
   Close,
-  EditPen
+  EditPen,
+  Notebook
 } from '@element-plus/icons-vue'
 import DynamicTable from '@/components/DynamicTable/index.vue'
 import DynamicSearch from '@/components/DynamicSearch/index.vue'
+import WeeklyReportDialog from './components/WeeklyReportDialog.vue'
+import LabelPrintConfigDialog from './components/LabelPrintConfigDialog.vue'
 
 // --- 1. Constants & Config ---
 const { proxy } = getCurrentInstance()
@@ -308,10 +314,25 @@ const data = reactive({
   multiple: true,
   showSearch: false,
   open: false,
+  showWeeklyReportDialog: false,
+  showLabelPrintDialog: false,
   form: {}
 })
 
-const { loading, total, dataList, queryParams, ids, single, multiple, showSearch, open, form } = toRefs(data)
+const {
+  loading,
+  total,
+  dataList,
+  queryParams,
+  ids,
+  single,
+  multiple,
+  showSearch,
+  open,
+  showWeeklyReportDialog,
+  showLabelPrintDialog,
+  form
+} = toRefs(data)
 
 // --- 3. Computed (派生状态) ---
 const visible = computed({
@@ -412,11 +433,11 @@ function handleDelete() {
 function handleExport() {
   proxy.$modal.msgInfo('导出中...')
 }
-function handleAction(msg) {
-  proxy.$modal.msgInfo(`${msg}功能开发中...`)
+function handleWeeklyReport() {
+  showWeeklyReportDialog.value = true
 }
-function handleClearAction(msg) {
-  proxy.$modal.msgInfo(`清除${msg}功能开发中...`)
+function handleLabelPrint() {
+  showLabelPrintDialog.value = true
 }
 
 // --- 5. Lifecycle Hooks ---
